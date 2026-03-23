@@ -1,0 +1,512 @@
+/* ============================================================
+   PORTFOLIO — Ola Jin Myhre Nymoen
+   Style: Minimalist, black & white, Helvetica
+   ============================================================ */
+
+
+/* ===========================
+   RESET & BASE STYLES
+   Remove browser defaults so everything
+   looks the same in all browsers
+=========================== */
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* CSS variables — like named constants for colors/fonts */
+:root {
+    --black: #0a0a0a;
+    --white: #ffffff;
+    --gray: #888888;
+    --light-gray: #f0f0f0;
+    --font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --max-width: 1100px;
+}
+
+html {
+    scroll-behavior: smooth; /* smooth scrolling when clicking nav links */
+}
+
+body {
+    font-family: var(--font);
+    color: var(--black);
+    background: var(--white);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+
+/* ===========================
+   NAVIGATION
+   Fixed at top — always visible while scrolling
+=========================== */
+
+nav {
+    position: fixed;      /* stays in place when you scroll */
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;   /* name on left, toggle on right */
+    align-items: center;
+    padding: 20px 60px;
+    background: var(--white);
+    border-bottom: 1px solid #e8e8e8;
+    z-index: 100;         /* sits on top of everything else */
+}
+
+.nav-name {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.lang-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--gray);
+}
+
+.lang-btn {
+    background: none;
+    border: none;
+    font-family: var(--font);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    color: var(--gray);
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.lang-btn.active {
+    color: var(--black);
+    font-weight: 600;
+}
+
+
+/* ===========================
+   SECTIONS — shared styles
+   Each section gets the same max-width and padding
+=========================== */
+
+section {
+    max-width: var(--max-width);
+    margin: 0 auto;           /* centers the section horizontally */
+    padding: 100px 60px;
+}
+
+/* Section headings (small caps labels like "ABOUT", "PROJECTS") */
+h2 {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 60px;
+}
+
+
+/* ===========================
+   HERO
+   The first big section — name and title
+=========================== */
+
+#hero {
+    padding-top: 200px;    /* extra top padding to clear the fixed nav */
+    padding-bottom: 160px;
+}
+
+#hero h1 {
+    /* clamp(min, preferred, max) — responsive font size */
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 300;         /* light weight = elegant */
+    line-height: 1.0;
+    letter-spacing: -0.02em;  /* slight tightening looks refined */
+    margin-bottom: 32px;
+}
+
+#hero .title {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 8px;
+}
+
+#hero .location {
+    font-size: 13px;
+    color: var(--gray);
+}
+
+
+/* ===========================
+   ABOUT
+=========================== */
+
+#about p {
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 1.75;
+    max-width: 680px;
+    color: #333;
+}
+
+
+/* ===========================
+   PROJECTS
+   2-column grid of cards
+=========================== */
+
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);   /* 2 equal columns */
+    gap: 48px 40px;                          /* row gap, column gap */
+}
+
+.project-card {
+    cursor: pointer;
+}
+
+/* The image placeholder box */
+.project-image {
+    width: 100%;
+    aspect-ratio: 4 / 3;     /* keeps a consistent shape */
+    background: var(--light-gray);
+    margin-bottom: 16px;
+    transition: opacity 0.3s;
+}
+
+.project-card:hover .project-image {
+    opacity: 0.75;
+}
+
+.project-year {
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.project-card h3 {
+    font-size: 15px;
+    font-weight: 400;
+    margin-bottom: 4px;
+}
+
+.project-card p {
+    font-size: 13px;
+    color: var(--gray);
+}
+
+
+/* ===========================
+   TIMELINE
+   Used for both Experience and Education
+=========================== */
+
+.timeline {
+    display: flex;
+    flex-direction: column;   /* stack items vertically */
+    gap: 48px;
+}
+
+.timeline-item {
+    display: grid;
+    grid-template-columns: 110px 1fr;   /* date column + content column */
+    gap: 40px;
+}
+
+.timeline-date {
+    font-size: 12px;
+    color: var(--gray);
+    letter-spacing: 0.04em;
+    padding-top: 3px;
+}
+
+.timeline-content h3 {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.timeline-company {
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 12px;
+}
+
+.timeline-content p:not(.timeline-company) {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.65;
+}
+
+
+/* ===========================
+   SKILLS
+   4-column grid of skill groups
+=========================== */
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+}
+
+.skill-group h3 {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 20px;
+}
+
+.skill-group ul {
+    list-style: none;
+}
+
+.skill-group ul li {
+    font-size: 14px;
+    padding: 8px 0;
+    border-bottom: 1px solid #efefef;
+}
+
+.skill-group ul li:last-child {
+    border-bottom: none;
+}
+
+
+/* ===========================
+   CONTACT
+=========================== */
+
+#contact p {
+    font-size: 15px;
+    color: var(--gray);
+    margin-bottom: 28px;
+}
+
+#contact a {
+    font-size: clamp(24px, 4vw, 40px);
+    font-weight: 300;
+    color: var(--black);
+    text-decoration: none;
+    border-bottom: 1px solid var(--black);
+    padding-bottom: 2px;
+    transition: opacity 0.2s;
+}
+
+#contact a:hover {
+    opacity: 0.35;
+}
+
+
+/* ===========================
+   NAV LINKS
+   Work / About / Contact i navigasjonen
+=========================== */
+
+.nav-name {
+    text-decoration: none;
+    color: var(--black);
+}
+
+.nav-links {
+    display: flex;
+    gap: 32px;
+}
+
+.nav-links a {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--gray);
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: var(--black);
+}
+
+
+/* ===========================
+   PROJECT CARDS — lenker nå
+   Fjerner understrek fra <a>-tagger brukt som kort
+=========================== */
+
+.project-card {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+
+/* ===========================
+   PROJECT DETAIL PAGE
+   Stilene for individuelle prosjektsider
+=========================== */
+
+.project-header {
+    padding-top: 180px;
+    padding-bottom: 80px;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding-left: 60px;
+    padding-right: 60px;
+}
+
+.project-meta {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 24px;
+}
+
+.project-meta span {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gray);
+}
+
+.project-header h1 {
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 1.0;
+    margin-bottom: 40px;
+}
+
+.project-intro {
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1.75;
+    max-width: 640px;
+    color: #333;
+}
+
+/* Bilder på prosjektsiden */
+.project-images {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 60px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.image-full img {
+    width: 100%;
+    display: block;
+}
+
+.image-caption-block img {
+    width: 100%;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.image-caption-block p {
+    font-size: 13px;
+    color: var(--gray);
+    max-width: 560px;
+    line-height: 1.65;
+}
+
+/* Navigasjon mellom prosjekter */
+.project-nav {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 60px 60px 100px;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #e8e8e8;
+}
+
+.project-nav a {
+    font-size: 13px;
+    color: var(--black);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    transition: opacity 0.2s;
+}
+
+.project-nav a:hover {
+    opacity: 0.4;
+}
+
+
+/* ===========================
+   FOOTER
+=========================== */
+
+footer {
+    border-top: 1px solid #e8e8e8;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 28px 60px;
+}
+
+footer p {
+    font-size: 12px;
+    color: var(--gray);
+}
+
+
+/* ===========================
+   RESPONSIVE — Mobile screens
+   @media means "apply these styles only when..."
+=========================== */
+
+@media (max-width: 768px) {
+
+    nav {
+        padding: 16px 24px;
+    }
+
+    .nav-name {
+        font-size: 10px;
+    }
+
+    section {
+        padding: 72px 24px;
+    }
+
+    #hero {
+        padding-top: 120px;
+        padding-bottom: 80px;
+    }
+
+    /* Stack projects to 1 column on mobile */
+    .project-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Stack skills to 2 columns on mobile */
+    .skills-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .timeline-item {
+        grid-template-columns: 72px 1fr;
+        gap: 16px;
+    }
+
+    footer {
+        padding: 28px 24px;
+    }
+}
