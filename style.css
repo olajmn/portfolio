@@ -361,13 +361,30 @@ h2 {
    Stilene for individuelle prosjektsider
 =========================== */
 
-.project-header {
-    padding-top: 180px;
-    padding-bottom: 80px;
+/* Sticky wrapper — full bredde med bakgrunn og border */
+.project-header-sticky {
+    position: sticky;
+    top: 60px;
+    z-index: 90;
+    background: var(--white);
+    border-bottom: 1px solid #e8e8e8;
+    padding-top: 160px;
+    padding-bottom: 32px;
+}
+
+/* Sentrert innhold inne i sticky wrapper */
+.project-header-inner {
     max-width: var(--max-width);
     margin: 0 auto;
     padding-left: 60px;
     padding-right: 60px;
+}
+
+/* Intro-teksten — ikke sticky, scroller normalt */
+.project-header {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 80px 60px 80px;
 }
 
 .project-meta {
@@ -383,12 +400,13 @@ h2 {
     color: var(--gray);
 }
 
-.project-header h1 {
-    font-size: clamp(36px, 6vw, 72px);
+.project-header-inner h1 {
+    font-size: 72px;              /* starter stor — JS krymper denne */
     font-weight: 300;
     letter-spacing: -0.02em;
     line-height: 1.0;
-    margin-bottom: 40px;
+    margin-bottom: 16px;
+    transition: font-size 0.1s ease;
 }
 
 .project-intro {
