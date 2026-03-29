@@ -10,25 +10,41 @@
 
     <!-- NAVIGATION -->
     <nav>
-        <a href="index.html" class="nav-name">Ola Jin Myhre Nymoen</a>
+        <a href="#hero" class="nav-home" aria-label="Home">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
+                <path d="M9 21V12h6v9"/>
+            </svg>
+        </a>
+        <span class="nav-divider"></span>
         <div class="nav-links">
+            <a href="#about">About</a>
             <a href="#projects">Work</a>
-            <a href="about.html">About</a>
             <a href="#contact">Contact</a>
         </div>
     </nav>
 
     <!-- HERO -->
     <section id="hero">
-        <h1>Ola Jin Myhre<br>Nymoen</h1>
-        <p class="title">Architect</p>
-        <p class="location">Oslo, Norway</p>
+        <h1>Ola Jin Myhre<br><span class="name-nymoen">Nymoen</span></h1>
+        <p class="title">Portfolio Website</p>
     </section>
 
     <!-- ABOUT -->
     <section id="about">
         <h2>About</h2>
-        <p>Recently graduated architect with a Master's degree from Czech Technical University in Prague. With experience from architectural offices in Oslo and Prague, I work across architectural design, visualization, and technical drawing. My background spans office and healthcare projects, international workshops, and competition entries.</p>
+        <div class="about-inner">
+            <p>
+                <span class="bio-line">Hey, I'm Ola Jin.</span><br><br>
+                <span class="bio-line">I studied architecture in Prague — five years of learning how to think about space, people, and why cities feel the way they do. It gave me more than a degree. It gave me a way of seeing the world.</span><br><br>
+                <span class="bio-line">Somewhere along the way, I realised I wanted to make things differently. The job market didn't help, but honestly — a year of sitting with myself did more. I came out the other side wanting to build in a new medium.</span><br><br>
+                <span class="bio-line">Code feels like digital DNA to me. The same logic, the same obsession with how pieces fit together — just a different material.</span><br><br>
+                <span class="bio-line">I'm currently a student, figuring it out one project at a time. If you're building something interesting, feel free to reach out.</span>
+            </p>
+            <div class="about-image">
+                <img src="images/profile.jpg" alt="Ola Jin Myhre Nymoen">
+            </div>
+        </div>
     </section>
 
     <!-- PROJECTS -->
@@ -36,163 +52,26 @@
         <h2>Projects</h2>
         <div class="project-grid">
 
-            <a href="projects/sagvag-senior-garden.html" class="project-card">
-                <div class="project-image">
-                    <img src="images/project-images/side-07.png" alt="Sagvåg Senior Garden">
+            <a href="projects/architecture/index.html" class="project-card">
+                <div class="project-image" style="background: white;">
+                    <img src="images/portfolio-cover.png" alt="Architecture Portfolio" class="img-multiply">
                 </div>
                 <div class="project-info">
-                    <span class="project-year">2024</span>
-                    <h3>Sagvåg Senior Garden</h3>
-                    <p>Residential — Sagvåg, Norway</p>
+                    <span class="project-year">2021–2024</span>
+                    <h3>Architecture</h3>
+                    <p>Selected works — Oslo, Prague, Sagvåg</p>
                 </div>
             </a>
 
-            <a href="projects/in-the-quarry.html" class="project-card">
-                <div class="project-image">
-                    <img src="images/in-the-quarry/cover.jpg" alt="In the Quarry">
+            <a href="projects/programming/this-portfolio.html" class="project-card project-card--coming-soon">
+                <div class="project-image project-image--placeholder">
                 </div>
                 <div class="project-info">
-                    <span class="project-year">2023</span>
-                    <h3>In the Quarry</h3>
-                    <p>Cultural Architecture — Ústí nad Labem, Czech Republic</p>
+                    <span class="project-year">2025</span>
+                    <h3>This Portfolio</h3>
+                    <p>Web development — HTML, CSS, JavaScript</p>
                 </div>
             </a>
-
-            <a href="projects/shifted.html" class="project-card">
-                <div class="project-image">
-                    <img src="images/project-images/side-15.png" alt="Shifted">
-                </div>
-                <div class="project-info">
-                    <span class="project-year">2022</span>
-                    <h3>Shifted</h3>
-                    <p>Bachelor Thesis — Prague, Czech Republic</p>
-                </div>
-            </a>
-
-            <a href="projects/lean-to.html" class="project-card">
-                <div class="project-image">
-                    <img src="images/project-images/side-17.png" alt="Lean-to">
-                </div>
-                <div class="project-info">
-                    <span class="project-year">2021</span>
-                    <h3>Lean-to</h3>
-                    <p>Student Project — Prague, Czech Republic</p>
-                </div>
-            </a>
-
-        </div>
-    </section>
-
-    <!-- EXPERIENCE -->
-    <section id="experience">
-        <h2>Experience</h2>
-        <div class="timeline">
-
-            <div class="timeline-item">
-                <span class="timeline-date">2023</span>
-                <div class="timeline-content">
-                    <h3>Architectural Intern</h3>
-                    <p class="timeline-company">ASAS arkitektur AS — Oslo</p>
-                    <p>Participated in office and healthcare sector projects. Worked in Revit, Rhino, Enscape, Adobe, and physical model building.</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <span class="timeline-date">2022–23</span>
-                <div class="timeline-content">
-                    <h3>The Why Factory Workshop</h3>
-                    <p class="timeline-company">ČVUT Praha</p>
-                    <p>Workshop with 48 fellow students alongside architect Winy Maas and The Why Factory (TU Delft). Presentation design, modelling and rendering in Rhino, Enscape, Adobe.</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <span class="timeline-date">2022</span>
-                <div class="timeline-content">
-                    <h3>Architectural Intern</h3>
-                    <p class="timeline-company">Dam architekti — Praha</p>
-                    <p>Supported a school competition project through design and graphic processing, and assistance with floor plans. Worked in AutoCAD, Rhino, Photoshop.</p>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- EDUCATION -->
-    <section id="education">
-        <h2>Education</h2>
-        <div class="timeline">
-
-            <div class="timeline-item">
-                <span class="timeline-date">2022–24</span>
-                <div class="timeline-content">
-                    <h3>Master of Architecture (M.Arch)</h3>
-                    <p class="timeline-company">Czech Technical University in Prague (ČVUT)</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <span class="timeline-date">2019–22</span>
-                <div class="timeline-content">
-                    <h3>Bachelor of Architecture (B.Arch)</h3>
-                    <p class="timeline-company">Architectural Institute in Prague (ARCHIP)</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <span class="timeline-date">2017–18</span>
-                <div class="timeline-content">
-                    <h3>One-year Design & Architecture School</h3>
-                    <p class="timeline-company">Designinstituttet — Oslo</p>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- SKILLS -->
-    <section id="skills">
-        <h2>Skills</h2>
-        <div class="skills-grid">
-
-            <div class="skill-group">
-                <h3>CAD & 3D</h3>
-                <ul>
-                    <li>Rhino</li>
-                    <li>Revit</li>
-                    <li>3ds Max</li>
-                    <li>Archicad</li>
-                    <li>AutoCAD</li>
-                </ul>
-            </div>
-
-            <div class="skill-group">
-                <h3>Visualisation</h3>
-                <ul>
-                    <li>Enscape</li>
-                    <li>Lumion</li>
-                    <li>Twinmotion</li>
-                    <li>V-Ray</li>
-                    <li>Corona</li>
-                </ul>
-            </div>
-
-            <div class="skill-group">
-                <h3>Graphics</h3>
-                <ul>
-                    <li>Photoshop</li>
-                    <li>Illustrator</li>
-                    <li>InDesign</li>
-                </ul>
-            </div>
-
-            <div class="skill-group">
-                <h3>Languages</h3>
-                <ul>
-                    <li>Norwegian — Native</li>
-                    <li>English — Fluent</li>
-                </ul>
-            </div>
 
         </div>
     </section>
@@ -200,7 +79,7 @@
     <!-- CONTACT -->
     <section id="contact">
         <h2>Contact</h2>
-        <p>Available for new opportunities.</p>
+        <!-- <p>Available for new opportunities.</p> -->
         <a href="mailto:olajnym@gmail.com">olajnym@gmail.com</a>
     </section>
 

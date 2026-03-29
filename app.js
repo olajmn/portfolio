@@ -5,59 +5,171 @@
 
 
 // ============================================================
-//  SHRINKING TITLE ON SCROLL
-//  Når brukeren scroller, krymper tittelen gradvis fra stor til liten.
-//
-//  Slik fungerer det:
-//  1. Vi lytter på "scroll"-hendelser (hver gang siden scrolles)
-//  2. Vi beregner hvor langt brukeren har scrollet (scrollY)
-//  3. Vi bruker det til å interpolere (blande) mellom stor og liten font
-//  4. "progress" er et tall mellom 0 og 1 — 0 = topp, 1 = ferdig krympet
+//  FORSIDEN: Hero-tittel krymper og sklir opp på scroll
 // ============================================================
 
-const stickyHeader = document.querySelector('.project-header-sticky');
-const stickyH1 = stickyHeader ? stickyHeader.querySelector('h1') : null;
-const stickyInner = stickyHeader ? stickyHeader.querySelector('.project-header-inner') : null;
+// ============================================================
+//  ANCHOR SCROLL FIX
+//  Sørger for at nav-lenker alltid lander på riktig sted,
+//  uavhengig av hvor på siden du er.
+// ============================================================
 
-if (stickyH1) {
-    const maxFontSize = 72;   // startsstørrelse (px)
-    const minFontSize = 22;   // sluttstørrelse når sticky (px)
-    const maxPadding = 160;   // startpadding øverst (px)
-    const minPadding = 16;    // sluttpadding når sticky (px)
-    const scrollRange = 250;  // antall piksler scroll for å fullføre effekten
+document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+    anchor.addEventListener('click', function(e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (!target) return;
+        e.preventDefault();
+        const top = target.getBoundingClientRect().top + window.scrollY - 70;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+    });
+});
 
-    window.addEventListener('scroll', function() {
-        // progress går fra 0.0 til 1.0 basert på scroll
+
+const heroSection = document.getElementById('hero');
+
+if (heroSection) {
+    const heroH1    = heroSection.querySelector('h1');
+    const heroTitle = heroSection.querySelector('.title');
+
+    const startFontSize = 96;
+    const scrollRange   = 340;
+
+    window.addEventListener('scroll', function () {
         const progress = Math.min(window.scrollY / scrollRange, 1);
 
-        // interpoler fontstørrelse mellom max og min
-        const fontSize = maxFontSize - (maxFontSize - minFontSize) * progress;
+        const fontSize   = startFontSize - (startFontSize - 12) * progress;
+        const translateY = -(progress * 220);
 
-        // interpoler padding øverst mellom max og min
-        const padding = maxPadding - (maxPadding - minPadding) * progress;
+        heroH1.style.fontSize  = fontSize + 'px';
+        heroH1.style.transform = `translateY(${translateY}px)`;
+        heroH1.style.opacity   = progress >= 1 ? '0' : '1';
 
-        stickyH1.style.fontSize = fontSize + 'px';
-        stickyHeader.style.paddingTop = padding + 'px';
+        if (heroTitle) {
+            heroTitle.style.fontSize  = (13 - 3 * progress) + 'px';
+            heroTitle.style.transform = `translateY(${translateY}px)`;
+        }
     });
 }
 
 
-// This function runs when the user clicks EN or NO in the nav
-function setLanguage(lang) {
+// ============================================================
+//  ABOUT: innholdet fader og sklir ut når du scroller forbi
+//
+//  getBoundingClientRect().top gir oss hvor toppen av seksjonen
+//  er relativt til vinduet. Når den blir negativ, er seksjonen
+//  på vei ut av synet — da starter vi fade-effekten.
+// ============================================================
 
-    // Find every element on the page that has a "data-en" attribute
-    // These are all the elements we want to translate
-    document.querySelectorAll('[data-en]').forEach(function(element) {
-        // Replace the text with whichever language was chosen
-        element.textContent = element.getAttribute('data-' + lang);
-    });
+const aboutSection = document.getElementById('about');
 
-    // Update the nav buttons: make the clicked one bold, the other grey
-    document.querySelectorAll('.lang-btn').forEach(function(btn) {
-        if (btn.getAttribute('data-lang') === lang) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
+
+
+// ============================================================
+//  TYPEWRITER — "About" skriver seg selv når siden laster
+//
+//  Slik fungerer det:
+//  1. Vi tømmer h2-teksten med en gang
+//  2. Vi bruker setInterval() — en funksjon som gjentar seg
+//     med et fast tidsintervall (her: hver 120ms)
+//  3. For hver gang legger vi til én bokstav
+//  4. Når alle bokstavene er skrevet, stopper vi og viser markøren
+// ============================================================
+
+// Gjenbrukbar funksjon — tar et h2-element og setter opp typewriter på det
+function addTypewriter(element) {
+    if (!element) return;
+
+    const fullText = element.textContent;
+    const cursor   = document.createElement('span');
+    cursor.className   = 'typing-cursor';
+    cursor.textContent = '.';
+
+    let activeInterval = null;
+
+    function startTyping() {
+        clearInterval(activeInterval);
+        element.textContent = '';
+
+        let i = 0;
+        activeInterval = setInterval(function () {
+            element.textContent += fullText[i];
+            i++;
+            if (i === fullText.length) clearInterval(activeInterval);
+        }, 40);  // 40ms per bokstav — rask "skudd"-effekt
+    }
+
+    const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) startTyping();
+        });
+    }, { threshold: 0.2 });
+
+    observer.observe(element);
+}
+
+// Bruk funksjonen på About og Projects
+addTypewriter(document.querySelector('#about h2'));
+addTypewriter(document.querySelector('#projects h2'));
+addTypewriter(document.querySelector('#contact h2'));
+
+
+// ============================================================
+//  SHRINKING TITLE ON SCROLL (prosjektsider)
+//  Tittelen krymper gradvis fra stor til liten når man scroller.
+// ============================================================
+
+// ============================================================
+//  BIO LINES — font-weight animerer basert på scroll-posisjon
+//
+//  Slik fungerer det:
+//  1. Vi henter midten av hvert avsnitt (getBoundingClientRect)
+//  2. Vi regner ut avstand til midten av skjermen
+//  3. Jo nærmere midten, jo høyere font-weight (tykkere)
+//  4. Dette kjøres på hvert scroll-event
+// ============================================================
+
+const bioLines = document.querySelectorAll('.bio-line');
+
+if (bioLines.length) {
+    function updateBioWeights() {
+        const viewportCenter = window.innerHeight / 2;
+
+        bioLines.forEach(function(line) {
+            const rect       = line.getBoundingClientRect();
+            const lineCenter = rect.top + rect.height / 2;
+            const distance   = Math.abs(lineCenter - viewportCenter);
+
+            // normalized: 0 = helt i midten, 1 = langt unna
+            const normalized = Math.min(distance / (window.innerHeight * 0.45), 1);
+
+            // opacity: 1 i midten, 0.2 når langt unna
+            const opacity = 1 - 0.8 * normalized;
+            line.style.opacity = opacity;
+        });
+    }
+
+    window.addEventListener('scroll', updateBioWeights);
+    updateBioWeights(); // kjør én gang ved lasting
+}
+
+
+const stickyHeader = document.querySelector('.project-header-sticky');
+const stickyH1 = stickyHeader ? stickyHeader.querySelector('h1') : null;
+
+if (stickyH1) {
+    const maxFontSize = 72;
+    const minFontSize = 22;
+    const maxPadding = 160;
+    const minPadding = 16;
+    const scrollRange = 250;
+
+    window.addEventListener('scroll', function() {
+        const progress = Math.min(window.scrollY / scrollRange, 1);
+
+        const fontSize = maxFontSize - (maxFontSize - minFontSize) * progress;
+        const padding  = maxPadding  - (maxPadding  - minPadding)  * progress;
+
+        stickyH1.style.fontSize       = fontSize + 'px';
+        stickyHeader.style.paddingTop = padding  + 'px';
     });
 }

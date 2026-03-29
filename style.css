@@ -45,23 +45,38 @@ body {
 =========================== */
 
 nav {
-    position: fixed;      /* stays in place when you scroll */
-    top: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-between;   /* name on left, toggle on right */
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
     align-items: center;
-    padding: 20px 60px;
-    background: var(--white);
-    border-bottom: 1px solid #e8e8e8;
-    z-index: 100;         /* sits on top of everything else */
+    gap: 16px;
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 100px;
+    z-index: 100;
+    white-space: nowrap;
 }
 
-.nav-name {
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+.nav-home {
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.nav-home:hover {
+    color: #000;
+}
+
+.nav-divider {
+    width: 1px;
+    height: 16px;
+    background: #e0e0e0;
 }
 
 .lang-toggle {
@@ -97,15 +112,21 @@ nav {
 
 section {
     max-width: var(--max-width);
-    margin: 0 auto;           /* centers the section horizontally */
+    margin: 0 auto;
     padding: 100px 60px;
+    scroll-margin-top: 70px;
 }
+
+#about {
+    padding-top: 40px;
+    scroll-margin-top: 70px;
+}
+
 
 /* Section headings (small caps labels like "ABOUT", "PROJECTS") */
 h2 {
     font-size: 11px;
     letter-spacing: 0.18em;
-    text-transform: uppercase;
     color: var(--gray);
     margin-bottom: 60px;
 }
@@ -117,8 +138,9 @@ h2 {
 =========================== */
 
 #hero {
-    padding-top: 200px;    /* extra top padding to clear the fixed nav */
-    padding-bottom: 160px;
+    padding-top: 260px;
+    padding-bottom: 40vh;
+    min-height: calc(500px + 40vh);
 }
 
 #hero h1 {
@@ -128,6 +150,7 @@ h2 {
     line-height: 1.0;
     letter-spacing: -0.02em;  /* slight tightening looks refined */
     margin-bottom: 32px;
+    transform-origin: left top;
 }
 
 #hero .title {
@@ -146,15 +169,104 @@ h2 {
 
 
 /* ===========================
+   HERO — bilde + tekst side ved side
+=========================== */
+
+.hero-inner {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 80px;
+}
+
+.hero-text {
+    flex: 1;
+    padding-top: 16px;
+}
+
+.hero-image {
+    width: 42%;
+    flex-shrink: 0;
+}
+
+.hero-image img {
+    width: 100%;
+    height: 520px;
+    object-fit: cover;          /* fyller boksen uten å strekke bildet */
+    display: block;
+    filter: grayscale(100%);
+}
+
+@media (max-width: 768px) {
+    .hero-inner {
+        flex-direction: column-reverse;
+        gap: 32px;
+    }
+
+    .hero-image {
+        width: 100%;
+    }
+
+    .hero-image img {
+        height: 320px;
+    }
+}
+
+
+/* ===========================
+   TYPEWRITER CURSOR
+=========================== */
+
+.typing-cursor {
+    animation: blink 1s step-end infinite;
+}
+
+/* @keyframes definerer en animasjon — her blinker vi opacity av og på */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+}
+
+
+/* ===========================
    ABOUT
 =========================== */
 
+.about-inner {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 48px 40px;
+    align-items: start;
+}
+
 #about p {
-    font-size: 20px;
-    font-weight: 300;
-    line-height: 1.75;
+    max-width: 420px;
+}
+
+.about-image {
+    width: 85%;
+    margin: 0 auto;
+}
+
+.about-image img {
+    width: 100%;
+    height: 560px;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+    filter: grayscale(100%);
+}
+
+#about p {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.7;
     max-width: 680px;
     color: #333;
+}
+
+.bio-line {
+    transition: opacity 0.15s ease;
 }
 
 
@@ -287,6 +399,10 @@ h2 {
    CONTACT
 =========================== */
 
+#contact {
+    padding-top: 160px;
+}
+
 #contact p {
     font-size: 15px;
     color: var(--gray);
@@ -324,16 +440,15 @@ h2 {
 }
 
 .nav-links a {
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 0.04em;
     text-decoration: none;
-    color: var(--gray);
+    color: #555;
     transition: color 0.2s;
 }
 
 .nav-links a:hover {
-    color: var(--black);
+    color: #000;
 }
 
 
@@ -353,6 +468,11 @@ h2 {
     height: 100%;
     object-fit: cover;
     display: block;
+}
+
+.img-multiply {
+    mix-blend-mode: multiply;
+    background: white;
 }
 
 
