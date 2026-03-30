@@ -14,6 +14,24 @@
 //  uavhengig av hvor på siden du er.
 // ============================================================
 
+// ============================================================
+//  NAV DISTORTION — lupe-effekt som følger musen
+//  Oppdaterer CSS-variabler --mouse-x og --mouse-y i sanntid
+//  ::before pseudo-elementet bruker disse til å flytte sirkelen
+// ============================================================
+
+const navEl = document.querySelector('nav');
+if (navEl) {
+    navEl.addEventListener('mousemove', function(e) {
+        const rect = navEl.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1) + '%';
+        const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1) + '%';
+        navEl.style.setProperty('--mouse-x', x);
+        navEl.style.setProperty('--mouse-y', y);
+    });
+}
+
+
 document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
     anchor.addEventListener('click', function(e) {
         const target = document.querySelector(this.getAttribute('href'));

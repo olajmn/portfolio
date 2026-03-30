@@ -60,6 +60,27 @@ nav {
     border-radius: 100px;
     z-index: 100;
     white-space: nowrap;
+    overflow: hidden;
+    --mouse-x: 50%;
+    --mouse-y: 50%;
+}
+
+nav::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 100px;
+    backdrop-filter: blur(40px) brightness(1.05);
+    -webkit-backdrop-filter: blur(40px) brightness(1.05);
+    mask-image: radial-gradient(circle 55px at var(--mouse-x) var(--mouse-y), black 0%, transparent 75%);
+    -webkit-mask-image: radial-gradient(circle 55px at var(--mouse-x) var(--mouse-y), black 0%, transparent 75%);
+    opacity: 0;
+    transition: opacity 0.25s;
+    pointer-events: none;
+}
+
+nav:hover::before {
+    opacity: 1;
 }
 
 .nav-home {
