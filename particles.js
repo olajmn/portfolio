@@ -62,7 +62,7 @@ function spawnParticle() {
              : bright ? 1.2 + Math.random() * 1.5
              :          0.6 + Math.random() * 1.2,
         // size controls the square dimensions (in pixels)
-        size:  large  ? 5 + Math.random() * 5     // 5–10px
+        size:  large  ? 4 + Math.random() * 3     // 5–10px
              : medium ? 3 + Math.random() * 2      // 3–5px  ← new
              : bright ? 1.5 + Math.random() * 1.5  // 1.5–3px
              :          0.8 + Math.random() * 1.2,  // 0.8–2px (tiny dots)
@@ -75,6 +75,19 @@ function spawnParticle() {
         fadeIn: 0,   // starts invisible, fades up to 1 over ~80 frames
     };
 }
+
+
+// ── MOUSE ──
+let mouseOver = false;
+const mouse = { x: null, y: null };
+
+canvas.addEventListener('mouseenter', function() { mouseOver = true; });
+canvas.addEventListener('mouseleave', function() { mouseOver = false; mouse.x = null; });
+canvas.addEventListener('mousemove', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = (e.clientX - rect.left) * (canvas.width  / canvas.offsetWidth);
+    mouse.y = (e.clientY - rect.top)  * (canvas.height / canvas.offsetHeight);
+});
 
 
 // ── SCROLL SPEED ──
@@ -93,17 +106,14 @@ window.addEventListener('wheel', e => {
 
 
 // ── FLOW FIELD ──
-// Base direction: straight right (angle 0)
-// Noise adds gentle up/down drift — kept small so particles never reverse direction
-// Max noise ≈ ±0.75 radians (±43°), so x-component (cos) is always positive = always rightward
 let time = 0;
+let currentAngle = -Math.PI / 6;  // starts at 30° upward-right, lerps toward mouse
 
 function getAngle(x, y) {
-    const baseAngle = -Math.PI / 6;  // 30° upward-right
     const s = 0.0010;
     const noise = Math.sin(x * s + time * 0.12) * 0.45
                 + Math.cos(y * s + time * 0.10) * 0.30;
-    return baseAngle + noise;
+    return currentAngle + noise;
 }
 
 
@@ -113,7 +123,7 @@ function animate() {
     // At default speed: fully opaque (alpha 1.0) = no tail, canvas looks clean.
     // At max speed:     more transparent (alpha 0.2) = previous frame lingers = tail.
     // Formula maps speedMultiplier (0.4 → 2.0) to fadeAlpha (1.0 → 0.2)
-    const fadeAlpha = 1 - ((speedMultiplier - 0.4) / 1.6) * 0.8;
+    const fadeAlpha = 1 - ((speedMultiplier - 0.4) / 1.6) * 0.9;
     ctx.fillStyle = `rgba(1, 2, 8, ${fadeAlpha})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -209,8 +219,23 @@ function animate() {
         ctx.shadowBlur = 0;
     });
 
-    // Slowly return speed to default
-    speedMultiplier += (0.15 - speedMultiplier) * 0.02;
+    // Hover: ramp up speed
+    const targetSpeed = mouseOver ? 2.0 : 0.15;
+    speedMultiplier += (targetSpeed - speedMultiplier) * 0.04;
+
+    // Steer angle toward mouse — lerp so it turns smoothly
+    const defaultAngle = -Math.PI / 6;
+    let targetAngle = defaultAngle;
+    if (mouse.x !== null) {
+        const cx = canvas.width  / 2;
+        const cy = canvas.height / 2;
+        targetAngle = Math.atan2(mouse.y - cy, mouse.x - cx);
+    }
+    // Shortest-path lerp — avoids spinning the long way around
+    let diff = targetAngle - currentAngle;
+    if (diff >  Math.PI) diff -= Math.PI * 2;
+    if (diff < -Math.PI) diff += Math.PI * 2;
+    currentAngle += diff * 0.03;
 
     time += 0.003;
     requestAnimationFrame(animate);
