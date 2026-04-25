@@ -124,19 +124,19 @@ h2 {
 =========================== */
 
 #home {
-    padding-top: 260px;
-    padding-bottom: 40vh;
-    min-height: calc(500px + 40vh);
+    padding-top: 120px;
+    padding-bottom: 120px;
 }
 
 #home h1 {
     /* clamp(min, preferred, max) — responsive font size */
     font-size: clamp(48px, 8vw, 96px);
-    font-weight: 300;         /* light weight = elegant */
+    font-weight: 130;         /* light weight = elegant */
     line-height: 1.0;
     letter-spacing: -0.02em;  /* slight tightening looks refined */
     margin-bottom: 32px;
-    transform-origin: left top;
+    color: white;
+    padding-top: 20px;
 }
 
 #home .title {
@@ -300,6 +300,7 @@ footer {
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 28px 60px;
+    padding-bottom: 70px;
 }
 
 footer p {

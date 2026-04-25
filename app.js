@@ -26,27 +26,21 @@ document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
 //  HERO — tittelen krymper og sklir opp på scroll
 // ============================================================
 
-const homeSection = document.getElementById('home');                                                                    
-                                                                                                                          
-  if (homeSection) {                                                                                                      
-      const homeH1    = homeSection.querySelector('h1');                                                                  
-      const homeTitle = homeSection.querySelector('.title');                                                              
-      const scrollRange = 340;                                                                                            
-                                                                                                                          
-      window.addEventListener('scroll', function () {                                                                     
-          const progress   = Math.min(window.scrollY / scrollRange, 1);
-          const scale      = 1 - 0.88 * progress;                                                                         
-          const translateY = -(progress * 220);
-                                                                                                                          
-          homeH1.style.transform = `translateY(${translateY}px) scale(${scale})`;                                         
-          homeH1.style.opacity   = progress >= 1 ? '0' : '1';
-                                                                                                                          
-          if (homeTitle) {                                                                                                
-              homeTitle.style.transform = `translateY(${translateY}px)`;                                                  
-              homeTitle.style.opacity   = progress >= 1 ? '0' : '1';                                                      
-          }                                                                                                               
-      });                                     
-  }                     
+const homeSection = document.getElementById('home');
+
+if (homeSection) {
+    const frame = homeSection.querySelector('.particle-frame');
+    const scrollRange = 340;
+
+    window.addEventListener('scroll', function () {
+        const progress   = Math.min(window.scrollY / scrollRange, 1);
+        const scale      = 1 - 0.88 * progress;
+        const translateY = -(progress * 220);
+
+        frame.style.transform = `translateY(${translateY}px) scale(${scale})`;
+        frame.style.opacity   = progress >= 1 ? '0' : '1';
+    });
+}                     
 
 
 // ============================================================
