@@ -58,6 +58,15 @@ nav {
     z-index: 100;
     white-space: nowrap;
     overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+nav:hover {
+    border-color: #b0b0b0;
+}
+
+nav:hover .nav-divider {
+    background: #b0b0b0;
 }
 
 .nav-home {
@@ -75,7 +84,9 @@ nav {
     width: 1px;
     height: 16px;
     background: #e0e0e0;
+    transition: background 0.2s;
 }
+
 
 .nav-links {
     display: flex;
