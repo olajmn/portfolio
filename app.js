@@ -32,15 +32,17 @@ if (homeSection) {
     const frame = homeSection.querySelector('.particle-frame');
     const scrollRange = 340;
 
-    window.addEventListener('scroll', function () {
+    function updateFrame() {
         const progress   = Math.min(window.scrollY / scrollRange, 1);
         const scale      = 1 - 0.5 * progress;
-        frame.style.transform = `scale(${scale})`; 
-        // const translateY = -(progress * 220);
+        const translateY = -(progress * 220);
 
         frame.style.transform = `translateY(${translateY}px) scale(${scale})`;
         frame.style.opacity   = progress >= 1 ? '0' : '1';
-    });
+    }
+
+    window.addEventListener('scroll', updateFrame);
+    updateFrame();
 }                     
 
 
