@@ -123,15 +123,28 @@ function spawnParticle() {
 
 
 // ── MOUSE ──
-let mouseOver = false;
+let mouseOver  = false;
+let isClicking = false;
+let isDragging = false;
+let lastDragX  = null;
+let lastDragY  = null;
 const mouse = { x: null, y: null };
 
 canvas.addEventListener('mouseenter', function() { mouseOver = true; });
-canvas.addEventListener('mouseleave', function() { mouseOver = false; mouse.x = null; });
-canvas.addEventListener('mousemove', function(e) {
+canvas.addEventListener('mouseleave', function() { mouseOver = false; mouse.x = null; isClicking = false; isDragging = false; });
+canvas.addEventListener('mousedown',  function(e) { isClicking = true; isDragging = true; lastDragX = e.clientX; lastDragY = e.clientY; });
+canvas.addEventListener('mouseup',    function() { isClicking = false; isDragging = false; lastDragX = null; lastDragY = null; });
+canvas.addEventListener('mousemove',  function(e) {
     const rect = canvas.getBoundingClientRect();
     mouse.x = (e.clientX - rect.left) * (canvas.width  / canvas.offsetWidth);
     mouse.y = (e.clientY - rect.top)  * (canvas.height / canvas.offsetHeight);
+
+    if (isDragging && lastDragX !== null) {
+        currentAngle += (e.clientX - lastDragX) * 0.012;
+        tiltAngle = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, tiltAngle + (e.clientY - lastDragY) * 0.01));
+        lastDragX = e.clientX;
+        lastDragY = e.clientY;
+    }
 });
 
 
@@ -157,6 +170,7 @@ let currentAngle = -Math.PI / 6;
 // Axis position — lerps smoothly toward mouse (or center when idle)
 let axCurrent = 0;
 let ayCurrent = 0;
+let tiltAngle = 0;
 
 function getAngle(x, y) {
     const s = 0.0010;
@@ -187,19 +201,23 @@ function animate() {
     const sinA = Math.sin(currentAngle);
     const cosA = Math.cos(currentAngle);
     const bandWidth = Math.min(canvas.width, canvas.height) * 0.35;
+    const pullTarget = isClicking ? 0.18 : 0.02;
+    if (!animate.pull) animate.pull = 0.02;
+    animate.pull += (pullTarget - animate.pull) * 0.12;
 
     particles.forEach(p => {
         const angle = getAngle(p.x, p.y);
 
-        // Accelerate in flow direction
-        p.vx += Math.cos(angle) * 0.12 * speedMultiplier;
-        p.vy += Math.sin(angle) * 0.12 * speedMultiplier;
+        // Accelerate in flow direction — tilt compresses the axis (cos(tilt) = 1 when flat, 0 when pointing at viewer)
+        const flowScale = Math.cos(tiltAngle);
+        p.vx += Math.cos(angle) * flowScale * 0.12 * speedMultiplier;
+        p.vy += Math.sin(angle) * flowScale * 0.12 * speedMultiplier;
 
         // Gravitational pull toward the mouse axis
         const signedDist = -sinA * (p.x - ax) + cosA * (p.y - ay);
         const distFactor = Math.max(0, 1 - Math.abs(signedDist) / bandWidth);
-        p.vx += Math.sign(signedDist) * sinA * 0.02 * distFactor;
-        p.vy -= Math.sign(signedDist) * cosA * 0.02 * distFactor;
+        p.vx += Math.sign(signedDist) * sinA * animate.pull * distFactor;
+        p.vy -= Math.sign(signedDist) * cosA * animate.pull * distFactor;
 
         // Cap speed so particles don't fly off too fast
         const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
@@ -298,18 +316,23 @@ function animate() {
     const lerpRate = speedMultiplier < targetSpeed ? 0.12 : 0.03;
     speedMultiplier += (targetSpeed - speedMultiplier) * lerpRate;
 
-    // Steer angle toward mouse — lerp so it turns smoothly
-    const defaultAngle = -Math.PI / 6;
-    let targetAngle = defaultAngle;
-    if (mouse.x !== null) {
-        const cx = canvas.width  / 2;
-        const cy = canvas.height / 2;
-        targetAngle = Math.atan2(mouse.y - cy, mouse.x - cx);
+    // Tilt: flatten back to 0 when not dragging
+    if (!isDragging) tiltAngle += (0 - tiltAngle) * 0.03;
+
+    // Steer angle toward mouse — only when not dragging
+    if (!isDragging) {
+        const defaultAngle = -Math.PI / 6;
+        let targetAngle = defaultAngle;
+        if (mouse.x !== null) {
+            const cx = canvas.width  / 2;
+            const cy = canvas.height / 2;
+            targetAngle = Math.atan2(mouse.y - cy, mouse.x - cx);
+        }
+        let diff = targetAngle - currentAngle;
+        if (diff >  Math.PI) diff -= Math.PI * 2;
+        if (diff < -Math.PI) diff += Math.PI * 2;
+        currentAngle += diff * 0.03;
     }
-    let diff = targetAngle - currentAngle;
-    if (diff >  Math.PI) diff -= Math.PI * 2;
-    if (diff < -Math.PI) diff += Math.PI * 2;
-    currentAngle += diff * 0.03;
 
     time += 0.003;
     requestAnimationFrame(animate);
