@@ -72,7 +72,9 @@ function spawnParticle() {
         large,
         medium,
         bright,
-        fadeIn: 0,   // starts invisible, fades up to 1 over ~80 frames
+        fadeIn: 0,
+        trail:    [],
+        trailLen: large ? 10 : medium ? 5 : 0,
     };
 }
 
@@ -107,7 +109,11 @@ window.addEventListener('wheel', e => {
 
 // ── FLOW FIELD ──
 let time = 0;
-let currentAngle = -Math.PI / 6;  // starts at 30° upward-right, lerps toward mouse
+let currentAngle = -Math.PI / 6;
+
+// Axis position — lerps smoothly toward mouse (or center when idle)
+let axCurrent = 0;
+let ayCurrent = 0;
 
 function getAngle(x, y) {
     const s = 0.0010;
@@ -123,24 +129,34 @@ function animate() {
     // At default speed: fully opaque (alpha 1.0) = no tail, canvas looks clean.
     // At max speed:     more transparent (alpha 0.2) = previous frame lingers = tail.
     // Formula maps speedMultiplier (0.4 → 2.0) to fadeAlpha (1.0 → 0.2)
-    const fadeAlpha = 1 - ((speedMultiplier - 0.4) / 1.6) * 0.9;
+    const fadeAlpha = 1 - ((speedMultiplier - 0.6) / 1.6) * 0.9;
+    // const fadeAlpha = 1 - Math.max(0, (speedMultiplier - 1.5) / 2.1) * 0.85;
     ctx.fillStyle = `rgba(1, 2, 8, ${fadeAlpha})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // ── DIAGONAL BAND ──
-    // We define a diagonal line across the screen: x + y = bandCenter
-    // This line goes from bottom-left to top-right, like in the reference image.
-    // For each particle, we measure its distance from this line.
-    // Particles close to the line get a brightness boost → creates the glowing river.
-    const bandCenter = (canvas.width + canvas.height) * 0.52;
-    const bandWidth  = Math.min(canvas.width, canvas.height) * 0.38;
+    // ── MOUSE AXIS ──
+    const axTarget = mouse.x !== null ? mouse.x : canvas.width  / 2;
+    const ayTarget = mouse.y !== null ? mouse.y : canvas.height / 2;
+    axCurrent += (axTarget - axCurrent) * 0.05;
+    ayCurrent += (ayTarget - ayCurrent) * 0.05;
+    const ax = axCurrent;
+    const ay = ayCurrent;
+    const sinA = Math.sin(currentAngle);
+    const cosA = Math.cos(currentAngle);
+    const bandWidth = Math.min(canvas.width, canvas.height) * 0.35;
 
     particles.forEach(p => {
         const angle = getAngle(p.x, p.y);
 
-        // Accelerate the particle in the flow direction
+        // Accelerate in flow direction
         p.vx += Math.cos(angle) * 0.12 * speedMultiplier;
         p.vy += Math.sin(angle) * 0.12 * speedMultiplier;
+
+        // Gravitational pull toward the mouse axis
+        const signedDist = -sinA * (p.x - ax) + cosA * (p.y - ay);
+        const distFactor = Math.max(0, 1 - Math.abs(signedDist) / bandWidth);
+        p.vx += Math.sign(signedDist) * sinA * 0.02 * distFactor;
+        p.vy -= Math.sign(signedDist) * cosA * 0.02 * distFactor;
 
         // Cap speed so particles don't fly off too fast
         const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
@@ -162,12 +178,8 @@ function animate() {
             return;
         }
 
-        // ── How close is this particle to the diagonal band? ──
-        // The perpendicular distance from point (x,y) to the line x+y=bandCenter
-        // is: |x + y - bandCenter| / sqrt(2)
-        // Math.SQRT2 is JavaScript's built-in value for √2 (≈ 1.414)
-        const bandDist   = Math.abs(p.x + p.y - bandCenter) / Math.SQRT2;
-        // bandFactor: 1.0 when right on the band, 0.0 when far away
+        // Brightness boost near the axis
+        const bandDist   = Math.abs(signedDist);
         const bandFactor = Math.max(0, 1 - bandDist / bandWidth);
 
         // Base transparency based on how much "life" the particle has left
@@ -178,17 +190,30 @@ function animate() {
         // Add a boost near the band — this creates the bright river effect
         const alpha = Math.min(1, baseAlpha + bandFactor * 0.55) * p.fadeIn;
 
+        // ── TRAIL ──
+        if (p.trailLen > 0) {
+            p.trail.push({ x: p.x, y: p.y });
+            if (p.trail.length > p.trailLen) p.trail.shift();
+
+            p.trail.forEach(function(pos, i) {
+                const t = i / p.trail.length;  // 0 = oldest, 1 = newest
+                ctx.fillStyle = p.color + alpha * t * 0.35 + ')';
+                ctx.fillRect(pos.x - p.size / 2, pos.y - p.size / 2, p.size, p.size);
+            });
+        }
+
         // ── DRAW ──
-        const rx = Math.round(p.x - p.size / 2);
-        const ry = Math.round(p.y - p.size / 2);
-        const rs = Math.round(p.size);
+        const rx = p.x - p.size / 2;
+        const ry = p.y - p.size / 2;
+        const rs = p.size;
 
         // Glow — larger particles glow more
         ctx.shadowColor = p.color + Math.min(1, alpha * 1.2) + ')';
-        ctx.shadowBlur  = p.large ? 12 : p.medium ? 7 : p.bright ? 9 : 4;
+        // ctx.shadowBlur  = p.large ? 12 : p.medium ? 7 : p.bright ? 9 : 4;
+        ctx.shadowBlur  = (p.large ? 24 : p.medium ? 14 : p.bright ? 18 : 8) * alpha; 
 
         // Outer square — slightly dimmer (the "bezel")
-        ctx.fillStyle = p.color + alpha * 0.6 + ')';
+        ctx.fillStyle = p.color + alpha * 1 + ')';
         ctx.fillRect(rx, ry, rs, rs);
 
         // Inner square — brighter (the "screen"), only on medium and large
@@ -221,7 +246,8 @@ function animate() {
 
     // Hover: ramp up speed
     const targetSpeed = mouseOver ? 2.0 : 0.15;
-    speedMultiplier += (targetSpeed - speedMultiplier) * 0.04;
+    const lerpRate = speedMultiplier < targetSpeed ? 0.12 : 0.03;
+    speedMultiplier += (targetSpeed - speedMultiplier) * lerpRate;
 
     // Steer angle toward mouse — lerp so it turns smoothly
     const defaultAngle = -Math.PI / 6;
@@ -231,7 +257,6 @@ function animate() {
         const cy = canvas.height / 2;
         targetAngle = Math.atan2(mouse.y - cy, mouse.x - cx);
     }
-    // Shortest-path lerp — avoids spinning the long way around
     let diff = targetAngle - currentAngle;
     if (diff >  Math.PI) diff -= Math.PI * 2;
     if (diff < -Math.PI) diff += Math.PI * 2;
