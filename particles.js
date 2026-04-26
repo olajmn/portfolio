@@ -24,32 +24,83 @@ resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
 
-// ── COLOUR PALETTE ──
-// Blue shades — from dark to light, drawn randomly
-const colors = [
-    'rgba(60,  110, 220, ',   // deep blue
-    'rgba(80,  140, 255, ',   // medium blue   (double weight = more common)
-    'rgba(80,  140, 255, ',
-    'rgba(120, 170, 255, ',   // light blue
-    'rgba(130, 175, 255, ',   // pale blue
-];
+// ── CONFIG ──
+// Change these to tweak the look of the particle system
+const CONFIG = {
+    count:      80,           // total number of particles
+    background: '1, 2, 8',   // RGB of the background (almost-black with blue tint)
+
+    colors: [
+        'rgba(20,  40,  120, ',   // navy — deep marine blue
+        'rgba(20,  40,  120, ',   // navy (listed twice = more common)
+        'rgba(60,  110, 220, ',   // deep blue
+        'rgba(80,  140, 255, ',   // medium blue (listed twice = more common)
+        'rgba(80,  140, 255, ',
+        'rgba(120, 170, 255, ',   // light blue
+        'rgba(130, 175, 255, ',   // pale blue
+    ],
+
+    large: {
+        chance:   0.04,   // 4% of particles are large
+        speedMin: 0.4,
+        speedMax: 0.8,
+        sizeMin:  4,
+        sizeMax:  3,
+        color:    'rgba(60,  120, 220, ',
+        trailLen: 10,
+    },
+    medium: {
+        chance:   0.35,   // 35% of particles are medium
+        speedMin: 0.7,
+        speedMax: 1.0,
+        sizeMin:  3,
+        sizeMax:  2,
+        trailLen: 5,
+    },
+    small: {
+        chance:   0.04,   // 4% of particles are small highlights
+        speedMin: 1.2,
+        speedMax: 1.5,
+        sizeMin:  1.5,
+        sizeMax:  1.5,
+        color:    'rgba(100, 160, 255, ',
+        trailLen: 0,
+    },
+    tiny: {               // everything else
+        speedMin: 0.6,
+        speedMax: 1.2,
+        sizeMin:  0.8,
+        sizeMax:  1.2,
+        trailLen: 0,
+    },
+};
 
 
 // ── PARTICLES ──
-const COUNT = 90;
 const particles = [];
 
-for (let i = 0; i < COUNT; i++) {
+for (let i = 0; i < CONFIG.count; i++) {
     particles.push(spawnParticle());
 }
 
 function spawnParticle() {
-    // 4%  chance of a large "block"
-    const large  = Math.random() < 0.04;
-    // 35% chance of a medium square — new middle tier
-    const medium = !large && Math.random() < 0.35;
-    // 4% chance of a bright highlight
-    const bright = !large && !medium && Math.random() < 0.04;
+    const large  = Math.random() < CONFIG.large.chance;
+    const medium = !large && Math.random() < CONFIG.medium.chance;
+    const small = !large && !medium && Math.random() < CONFIG.small.chance;
+
+    const cfg = large ? CONFIG.large : medium ? CONFIG.medium : small ? CONFIG.small : CONFIG.tiny;
+
+    // 1% chance of crimson — only on small and tiny particles
+    const crimson = !large && !medium && Math.random() < 0.01;
+
+    const colorIndex = Math.floor(Math.random() * CONFIG.colors.length);
+    const baseColor  = crimson ? 'rgba(180, 20, 40, '
+                     : small   ? CONFIG.small.color
+                     : large   ? CONFIG.large.color
+                     :           CONFIG.colors[colorIndex];
+
+    // navy = the two dark marine entries (index 0 and 1 in colors array)
+    const navy = !crimson && !small && !large && colorIndex <= 1;
 
     return {
         x:     Math.random() * canvas.width,
@@ -57,24 +108,16 @@ function spawnParticle() {
         vx:    0,
         vy:    0,
         life:  Math.random(),
-        speed: large  ? 0.4 + Math.random() * 0.8
-             : medium ? 0.7 + Math.random() * 1.0
-             : bright ? 1.2 + Math.random() * 1.5
-             :          0.6 + Math.random() * 1.2,
-        // size controls the square dimensions (in pixels)
-        size:  large  ? 4 + Math.random() * 3     // 5–10px
-             : medium ? 3 + Math.random() * 2      // 3–5px  ← new
-             : bright ? 1.5 + Math.random() * 1.5  // 1.5–3px
-             :          0.8 + Math.random() * 1.2,  // 0.8–2px (tiny dots)
-        color: bright ? 'rgba(100, 160, 255, '
-             : large  ? 'rgba(60,  120, 220, '
-             :          colors[Math.floor(Math.random() * colors.length)],
+        speed: cfg.speedMin + Math.random() * cfg.speedMax,
+        size:  cfg.sizeMin  + Math.random() * cfg.sizeMax,
+        color: baseColor,
         large,
         medium,
-        bright,
-        fadeIn: 0,
+        small,
+        navy,
+        fadeIn:   0,
         trail:    [],
-        trailLen: large ? 10 : medium ? 5 : 0,
+        trailLen: cfg.trailLen,
     };
 }
 
@@ -131,7 +174,7 @@ function animate() {
     // Formula maps speedMultiplier (0.4 → 2.0) to fadeAlpha (1.0 → 0.2)
     const fadeAlpha = 1 - ((speedMultiplier - 0.6) / 1.6) * 0.9;
     // const fadeAlpha = 1 - Math.max(0, (speedMultiplier - 1.5) / 2.1) * 0.85;
-    ctx.fillStyle = `rgba(1, 2, 8, ${fadeAlpha})`;
+    ctx.fillStyle = `rgba(${CONFIG.background}, ${fadeAlpha})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // ── MOUSE AXIS ──
@@ -183,11 +226,11 @@ function animate() {
         const bandFactor = Math.max(0, 1 - bandDist / bandWidth);
 
         // Base transparency based on how much "life" the particle has left
-        const baseAlpha = p.bright ? p.life * 0.85
+        const baseAlpha = p.small ? p.life * 0.85
                         : p.large  ? p.life * 0.65
                         :            p.life * 0.55;
 
-        // Add a boost near the band — this creates the bright river effect
+        // Add a boost near the band — this creates the small river effect
         const alpha = Math.min(1, baseAlpha + bandFactor * 0.55) * p.fadeIn;
 
         // ── TRAIL ──
@@ -207,16 +250,22 @@ function animate() {
         const ry = p.y - p.size / 2;
         const rs = p.size;
 
-        // Glow — larger particles glow more
-        ctx.shadowColor = p.color + Math.min(1, alpha * 1.2) + ')';
-        // ctx.shadowBlur  = p.large ? 12 : p.medium ? 7 : p.bright ? 9 : 4;
-        ctx.shadowBlur  = (p.large ? 24 : p.medium ? 14 : p.bright ? 18 : 8) * alpha; 
+        // Glow — larger particles glow more; navy gets a lighter shadow color for a bright-core look
+        ctx.shadowColor = p.navy  ? 'rgba(80, 130, 255, ' + Math.min(1, alpha * 1.4) + ')'
+                        :           p.color + Math.min(1, alpha * 1.2) + ')';
+        ctx.shadowBlur  = (p.large ? 24 : p.medium ? 14 : p.small ? 18 : p.navy ? 14 : 8) * alpha;
 
         // Outer square — slightly dimmer (the "bezel")
         ctx.fillStyle = p.color + alpha * 1 + ')';
         ctx.fillRect(rx, ry, rs, rs);
 
-        // Inner square — brighter (the "screen"), only on medium and large
+        // Navy: tiny bright center pixel
+        if (p.navy) {
+            ctx.fillStyle = 'rgba(140, 180, 255, ' + Math.min(1, alpha * 0.6) + ')';
+            ctx.fillRect(p.x, p.y, 1, 1);
+        }
+
+        // Inner square — smaller (the "screen"), only on medium and large
         // inset pulls each edge inward by ~25% of the size
         if (p.large || p.medium) {
             const inset = Math.max(1, Math.round(p.size * 0.08));
