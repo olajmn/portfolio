@@ -23,9 +23,10 @@ const Z_CENTER = 600;
 
 // ── CONFIG PARTICLES ──
 const CONFIG = {
-    count:      120,
+    count:      100,
     background: '1, 2, 8',
     brownian:   0.008,
+    friction:   0.97,   // 1.0 = ingen bremsing, 0.95 = mye bremsing
 
     attract: {
         maxDist:   90,
@@ -55,7 +56,7 @@ const TIERS = {
 
     7: { pct: 0.12, inertia: 5.0,  glowMult: 1.0, size: [0.44, 0.58], mass: 3.5,  lifetime: [0.7, 0.9],  color: 'rgba(140, 180, 255, ' },
     8: { pct: 0.07, inertia: 8.0,  glowMult: 1.0, size: [0.58, 0.76], mass: 6.0,  lifetime: [0.8, 0.95], color: 'rgba(200, 220, 255, ' },
-    9: { pct: 0.04, inertia: 14.0, glowMult: 5.0, minCount: 1, maxCount: 1, size: [0.30, 0.40], mass: 30.0, lifetime: [0.9, 1.0], color: 'rgba(255, 255, 255, ' },
+    9: { pct: 0.04, inertia: 14.0, glowMult: 5.0, minCount: 1, maxCount: 1, gravRange: 500, size: [0.30, 0.40], mass: 30.0, lifetime: [0.9, 1.0], color: 'rgba(255, 255, 255, ' },
 };
 
 // ── VISUAL MAPPING ──
@@ -116,18 +117,43 @@ function spawnParticle() {
         vy:    (Math.random() - 0.5) * 0.4,
         vz:    (Math.random() - 0.5) * 0.05,
         size:     rndBetween(t.size[0],     t.size[1]),
-        mass:     t.mass,
-        inertia:  t.inertia,
-        glowMult: t.glowMult,
-        lifeMax:  rndBetween(t.lifetime[0], t.lifetime[1]) * 1800,
+        mass:      t.mass,
+        inertia:   t.inertia,
+        glowMult:  t.glowMult,
+        gravRange: t.gravRange ?? null,
+        lifeMax:  t.tier === 9 ? Infinity : rndBetween(t.lifetime[0], t.lifetime[1]) * 1800,
         life:     0,
         fadeIn:   60,
+        // Tier 9 supernova properties
+        charge:           t.tier === 9 ? 0 : undefined,
+        explodeThreshold: t.tier === 9 ? 0.5 + Math.random() * 0.5 : undefined,
+        exploding:        t.tier === 9 ? false : undefined,
+        explodeTimer:     t.tier === 9 ? 0 : undefined,
         color: t.color,
         spin:       Math.random() < 0.5 ? 1 : -1,
         ecc:        0.6 + Math.random() * 0.8,
         orbitAngle: Math.random() * Math.PI * 2,
     };
 }
+
+spawnParticle._forceTier9 = function() {
+    const t = TIERS[9];
+    const x = (Math.random() - 0.5) * canvas.width  * 0.8;
+    const y = (Math.random() - 0.5) * canvas.height * 0.8;
+    return {
+        tier: 9, x, y, cx: x, cy: y,
+        centerPull: t.centerPull ?? 0.00025 / t.mass,
+        z: Z_CENTER + (Math.random() - 0.5) * 40,
+        vx: 0, vy: 0, vz: 0,
+        size: rndBetween(t.size[0], t.size[1]),
+        mass: t.mass, inertia: t.inertia, glowMult: t.glowMult, gravRange: t.gravRange ?? null,
+        lifeMax: Infinity, life: 0, fadeIn: 60, color: t.color,
+        spin: Math.random() < 0.5 ? 1 : -1,
+        ecc: 0.6 + Math.random() * 0.8,
+        orbitAngle: Math.random() * Math.PI * 2,
+        charge: 0, explodeThreshold: 0.5 + Math.random() * 0.5, exploding: false, explodeTimer: 0,
+    };
+};
 
 for (let i = 0; i < CONFIG.count; i++) {
     particles.push(spawnParticle());
@@ -151,57 +177,130 @@ function animate() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // ── PARTICLE-PARTICLE GRAVITY ──
+    // Split into heavy (mass >= 1) and light (mass < 1) for performance:
+    // heavy↔heavy: full bidirectional physics  O(n_heavy²)
+    // heavy→light: only heavy pushes light     O(n_heavy × n_light)
+    // light vs light: skipped entirely
     const cfg = CONFIG.attract;
-    for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-            const a  = particles[i];
-            const b  = particles[j];
-            // Skip tiny-vs-tiny — they barely affect each other and this saves ~70% of pair checks
-            if (a.mass < 1.0 && b.mass < 1.0) continue;
+    const heavy = [];
+    const light  = [];
+    for (const p of particles) {
+        if (p.exploding) continue;
+        (p.mass >= 1.0 ? heavy : light).push(p);
+    }
 
-            const dx = b.x - a.x;
-            const dy = b.y - a.y;
-            const dz = b.z - a.z;
-            const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
-            if (dist < 1 || dist > cfg.maxDist) continue;
+    function applyForces(a, b, bidirectional) {
+        const dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;
+        const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+        const maxDist = Math.max(a.gravRange ?? cfg.maxDist, b.gravRange ?? cfg.maxDist);
+        if (dist < 1 || dist > maxDist) return;
 
-            const nx = dx/dist, ny = dy/dist, nz = dz/dist;
+        const nx = dx/dist, ny = dy/dist, nz = dz/dist;
+        const attract   = dist > cfg.repelDist;
+        const baseForce = attract
+            ? cfg.pull * (1 - dist / maxDist)
+            : cfg.push * (1 - dist / cfg.repelDist);
 
-            const attract = dist > cfg.repelDist;
-            const baseForce = attract
-                ? cfg.pull * (1 - dist / cfg.maxDist)
-                : cfg.push * (1 - dist / cfg.repelDist);
+        const forceOnA = baseForce * b.mass * (attract ? 1 : -1);
+        a.vx += nx * forceOnA / a.inertia;
+        a.vy += ny * forceOnA / a.inertia;
+        a.vz += nz * forceOnA * 0.2 / a.inertia;
 
-            // Each particle feels a force proportional to the OTHER's mass —
-            // heavy particles barely move, light ones get pulled strongly
-            const forceOnA = baseForce * b.mass * (attract ? 1 : -1);
+        if (bidirectional) {
             const forceOnB = baseForce * a.mass * (attract ? 1 : -1);
+            b.vx -= nx * forceOnB / b.inertia;
+            b.vy -= ny * forceOnB / b.inertia;
+            b.vz -= nz * forceOnB * 0.2 / b.inertia;
+        }
 
-            a.vx += nx * forceOnA / a.inertia;  a.vy += ny * forceOnA / a.inertia;  a.vz += nz * forceOnA * 0.2 / a.inertia;
-            b.vx -= nx * forceOnB / b.inertia;  b.vy -= ny * forceOnB / b.inertia;  b.vz -= nz * forceOnB * 0.2 / b.inertia;
+        const falloff = 1 - dist / maxDist;
+        const tx = -ny, ty = nx;
 
-            // Swirl — scales with the OTHER's mass (heavier = stronger orbit field)
-            // Ellipse: skew the tangential force slightly in X vs Y using ecc + orbitAngle
-            const falloff = 1 - dist / cfg.maxDist;
-            const tx = -ny, ty = nx;
+        const eccXb = 1 + (b.ecc - 1) * Math.cos(b.orbitAngle);
+        const eccYb = 1 + (b.ecc - 1) * Math.sin(b.orbitAngle);
+        a.vx += tx * cfg.swirl * falloff * b.mass * b.spin * eccXb / a.inertia;
+        a.vy += ty * cfg.swirl * falloff * b.mass * b.spin * eccYb / a.inertia;
 
+        if (bidirectional) {
             const eccXa = 1 + (a.ecc - 1) * Math.cos(a.orbitAngle);
             const eccYa = 1 + (a.ecc - 1) * Math.sin(a.orbitAngle);
-            const eccXb = 1 + (b.ecc - 1) * Math.cos(b.orbitAngle);
-            const eccYb = 1 + (b.ecc - 1) * Math.sin(b.orbitAngle);
-
-            a.vx += tx * cfg.swirl * falloff * b.mass * b.spin * eccXb / a.inertia;
-            a.vy += ty * cfg.swirl * falloff * b.mass * b.spin * eccYb / a.inertia;
             b.vx -= tx * cfg.swirl * falloff * a.mass * a.spin * eccXa / b.inertia;
             b.vy -= ty * cfg.swirl * falloff * a.mass * a.spin * eccYa / b.inertia;
         }
     }
+
+    // Heavy ↔ heavy — full physics both ways
+    for (let i = 0; i < heavy.length; i++)
+        for (let j = i + 1; j < heavy.length; j++)
+            applyForces(heavy[i], heavy[j], true);
+
+    // Heavy → light — only heavy affects light, not the other way
+    for (const h of heavy)
+        for (const l of light)
+            applyForces(l, h, false);
 
     // Sort far → near — every 3rd frame is enough (z changes slowly)
     if (animate.frame % 3 === 0) particles.sort((a, b) => b.z - a.z);
     animate.frame = (animate.frame ?? 0) + 1;
 
     particles.forEach(p => {
+        // ── TIER 9 SUPERNOVA LIFECYCLE ──
+        if (p.tier === 9) {
+            if (p.exploding) {
+                p.explodeTimer--;
+                if (p.explodeTimer <= 0) {
+                    // Respawn as fresh tier 9
+                    const fresh = spawnParticle._forceTier9();
+                    Object.assign(p, fresh);
+                }
+                return; // invisible and inert during cooldown
+            }
+
+            // Accumulate charge over time
+            p.charge += 1 / 2400;
+
+            // Nearby particles accelerate charge buildup
+            let nearby = 0;
+            for (const q of particles) {
+                if (q === p || q.exploding) continue;
+                if (Math.hypot(q.x - p.x, q.y - p.y) < 100) nearby++;
+            }
+            p.charge += nearby * 0.00008;
+
+            // SUPERNOVA — when charge hits the random threshold (min 50%)
+            if (p.charge >= p.explodeThreshold) {
+                for (const q of particles) {
+                    if (q === p) continue;
+                    const dx = q.x - p.x, dy = q.y - p.y;
+                    const dist = Math.hypot(dx, dy);
+                    if (dist < 1) continue;
+
+                    if (q.mass < 1.0) {
+                        // Light particles — pulled INWARD from a large radius
+                        if (dist < 320) {
+                            const pull = 8 * (1 - dist / 320);
+                            q.vx -= (dx / dist) * pull;
+                            q.vy -= (dy / dist) * pull;
+                        }
+                    } else {
+                        // Heavy particles — blasted OUTWARD, force scales with their mass
+                        if (dist < 200) {
+                            const burst = 6 * (1 - dist / 200) * (q.mass / 3);
+                            q.vx += (dx / dist) * burst;
+                            q.vy += (dy / dist) * burst;
+                        }
+                    }
+                }
+                p.exploding    = true;
+                p.explodeTimer = 240;
+                return;
+            }
+        }
+
+        // Friction — slows all movement each frame
+        p.vx *= CONFIG.friction;
+        p.vy *= CONFIG.friction;
+
         // Brownian motion — heavy particles barely jitter
         p.vx += (Math.random() - 0.5) * CONFIG.brownian / p.inertia;
         p.vy += (Math.random() - 0.5) * CONFIG.brownian / p.inertia;
@@ -241,7 +340,8 @@ function animate() {
         // Derive all visuals from abstract size (0–1)
         const radius = Math.max(0.4, p.size * VISUAL.maxRadius * scale);
         const alpha  = (VISUAL.alphaMin + p.size * (VISUAL.alphaMax - VISUAL.alphaMin)) * lifeFactor;
-        const glow   = p.size * VISUAL.maxGlow * scale * lifeFactor * p.glowMult;
+        const chargeMult = p.charge !== undefined ? 1 + p.charge * 5 : 1;
+        const glow   = p.size * VISUAL.maxGlow * scale * lifeFactor * p.glowMult * chargeMult;
 
         // Only apply shadowBlur for particles large enough to show it
         if (glow > 4) {
