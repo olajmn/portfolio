@@ -127,6 +127,8 @@ function spawnParticle() {
         // Tier 9 supernova properties
         charge:           t.tier === 9 ? 0 : undefined,
         explodeThreshold: t.tier === 9 ? 0.5 + Math.random() * 0.5 : undefined,
+        primed:           t.tier === 9 ? false : undefined,
+        primeTimer:       t.tier === 9 ? 0 : undefined,
         exploding:        t.tier === 9 ? false : undefined,
         explodeTimer:     t.tier === 9 ? 0 : undefined,
         color: t.color,
@@ -151,7 +153,8 @@ spawnParticle._forceTier9 = function() {
         spin: Math.random() < 0.5 ? 1 : -1,
         ecc: 0.6 + Math.random() * 0.8,
         orbitAngle: Math.random() * Math.PI * 2,
-        charge: 0, explodeThreshold: 0.5 + Math.random() * 0.5, exploding: false, explodeTimer: 0,
+        charge: 0, explodeThreshold: 0.5 + Math.random() * 0.5,
+        primed: false, primeTimer: 0, exploding: false, explodeTimer: 0,
     };
 };
 
@@ -248,52 +251,45 @@ function animate() {
         if (p.tier === 9) {
             if (p.exploding) {
                 p.explodeTimer--;
-                if (p.explodeTimer <= 0) {
-                    // Respawn as fresh tier 9
-                    const fresh = spawnParticle._forceTier9();
-                    Object.assign(p, fresh);
-                }
-                return; // invisible and inert during cooldown
+                if (p.explodeTimer <= 0) Object.assign(p, spawnParticle._forceTier9());
+                return; // invisible during cooldown
             }
 
-            // Accumulate charge over time
-            p.charge += 1 / 2400;
-
-            // Nearby particles accelerate charge buildup
-            let nearby = 0;
-            for (const q of particles) {
-                if (q === p || q.exploding) continue;
-                if (Math.hypot(q.x - p.x, q.y - p.y) < 100) nearby++;
-            }
-            p.charge += nearby * 0.00008;
-
-            // SUPERNOVA — when charge hits the random threshold (min 50%)
-            if (p.charge >= p.explodeThreshold) {
+            if (!p.primed) {
+                // Accumulate charge
+                p.charge += 1 / 2400;
+                let nearby = 0;
                 for (const q of particles) {
-                    if (q === p) continue;
-                    const dx = q.x - p.x, dy = q.y - p.y;
-                    const dist = Math.hypot(dx, dy);
-                    if (dist < 1) continue;
+                    if (q === p || q.exploding) continue;
+                    if (Math.hypot(q.x - p.x, q.y - p.y) < 100) nearby++;
+                }
+                p.charge += nearby * 0.00008;
 
-                    if (q.mass < 1.0) {
-                        // Light particles — pulled INWARD from a large radius
-                        if (dist < 320) {
-                            const pull = 8 * (1 - dist / 320);
-                            q.vx -= (dx / dist) * pull;
-                            q.vy -= (dy / dist) * pull;
-                        }
-                    } else {
-                        // Heavy particles — blasted OUTWARD, force scales with their mass
-                        if (dist < 200) {
-                            const burst = 6 * (1 - dist / 200) * (q.mass / 3);
-                            q.vx += (dx / dist) * burst;
-                            q.vy += (dy / dist) * burst;
+                if (p.charge >= p.explodeThreshold) {
+                    p.primed     = true;
+                    p.primeTimer = 900;
+                    p.charge     = 1;
+                }
+            } else {
+                // Primed — counting down, still visible
+                p.primeTimer--;
+                if (p.primeTimer <= 0) {
+                    // SUPERNOVA
+                    for (const q of particles) {
+                        if (q === p) continue;
+                        const dx = q.x - p.x, dy = q.y - p.y;
+                        const dist = Math.hypot(dx, dy);
+                        if (dist < 1) continue;
+                        if (q.mass < 1.0) {
+                            if (dist < 320) { const pull = 8 * (1 - dist/320); q.vx -= dx/dist*pull; q.vy -= dy/dist*pull; }
+                        } else {
+                            if (dist < 200) { const burst = 6*(1-dist/200)*(q.mass/3); q.vx += dx/dist*burst; q.vy += dy/dist*burst; }
                         }
                     }
+                    p.exploding    = true;
+                    p.explodeTimer = 240;
+                    return;
                 }
-                p.exploding    = true;
-                p.explodeTimer = 240;
-                return;
             }
         }
 
@@ -329,19 +325,30 @@ function animate() {
         // Ageing — fade in at birth, fade out at death, respawn
         p.life++;
         const fadeInAlpha  = Math.min(1, p.life / p.fadeIn);
-        const fadeOutAlpha = Math.max(0, 1 - Math.max(0, p.life - p.lifeMax * 0.85) / (p.lifeMax * 0.15));
+        const fadeOutAlpha = p.lifeMax === Infinity ? 1
+            : Math.max(0, 1 - Math.max(0, p.life - p.lifeMax * 0.92) / (p.lifeMax * 0.08));
         const lifeFactor   = fadeInAlpha * fadeOutAlpha;
 
         if (p.life > p.lifeMax) {
-            Object.assign(p, spawnParticle());  // respawn in place
+            Object.assign(p, spawnParticle());
             return;
         }
 
         // Derive all visuals from abstract size (0–1)
         const radius = Math.max(0.4, p.size * VISUAL.maxRadius * scale);
         const alpha  = (VISUAL.alphaMin + p.size * (VISUAL.alphaMax - VISUAL.alphaMin)) * lifeFactor;
-        const chargeMult = p.charge !== undefined ? 1 + p.charge * 5 : 1;
-        const glow   = p.size * VISUAL.maxGlow * scale * lifeFactor * p.glowMult * chargeMult;
+
+        // Tier 9 glow: pulses when primed, scales with charge otherwise
+        let chargeMult = 1;
+        if (p.charge !== undefined) {
+            if (p.primed) {
+                // Pulse between 4× and 7× while primed
+                chargeMult = 5.5 + Math.sin(Date.now() * 0.006) * 1.5;
+            } else {
+                chargeMult = 1 + p.charge * 5;
+            }
+        }
+        const glow = p.size * VISUAL.maxGlow * scale * lifeFactor * p.glowMult * chargeMult;
 
         // Only apply shadowBlur for particles large enough to show it
         if (glow > 4) {
