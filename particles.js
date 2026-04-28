@@ -13,8 +13,9 @@ const Z_CENTER = 600;
 // Dette er det eneste du trenger å endre.
 
 const CONFIG = {
-    count:    320,           // totalt antall partikler
+    count:    400,           // totalt antall partikler
     bg:       '0, 0, 0',    // bakgrunnsfarge (r, g, b)
+    speed:    0.28,           // global fartsmultiplikator (1.0 = full, 0.5 = halvfart)
     brownian: 0.003,         // tilfeldig jitter per frame
     friction: 0.975,         // bremsing per frame (1.0 = ingen, 0.95 = mye)
 
@@ -50,11 +51,11 @@ const MIX = [1, 2, 3, 4, 5, 6, 9];
 const TIERS = {
     1: { pct: 1.00, size: [0.07, 0.13], mass: 0.3, inertia:  3.0, glowMult: 0.3, repelDist:  5,            lifetime: [0.2, 0.5], color: 'rgba( 75, 130, 230, ' },
     2: { pct: 0.90, size: [0.13, 0.19], mass: 0.5, inertia:  3.0, glowMult: 0.5, repelDist:  8,            lifetime: [0.3, 0.6], color: 'rgba( 65, 120, 225, ' },
-    3: { pct: 0.80, size: [0.15, 0.22], mass: 0.7, inertia:  4.0, glowMult: 0.5, repelDist: 11,            lifetime: [0.4, 0.7], color: 'rgba( 55, 108, 218, ' },
+    3: { pct: 0.80, size: [0.15, 0.22], mass: 0.7, inertia:  4.0, glowMult: 0.5, repelDist: 11,            lifetime: [0.8, 1.4], color: 'rgba( 55, 108, 218, ' },
 
-    4: { pct: 0.40, size: [0.18, 0.28], mass: 3.0, inertia:  5.0, glowMult: 0.8, centerPull: 0.00002,     lifetime: [0.5, 0.7], color: 'rgba( 60, 115, 225, ' },
-    5: { pct: 0.30, size: [0.28, 0.38], mass: 4.5, inertia:  6.5, glowMult: 1.2, centerPull: 0.00005,     lifetime: [0.5, 0.7], color: 'rgba( 40,  85, 195, ' },
-    6: { pct: 0.22, size: [0.38, 0.50], mass: 6.0, inertia:  8.0, glowMult: 1.6, centerPull: 0.00012,     lifetime: [0.6, 0.8], color: 'rgba( 25,  55, 165, ' },
+    4: { pct: 0.40, size: [0.18, 0.28], mass: 3.0, inertia:  5.0, glowMult: 0.8, centerPull: 0.00002,     lifetime: [1.0, 1.4], color: 'rgba( 60, 115, 225, ' },
+    5: { pct: 0.30, size: [0.28, 0.38], mass: 4.5, inertia:  6.5, glowMult: 1.2, centerPull: 0.00005,     lifetime: [1.0, 1.4], color: 'rgba( 40,  85, 195, ' },
+    6: { pct: 0.22, size: [0.38, 0.50], mass: 6.0, inertia:  8.0, glowMult: 1.6, centerPull: 0.00012,     lifetime: [1.2, 1.6], color: 'rgba( 25,  55, 165, ' },
 
     9: { pct: 0.04, size: [0.10, 0.16], mass: 30.0, inertia: 14.0, glowMult: 6.0, minCount: 1, maxCount: 3, lifetime: [1.4, 1.6], fadeStart: 0.45, fadeIn: 220, spin: 1, color: 'rgba(240, 245, 255, ' },
 };
@@ -103,6 +104,8 @@ function spawnParticle() {
         ecc:        0.6 + Math.random() * 0.8,
         orbitAngle: Math.random() * Math.PI * 2,
         trail:      [],
+        warpLife:   0,
+        warpTrail:  [],
     };
 }
 
@@ -117,7 +120,13 @@ function project(x, y, z) {
 }
 
 // ── TIER 10 — MUSEKLIKK ──
-let mouseParticle = null;
+let mouseParticle    = null;
+const BASE_SPEED     = CONFIG.speed;
+const BOOST_SPEED    = 0.80;
+const RAMP_UP        = (BOOST_SPEED - BASE_SPEED) / (4.5 * 60);
+let implosionCenter  = null;
+let implodeTimer     = 0;
+const IMPLODE_FRAMES = 28;
 
 function screenToWorld(ex, ey) {
     const r = canvas.getBoundingClientRect();
@@ -129,13 +138,21 @@ canvas.addEventListener('mousedown', e => {
     mouseParticle = {
         tier: 10, x, y, cx: x, cy: y,
         z: Z_CENTER, vx: 0, vy: 0, vz: 0,
-        size: 0.12, mass: 80, inertia: 20, glowMult: 0,
+        size: 0.12, mass: 200, inertia: 20, glowMult: 0,
         centerPull: 0, repelDist: 8,
         lifeMax: Infinity, life: 0, fadeIn: 1, fadeStart: 0.85,
         color: 'rgba(255, 255, 255, ',
         spin: 1, ecc: 1.0, orbitAngle: 0, trail: [],
     };
     particles.push(mouseParticle);
+
+    const warpRange = Math.min(canvas.width, canvas.height) * 0.80;
+    for (const p of particles) {
+        if (Math.hypot(p.x - x, p.y - y) < warpRange) {
+            p.warpLife  = 120;
+            p.warpTrail = [];
+        }
+    }
 });
 
 canvas.addEventListener('mousemove', e => {
@@ -149,8 +166,11 @@ canvas.addEventListener('mousemove', e => {
 
 function releaseMouse() {
     if (!mouseParticle) return;
+    implosionCenter = { x: mouseParticle.x, y: mouseParticle.y };
+    implodeTimer    = IMPLODE_FRAMES;
     particles.splice(particles.indexOf(mouseParticle), 1);
     mouseParticle = null;
+    for (const p of particles) { p.warpTrail = []; p.warpLife = 0; }
 }
 canvas.addEventListener('mouseup',    releaseMouse);
 canvas.addEventListener('mouseleave', releaseMouse);
@@ -158,6 +178,34 @@ canvas.addEventListener('mouseleave', releaseMouse);
 
 // ── ANIMASJON ──
 function animate() {
+    if (mouseParticle) {
+        CONFIG.speed = Math.min(BOOST_SPEED, CONFIG.speed + RAMP_UP);
+    } else {
+        CONFIG.speed += (BASE_SPEED - CONFIG.speed) * 0.05;
+    }
+
+    if (implodeTimer > 0) {
+        for (const p of particles) {
+            const dx   = implosionCenter.x - p.x;
+            const dy   = implosionCenter.y - p.y;
+            const dist = Math.max(Math.hypot(dx, dy), 1);
+            p.vx += (dx / dist) * 0.7;
+            p.vy += (dy / dist) * 0.7;
+        }
+        implodeTimer--;
+
+        if (implodeTimer === 0) {
+            for (const p of particles) {
+                const dx   = p.x - implosionCenter.x;
+                const dy   = p.y - implosionCenter.y;
+                const dist = Math.max(Math.hypot(dx, dy), 1);
+                p.vx = (dx / dist) * 6;
+                p.vy = (dy / dist) * 6;
+            }
+            implosionCenter = null;
+        }
+    }
+
     ctx.fillStyle = `rgba(${CONFIG.bg}, 0.80)`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -167,7 +215,7 @@ function animate() {
     for (const p of particles) (p.mass >= 1 ? heavy : light).push(p);
 
     const tier9Range  = Math.min(canvas.width, canvas.height) * 0.3;
-    const tier10Range = Math.min(canvas.width, canvas.height) * 0.55;
+    const tier10Range = Math.min(canvas.width, canvas.height) * 0.80;
 
     function getTierRange(p) {
         if (p.tier === 10) return tier10Range;
@@ -257,15 +305,10 @@ function animate() {
         const spd    = Math.hypot(p.vx, p.vy);
         if (spd > maxSpd) { p.vx *= maxSpd/spd; p.vy *= maxSpd/spd; }
 
-        p.x += p.vx;  p.y += p.vy;  p.z += p.vz;
+        p.x += p.vx * CONFIG.speed;  p.y += p.vy * CONFIG.speed;  p.z += p.vz * CONFIG.speed;
         p.vx += (p.cx - p.x) * p.centerPull;
         p.vy += (p.cy - p.y) * p.centerPull;
 
-        // Oppdater hale-historikk (ikke for tier 9 selv)
-        if (p.tier !== 9) {
-            p.trail.push({ x: p.x, y: p.y });
-            if (p.trail.length > 20) p.trail.shift();
-        }
 
         p.life++;
         if (p.life > p.lifeMax) { Object.assign(p, spawnParticle()); return; }
@@ -294,36 +337,23 @@ function animate() {
         const trailBoost = 1 + mouseProx * 2.5;
         const glow       = p.size * VISUAL.maxGlow * scale * lf * p.glowMult * glowBoost;
 
-        // Hale
         ctx.shadowBlur = 0;
+
         if (p.tier !== 9) {
-            if (mouseProx > 0 && spd > 0.15) {
-                // Lightspeed-strek — gradient bakover langs hastighetsvektoren
-                const streakPx = spd * 28 * mouseProx;
-                const ex = sx - (p.vx / spd) * streakPx;
-                const ey = sy - (p.vy / spd) * streakPx;
-                const grad = ctx.createLinearGradient(sx, sy, ex, ey);
-                grad.addColorStop(0, p.color + (alpha * 0.85) + ')');
-                grad.addColorStop(1, p.color + '0)');
-                ctx.strokeStyle = grad;
-                ctx.lineWidth   = Math.max(0.4, radius * 1.2);
-                ctx.lineCap     = 'round';
-                ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(ex, ey); ctx.stroke();
-            } else {
-                // Normal dot-trail basert på posisjonshistorikk
-                const numPts = Math.min(
-                    Math.floor(Math.max(0, spd - 0.25) * 14),
-                    p.trail.length - 1
-                );
-                for (let i = 0; i < numPts; i++) {
-                    const pt   = p.trail[p.trail.length - 1 - i];
-                    const pos  = project(pt.x, pt.y, p.z);
-                    const frac = (numPts - i) / numPts;
-                    ctx.fillStyle = p.color + (alpha * frac * 0.4) + ')';
-                    ctx.beginPath();
-                    ctx.arc(pos.sx, pos.sy, Math.max(0.15, radius * frac * 0.55), 0, Math.PI * 2);
-                    ctx.fill();
-                }
+            if (p.warpLife > 0 || p.warpTrail.length > 0) {
+                p.warpTrail.push({ x: p.x, y: p.y });
+                if (p.warpTrail.length > 80) p.warpTrail.shift();
+                if (p.warpLife > 0) p.warpLife--;
+            }
+
+            for (let i = 0; i < p.warpTrail.length; i++) {
+                const frac = i / p.warpTrail.length;       // 0 = eldst, 1 = nyest
+                const pt   = p.warpTrail[i];
+                const pos  = project(pt.x, pt.y, p.z);
+                ctx.fillStyle = p.color + (alpha * frac * 0.7) + ')';
+                ctx.beginPath();
+                ctx.arc(pos.sx, pos.sy, Math.max(0.15, radius * frac * 0.65), 0, Math.PI * 2);
+                ctx.fill();
             }
         }
 
