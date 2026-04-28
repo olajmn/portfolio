@@ -13,7 +13,7 @@ const Z_CENTER = 600;
 // Dette er det eneste du trenger å endre.
 
 const CONFIG = {
-    count:    400,           // totalt antall partikler
+    count:    340,           // totalt antall partikler
     bg:       '0, 0, 0',    // bakgrunnsfarge (r, g, b)
     speed:    0.28,           // global fartsmultiplikator (1.0 = full, 0.5 = halvfart)
     brownian: 0.003,         // tilfeldig jitter per frame
@@ -36,7 +36,7 @@ const VISUAL = {
 };
 
 // MIX — hvilke tiers som er aktive
-const MIX = [1, 2, 3, 4, 5, 6, 9];
+const MIX = [1, 2, 3, 4, 5, 6, ];
 
 // TIERS — egenskaper per tier
 //   pct:        relativ spawn-sannsynlighet
@@ -49,15 +49,15 @@ const MIX = [1, 2, 3, 4, 5, 6, 9];
 //   minCount:   alltid minst dette mange på skjermen
 //   maxCount:   aldri mer enn dette mange på skjermen
 const TIERS = {
-    1: { pct: 1.00, size: [0.07, 0.13], mass: 0.3, inertia:  3.0, glowMult: 0.3, repelDist:  5,            lifetime: [0.2, 0.5], color: 'rgba( 75, 130, 230, ' },
-    2: { pct: 0.90, size: [0.13, 0.19], mass: 0.5, inertia:  3.0, glowMult: 0.5, repelDist:  8,            lifetime: [0.3, 0.6], color: 'rgba( 65, 120, 225, ' },
-    3: { pct: 0.80, size: [0.15, 0.22], mass: 0.7, inertia:  4.0, glowMult: 0.5, repelDist: 11,            lifetime: [0.8, 1.4], color: 'rgba( 55, 108, 218, ' },
+    1: { pct: 1.00, size: [0.18, 0.28], mass: 0.3, inertia:  3.0, glowMult: 0.3, repelDist:  5,            lifetime: [0.2, 0.5], color: 'rgba( 75, 130, 230, ' },
+    2: { pct: 0.90, size: [0.24, 0.33], mass: 0.5, inertia:  3.0, glowMult: 0.5, repelDist:  8,            lifetime: [0.3, 0.6], color: 'rgba( 65, 120, 225, ' },
+    3: { pct: 0.80, size: [0.28, 0.38], mass: 0.7, inertia:  4.0, glowMult: 0.5, repelDist: 11,            lifetime: [0.8, 1.4], color: 'rgba( 55, 108, 218, ' },
 
     4: { pct: 0.40, size: [0.18, 0.28], mass: 3.0, inertia:  5.0, glowMult: 0.8, centerPull: 0.00002,     lifetime: [1.0, 1.4], color: 'rgba( 60, 115, 225, ' },
     5: { pct: 0.30, size: [0.28, 0.38], mass: 4.5, inertia:  6.5, glowMult: 1.2, centerPull: 0.00005,     lifetime: [1.0, 1.4], color: 'rgba( 40,  85, 195, ' },
     6: { pct: 0.22, size: [0.38, 0.50], mass: 6.0, inertia:  8.0, glowMult: 1.6, centerPull: 0.00012,     lifetime: [1.2, 1.6], color: 'rgba( 25,  55, 165, ' },
 
-    9: { pct: 0.04, size: [0.10, 0.16], mass: 30.0, inertia: 14.0, glowMult: 6.0, minCount: 1, maxCount: 3, lifetime: [1.4, 1.6], fadeStart: 0.45, fadeIn: 220, spin: 1, color: 'rgba(240, 245, 255, ' },
+    9: { pct: 0.04, size: [0.22, 0.32], mass: 30.0, inertia: 14.0, glowMult: 6.0, minCount: 1, maxCount: 3, lifetime: [1.4, 1.6], fadeStart: 0.45, fadeIn: 220, spin: 1, color: 'rgba( 20,  50, 180, ' },
 };
 // ────────────────────────────────────────────────────────────
 
@@ -106,6 +106,7 @@ function spawnParticle() {
         trail:      [],
         warpLife:   0,
         warpTrail:  [],
+        phase:      Math.random() * Math.PI * 2,
     };
 }
 
@@ -118,6 +119,11 @@ function project(x, y, z) {
     const sc = FOCAL / Math.max(z, 1);
     return { sx: canvas.width / 2 + x * sc, sy: canvas.height / 2 + y * sc, scale: Z_CENTER / Math.max(z, 1) };
 }
+
+// ── NEURON IMPULS ──
+const impulseRings = [];
+const RING_SPEED   = 1.8;
+const RING_BAND    = 20;
 
 // ── TIER 10 — MUSEKLIKK ──
 let mouseParticle    = null;
@@ -172,9 +178,15 @@ function releaseMouse() {
     if (!mouseParticle) return;
     implosionCenter = { x: mouseParticle.x, y: mouseParticle.y };
     implodeTimer    = IMPLODE_FRAMES;
+    CONFIG.speed    = BASE_SPEED;
     particles.splice(particles.indexOf(mouseParticle), 1);
     mouseParticle = null;
-    for (const p of particles) { p.warpTrail = []; p.warpLife = 0; }
+    for (const p of particles) {
+        p.warpTrail = [];
+        p.warpLife  = 0;
+        p.vx *= 0.2;
+        p.vy *= 0.2;
+    }
 }
 canvas.addEventListener('mouseup',    releaseMouse);
 canvas.addEventListener('mouseleave', releaseMouse);
@@ -188,13 +200,18 @@ function animate() {
         CONFIG.speed += (BASE_SPEED - CONFIG.speed) * 0.05;
     }
 
+
     if (implodeTimer > 0) {
+        const impRadius = Math.min(canvas.width, canvas.height) * 0.45;
         for (const p of particles) {
-            const dx   = implosionCenter.x - p.x;
-            const dy   = implosionCenter.y - p.y;
-            const dist = Math.max(Math.hypot(dx, dy), 1);
-            p.vx += (dx / dist) * 0.7;
-            p.vy += (dy / dist) * 0.7;
+            const dx      = implosionCenter.x - p.x;
+            const dy      = implosionCenter.y - p.y;
+            const dist    = Math.hypot(dx, dy);
+            const falloff = Math.max(0, 1 - dist / impRadius);
+            p.x  += dx * 0.04 * falloff;
+            p.y  += dy * 0.04 * falloff;
+            p.vx *= 0.85;
+            p.vy *= 0.85;
         }
         implodeTimer--;
 
@@ -274,6 +291,7 @@ function animate() {
 
     if (animate.frame % 3 === 0) particles.sort((a, b) => b.z - a.z);
     animate.frame = (animate.frame ?? 0) + 1;
+    const newRings = [];
 
     particles.forEach(p => {
         // Tier 10 følger musa — ingen fysikk, bare tegning (ser ut som tier 9)
@@ -337,7 +355,21 @@ function animate() {
             ? 1 - distToMouse / tier10Range
             : 0;
 
-        const glowBoost  = 1 + mouseProx * 1.8;
+        if (p.tier === 6 && Math.random() < 0.0006)
+            newRings.push({ x: p.x, y: p.y, r: 0, maxR: 300, alpha: 1.0 });
+
+        let impulse = 0;
+        if (p.tier !== 9 && p.tier !== 10) {
+            for (const ring of impulseRings) {
+                const dist = Math.hypot(p.x - ring.x, p.y - ring.y);
+                const bandFrac = 1 - Math.abs(dist - ring.r) / RING_BAND;
+                if (bandFrac > 0) impulse = Math.max(impulse, bandFrac * ring.alpha);
+            }
+            if (impulse > 0.55 && (p.tier === 4 || p.tier === 5) && Math.random() < 0.12)
+                newRings.push({ x: p.x, y: p.y, r: 0, maxR: 160, alpha: 0.55 });
+        }
+
+        const glowBoost  = 1 + mouseProx * 1.8 + impulse * 2.5;
         const trailBoost = 1 + mouseProx * 2.5;
         const glow       = p.size * VISUAL.maxGlow * scale * lf * p.glowMult * glowBoost;
 
@@ -364,11 +396,17 @@ function animate() {
         if (p.tier === 9) {
             const haloR = radius * 6;
             const grad  = ctx.createRadialGradient(sx, sy, radius, sx, sy, haloR);
-            grad.addColorStop(0, 'rgba(220, 230, 255, 0.18)');
-            grad.addColorStop(1, 'rgba(200, 215, 255, 0)');
+            grad.addColorStop(0, 'rgba( 30,  70, 200, 0.18)');
+            grad.addColorStop(1, 'rgba( 20,  50, 180, 0)');
             ctx.shadowBlur = 0;
             ctx.fillStyle  = grad;
             ctx.beginPath(); ctx.arc(sx, sy, haloR, 0, Math.PI * 2); ctx.fill();
+
+            ctx.shadowColor = 'rgba(60, 120, 255, 0.9)';
+            ctx.shadowBlur  = radius * 18;
+            ctx.fillStyle   = 'rgba(60, 120, 255, ' + (alpha * 0.6) + ')';
+            ctx.beginPath(); ctx.arc(sx, sy, radius * 1.8, 0, Math.PI * 2); ctx.fill();
+            ctx.shadowBlur  = 0;
         }
 
         if (glow > 4) {
@@ -378,6 +416,13 @@ function animate() {
         ctx.fillStyle = p.color + alpha + ')';
         ctx.beginPath(); ctx.arc(sx, sy, radius, 0, Math.PI * 2); ctx.fill();
 
+        if (impulse > 0.3) {
+            ctx.shadowBlur = 0;
+            ctx.fillStyle  = `rgba(200, 225, 255, ${impulse * alpha * 0.9})`;
+            ctx.beginPath(); ctx.arc(sx, sy, radius, 0, Math.PI * 2); ctx.fill();
+        }
+
+
         if (glow > 4) {
             ctx.shadowBlur = glow * 0.4;
             ctx.fillStyle  = p.color + Math.min(1, alpha * 1.2) + ')';
@@ -385,6 +430,12 @@ function animate() {
             ctx.shadowBlur = 0;
         }
     });
+
+    for (const ring of newRings) impulseRings.push(ring);
+
+    for (const ring of impulseRings) ring.r += RING_SPEED;
+    for (let i = impulseRings.length - 1; i >= 0; i--)
+        if (impulseRings[i].r > impulseRings[i].maxR) impulseRings.splice(i, 1);
 
     requestAnimationFrame(animate);
 }
