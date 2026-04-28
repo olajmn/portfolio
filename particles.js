@@ -294,21 +294,36 @@ function animate() {
         const trailBoost = 1 + mouseProx * 2.5;
         const glow       = p.size * VISUAL.maxGlow * scale * lf * p.glowMult * glowBoost;
 
-        // Hale — antall punkter skalerer med hastighet (+ boost nær cursor)
-        const numPts = p.tier === 9 ? 0 : Math.min(
-            Math.floor(Math.max(0, spd - 0.25) * 14 * trailBoost),
-            p.trail.length - 1
-        );
-        if (numPts > 0) {
-            ctx.shadowBlur = 0;
-            for (let i = 0; i < numPts; i++) {
-                const pt   = p.trail[p.trail.length - 1 - i];
-                const pos  = project(pt.x, pt.y, p.z);
-                const frac = (numPts - i) / numPts;
-                ctx.fillStyle = p.color + (alpha * frac * Math.min(0.8, 0.4 * trailBoost)) + ')';
-                ctx.beginPath();
-                ctx.arc(pos.sx, pos.sy, Math.max(0.15, radius * frac * 0.55), 0, Math.PI * 2);
-                ctx.fill();
+        // Hale
+        ctx.shadowBlur = 0;
+        if (p.tier !== 9) {
+            if (mouseProx > 0 && spd > 0.15) {
+                // Lightspeed-strek — gradient bakover langs hastighetsvektoren
+                const streakPx = spd * 28 * mouseProx;
+                const ex = sx - (p.vx / spd) * streakPx;
+                const ey = sy - (p.vy / spd) * streakPx;
+                const grad = ctx.createLinearGradient(sx, sy, ex, ey);
+                grad.addColorStop(0, p.color + (alpha * 0.85) + ')');
+                grad.addColorStop(1, p.color + '0)');
+                ctx.strokeStyle = grad;
+                ctx.lineWidth   = Math.max(0.4, radius * 1.2);
+                ctx.lineCap     = 'round';
+                ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(ex, ey); ctx.stroke();
+            } else {
+                // Normal dot-trail basert på posisjonshistorikk
+                const numPts = Math.min(
+                    Math.floor(Math.max(0, spd - 0.25) * 14),
+                    p.trail.length - 1
+                );
+                for (let i = 0; i < numPts; i++) {
+                    const pt   = p.trail[p.trail.length - 1 - i];
+                    const pos  = project(pt.x, pt.y, p.z);
+                    const frac = (numPts - i) / numPts;
+                    ctx.fillStyle = p.color + (alpha * frac * 0.4) + ')';
+                    ctx.beginPath();
+                    ctx.arc(pos.sx, pos.sy, Math.max(0.15, radius * frac * 0.55), 0, Math.PI * 2);
+                    ctx.fill();
+                }
             }
         }
 
