@@ -148,9 +148,13 @@ canvas.addEventListener('mousedown', e => {
 
     const warpRange = Math.min(canvas.width, canvas.height) * 0.80;
     for (const p of particles) {
-        if (Math.hypot(p.x - x, p.y - y) < warpRange) {
+        const dist = Math.hypot(p.x - x, p.y - y);
+        if (dist < warpRange) {
             p.warpLife  = 120;
             p.warpTrail = [];
+            const d = Math.max(dist, 1);
+            p.vx += ((x - p.x) / d) * 3.0;
+            p.vy += ((y - p.y) / d) * 3.0;
         }
     }
 });
@@ -199,8 +203,8 @@ function animate() {
                 const dx   = p.x - implosionCenter.x;
                 const dy   = p.y - implosionCenter.y;
                 const dist = Math.max(Math.hypot(dx, dy), 1);
-                p.vx = (dx / dist) * 6;
-                p.vy = (dy / dist) * 6;
+                p.vx = (dx / dist) * 28;
+                p.vy = (dy / dist) * 28;
             }
             implosionCenter = null;
         }
@@ -350,9 +354,9 @@ function animate() {
                 const frac = i / p.warpTrail.length;       // 0 = eldst, 1 = nyest
                 const pt   = p.warpTrail[i];
                 const pos  = project(pt.x, pt.y, p.z);
-                ctx.fillStyle = p.color + (alpha * frac * 0.7) + ')';
+                ctx.fillStyle = p.color + (alpha * frac * 0.3) + ')';
                 ctx.beginPath();
-                ctx.arc(pos.sx, pos.sy, Math.max(0.15, radius * frac * 0.65), 0, Math.PI * 2);
+                ctx.arc(pos.sx, pos.sy, Math.max(0.15, radius * frac * 0.4), 0, Math.PI * 2);
                 ctx.fill();
             }
         }
