@@ -13,9 +13,9 @@ const Z_CENTER = 600;
 // Dette er det eneste du trenger å endre.
 
 const CONFIG = {
-    count:    340,           // totalt antall partikler
+    count:    350,           // totalt antall partikler
     bg:       '0, 0, 0',    // bakgrunnsfarge (r, g, b)
-    speed:    0.28,           // global fartsmultiplikator (1.0 = full, 0.5 = halvfart)
+    speed:    0.55,           // global fartsmultiplikator (1.0 = full, 0.5 = halvfart)
     brownian: 0.003,         // tilfeldig jitter per frame
     friction: 0.975,         // bremsing per frame (1.0 = ingen, 0.95 = mye)
 
@@ -36,7 +36,7 @@ const VISUAL = {
 };
 
 // MIX — hvilke tiers som er aktive
-const MIX = [1, 2, 3, 4, 5, 6, ];
+const MIX = [1, 2, 3, 4, 5, 6, 9];
 
 // TIERS — egenskaper per tier
 //   pct:        relativ spawn-sannsynlighet
@@ -57,7 +57,7 @@ const TIERS = {
     5: { pct: 0.30, size: [0.28, 0.38], mass: 4.5, inertia:  6.5, glowMult: 1.2, centerPull: 0.00005,     lifetime: [1.0, 1.4], color: 'rgba( 40,  85, 195, ' },
     6: { pct: 0.22, size: [0.38, 0.50], mass: 6.0, inertia:  8.0, glowMult: 1.6, centerPull: 0.00012,     lifetime: [1.2, 1.6], color: 'rgba( 25,  55, 165, ' },
 
-    9: { pct: 0.04, size: [0.22, 0.32], mass: 30.0, inertia: 14.0, glowMult: 6.0, minCount: 1, maxCount: 3, lifetime: [1.4, 1.6], fadeStart: 0.45, fadeIn: 220, spin: 1, color: 'rgba( 20,  50, 180, ' },
+    9: { pct: 0.04, size: [0.14, 0.20], mass: 30.0, inertia: 14.0, glowMult: 6.0, minCount: 1, maxCount: 1, lifetime: [2.4, 2.6], fadeStart: 0.45, fadeIn: 220, spin: 1, color: 'rgba( 20,  50, 180, ' },
 };
 // ────────────────────────────────────────────────────────────
 
@@ -83,8 +83,8 @@ function pickTier() {
 
 function spawnParticle() {
     const t = pickTier();
-    const x = (Math.random() - 0.5) * canvas.width  * 0.8;
-    const y = (Math.random() - 0.5) * canvas.height * 0.8;
+    const x = (Math.random() - 0.5) * canvas.width  * 1.0;
+    const y = (Math.random() - 0.5) * canvas.height * 1.0;
     return {
         tier: t.tier, x, y, cx: x, cy: y,
         z:  Z_CENTER + (Math.random() - 0.5) * 40,
@@ -103,10 +103,7 @@ function spawnParticle() {
         spin:       t.spin ?? (Math.random() < 0.5 ? 1 : -1),
         ecc:        0.6 + Math.random() * 0.8,
         orbitAngle: Math.random() * Math.PI * 2,
-        trail:      [],
-        warpLife:   0,
-        warpTrail:  [],
-        phase:      Math.random() * Math.PI * 2,
+        isPulser:   false,
     };
 }
 
@@ -124,15 +121,10 @@ function project(x, y, z) {
 const impulseRings = [];
 const RING_SPEED   = 1.8;
 const RING_BAND    = 20;
+let pulseTimer = 120; // frames til neste puls
 
 // ── TIER 10 — MUSEKLIKK ──
-let mouseParticle    = null;
-const BASE_SPEED     = CONFIG.speed;
-const BOOST_SPEED    = 0.80;
-const RAMP_UP        = (BOOST_SPEED - BASE_SPEED) / (4.5 * 60);
-let implosionCenter  = null;
-let implodeTimer     = 0;
-const IMPLODE_FRAMES = 28;
+let mouseParticle = null;
 
 function screenToWorld(ex, ey) {
     const r = canvas.getBoundingClientRect();
@@ -144,25 +136,13 @@ canvas.addEventListener('mousedown', e => {
     mouseParticle = {
         tier: 10, x, y, cx: x, cy: y,
         z: Z_CENTER, vx: 0, vy: 0, vz: 0,
-        size: 0.12, mass: 200, inertia: 20, glowMult: 0,
+        size: 0.12, mass: 200, inertia: 20, glowMult: 0, pullMult: 25,
         centerPull: 0, repelDist: 8,
         lifeMax: Infinity, life: 0, fadeIn: 1, fadeStart: 0.85,
         color: 'rgba(255, 255, 255, ',
-        spin: 1, ecc: 1.0, orbitAngle: 0, trail: [],
+        spin: 1, ecc: 1.0, orbitAngle: 0,
     };
     particles.push(mouseParticle);
-
-    const warpRange = Math.min(canvas.width, canvas.height) * 0.80;
-    for (const p of particles) {
-        const dist = Math.hypot(p.x - x, p.y - y);
-        if (dist < warpRange) {
-            p.warpLife  = 120;
-            p.warpTrail = [];
-            const d = Math.max(dist, 1);
-            p.vx += ((x - p.x) / d) * 3.0;
-            p.vy += ((y - p.y) / d) * 3.0;
-        }
-    }
 });
 
 canvas.addEventListener('mousemove', e => {
@@ -176,17 +156,8 @@ canvas.addEventListener('mousemove', e => {
 
 function releaseMouse() {
     if (!mouseParticle) return;
-    implosionCenter = { x: mouseParticle.x, y: mouseParticle.y };
-    implodeTimer    = IMPLODE_FRAMES;
-    CONFIG.speed    = BASE_SPEED;
     particles.splice(particles.indexOf(mouseParticle), 1);
     mouseParticle = null;
-    for (const p of particles) {
-        p.warpTrail = [];
-        p.warpLife  = 0;
-        p.vx *= 0.2;
-        p.vy *= 0.2;
-    }
 }
 canvas.addEventListener('mouseup',    releaseMouse);
 canvas.addEventListener('mouseleave', releaseMouse);
@@ -194,39 +165,6 @@ canvas.addEventListener('mouseleave', releaseMouse);
 
 // ── ANIMASJON ──
 function animate() {
-    if (mouseParticle) {
-        CONFIG.speed = Math.min(BOOST_SPEED, CONFIG.speed + RAMP_UP);
-    } else {
-        CONFIG.speed += (BASE_SPEED - CONFIG.speed) * 0.05;
-    }
-
-
-    if (implodeTimer > 0) {
-        const impRadius = Math.min(canvas.width, canvas.height) * 0.45;
-        for (const p of particles) {
-            const dx      = implosionCenter.x - p.x;
-            const dy      = implosionCenter.y - p.y;
-            const dist    = Math.hypot(dx, dy);
-            const falloff = Math.max(0, 1 - dist / impRadius);
-            p.x  += dx * 0.04 * falloff;
-            p.y  += dy * 0.04 * falloff;
-            p.vx *= 0.85;
-            p.vy *= 0.85;
-        }
-        implodeTimer--;
-
-        if (implodeTimer === 0) {
-            for (const p of particles) {
-                const dx   = p.x - implosionCenter.x;
-                const dy   = p.y - implosionCenter.y;
-                const dist = Math.max(Math.hypot(dx, dy), 1);
-                p.vx = (dx / dist) * 28;
-                p.vy = (dy / dist) * 28;
-            }
-            implosionCenter = null;
-        }
-    }
-
     ctx.fillStyle = `rgba(${CONFIG.bg}, 0.80)`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -253,7 +191,8 @@ function animate() {
         const nx = dx/dist, ny = dy/dist, nz = dz/dist;
         const repelDist = Math.min(a.repelDist, b.repelDist);
         const attract   = dist > repelDist;
-        const baseForce = attract ? cfg.pull * (1 - dist/maxDist) : cfg.push * (1 - dist/repelDist);
+        const pullMult  = b.pullMult ?? 1;
+        const baseForce = attract ? cfg.pull * pullMult * (1 - dist/maxDist) : cfg.push * (1 - dist/repelDist);
 
         const fa = baseForce * b.mass * (attract ? 1 : -1);
         a.vx += nx * fa / a.inertia;
@@ -291,6 +230,25 @@ function animate() {
 
     if (animate.frame % 3 === 0) particles.sort((a, b) => b.z - a.z);
     animate.frame = (animate.frame ?? 0) + 1;
+
+    pulseTimer--;
+    if (pulseTimer <= 0) {
+        const tier6 = particles.filter(p => p.tier === 6);
+
+        // Fyll opp til 5 pulsere om noen har dødd og respawnet
+        const pulsers = tier6.filter(p => p.isPulser);
+        tier6.filter(p => !p.isPulser)
+             .slice(0, 1 - pulsers.length)
+             .forEach(p => p.isPulser = true);
+
+        const active = tier6.filter(p => p.isPulser);
+        if (active.length > 0) {
+            const p = active[Math.floor(Math.random() * active.length)];
+            impulseRings.push({ x: p.x, y: p.y, r: 0, maxR: 300, alpha: 1.0 });
+        }
+        pulseTimer = Math.round(120 + Math.random() * 120);
+    }
+
     const newRings = [];
 
     particles.forEach(p => {
@@ -323,7 +281,7 @@ function animate() {
         p.vy += (Math.random() - 0.5) * CONFIG.brownian / p.inertia;
         p.vz  = p.vz * 0.88 + (Z_CENTER - p.z) * 0.002;
 
-        const maxSpd = 1.5 + p.mass * 0.2;
+        const maxSpd = 3.5 + p.mass * 0.3;
         const spd    = Math.hypot(p.vx, p.vy);
         if (spd > maxSpd) { p.vx *= maxSpd/spd; p.vy *= maxSpd/spd; }
 
@@ -355,8 +313,6 @@ function animate() {
             ? 1 - distToMouse / tier10Range
             : 0;
 
-        if (p.tier === 6 && Math.random() < 0.0006)
-            newRings.push({ x: p.x, y: p.y, r: 0, maxR: 300, alpha: 1.0 });
 
         let impulse = 0;
         if (p.tier !== 9 && p.tier !== 10) {
@@ -370,46 +326,32 @@ function animate() {
         }
 
         const glowBoost  = 1 + mouseProx * 1.8 + impulse * 2.5;
-        const trailBoost = 1 + mouseProx * 2.5;
         const glow       = p.size * VISUAL.maxGlow * scale * lf * p.glowMult * glowBoost;
 
         ctx.shadowBlur = 0;
 
-        if (p.tier !== 9) {
-            if (p.warpLife > 0 || p.warpTrail.length > 0) {
-                p.warpTrail.push({ x: p.x, y: p.y });
-                if (p.warpTrail.length > 80) p.warpTrail.shift();
-                if (p.warpLife > 0) p.warpLife--;
-            }
-
-            for (let i = 0; i < p.warpTrail.length; i++) {
-                const frac = i / p.warpTrail.length;       // 0 = eldst, 1 = nyest
-                const pt   = p.warpTrail[i];
-                const pos  = project(pt.x, pt.y, p.z);
-                ctx.fillStyle = p.color + (alpha * frac * 0.3) + ')';
-                ctx.beginPath();
-                ctx.arc(pos.sx, pos.sy, Math.max(0.15, radius * frac * 0.4), 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
         if (p.tier === 9) {
-            const haloR = radius * 6;
+            const haloR = radius * 10;
             const grad  = ctx.createRadialGradient(sx, sy, radius, sx, sy, haloR);
-            grad.addColorStop(0, 'rgba( 30,  70, 200, 0.18)');
+            grad.addColorStop(0, 'rgba( 40,  90, 220, 0.28)');
             grad.addColorStop(1, 'rgba( 20,  50, 180, 0)');
             ctx.shadowBlur = 0;
             ctx.fillStyle  = grad;
             ctx.beginPath(); ctx.arc(sx, sy, haloR, 0, Math.PI * 2); ctx.fill();
 
-            ctx.shadowColor = 'rgba(60, 120, 255, 0.9)';
-            ctx.shadowBlur  = radius * 18;
-            ctx.fillStyle   = 'rgba(60, 120, 255, ' + (alpha * 0.6) + ')';
-            ctx.beginPath(); ctx.arc(sx, sy, radius * 1.8, 0, Math.PI * 2); ctx.fill();
+            ctx.shadowColor = 'rgba(80, 140, 255, 1.0)';
+            ctx.shadowBlur  = radius * 32;
+            ctx.fillStyle   = 'rgba(80, 140, 255, ' + (alpha * 0.85) + ')';
+            ctx.beginPath(); ctx.arc(sx, sy, radius * 2.2, 0, Math.PI * 2); ctx.fill();
+
+            ctx.shadowBlur  = radius * 14;
+            ctx.fillStyle   = 'rgba(160, 200, 255, ' + (alpha * 0.9) + ')';
+            ctx.beginPath(); ctx.arc(sx, sy, radius * 0.7, 0, Math.PI * 2); ctx.fill();
             ctx.shadowBlur  = 0;
         }
 
-        if (glow > 4) {
+        const canGlow = (p.tier === 5 || p.tier === 6 || p.tier === 9);
+        if (canGlow && glow > 4) {
             ctx.shadowColor = p.color + Math.min(1, alpha * 1.5) + ')';
             ctx.shadowBlur  = glow * 2;
         }
@@ -422,8 +364,7 @@ function animate() {
             ctx.beginPath(); ctx.arc(sx, sy, radius, 0, Math.PI * 2); ctx.fill();
         }
 
-
-        if (glow > 4) {
+        if (canGlow && glow > 4) {
             ctx.shadowBlur = glow * 0.4;
             ctx.fillStyle  = p.color + Math.min(1, alpha * 1.2) + ')';
             ctx.beginPath(); ctx.arc(sx, sy, radius * 0.5, 0, Math.PI * 2); ctx.fill();
