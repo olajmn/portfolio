@@ -56,7 +56,7 @@ const TIERS = {
     5: { pct: 0.30, size: [0.28, 0.38], mass: 4.5, inertia:  6.5, glowMult: 1.2, centerPull: 0.00005,     lifetime: [0.5, 0.7], color: 'rgba( 40,  85, 195, ' },
     6: { pct: 0.22, size: [0.38, 0.50], mass: 6.0, inertia:  8.0, glowMult: 1.6, centerPull: 0.00012,     lifetime: [0.6, 0.8], color: 'rgba( 25,  55, 165, ' },
 
-    9: { pct: 0.04, size: [0.10, 0.16], mass: 30.0, inertia: 14.0, glowMult: 6.0, minCount: 1, maxCount: 3, lifetime: [1.4, 1.6], color: 'rgba(240, 245, 255, ' },
+    9: { pct: 0.04, size: [0.10, 0.16], mass: 30.0, inertia: 14.0, glowMult: 6.0, minCount: 1, maxCount: 3, lifetime: [1.4, 1.6], fadeStart: 0.55, spin: 1, color: 'rgba(240, 245, 255, ' },
 };
 // ────────────────────────────────────────────────────────────
 
@@ -99,7 +99,7 @@ function spawnParticle() {
         lifeMax:    rnd(t.lifetime[0], t.lifetime[1]) * 1800,
         life: 0, fadeIn: 60,
         color: t.color,
-        spin:       Math.random() < 0.5 ? 1 : -1,
+        spin:       t.spin ?? (Math.random() < 0.5 ? 1 : -1),
         ecc:        0.6 + Math.random() * 0.8,
         orbitAngle: Math.random() * Math.PI * 2,
         trail:      [],
@@ -204,9 +204,10 @@ function animate() {
         const { sx, sy, scale } = project(p.x, p.y, p.z);
         if (scale < 0.05) return;
 
-        const fadeIn  = Math.min(1, p.life / p.fadeIn);
-        const fadeOut = Math.max(0, 1 - Math.max(0, p.life - p.lifeMax * 0.85) / (p.lifeMax * 0.15));
-        const lf      = fadeIn * fadeOut;
+        const fadeIn    = Math.min(1, p.life / p.fadeIn);
+        const fadeStart = p.fadeStart ?? 0.85;
+        const fadeOut   = Math.max(0, 1 - Math.max(0, p.life - p.lifeMax * fadeStart) / (p.lifeMax * (1 - fadeStart)));
+        const lf        = fadeIn * fadeOut;
 
         const radius = Math.max(0.4, p.size * VISUAL.maxRadius * scale);
         const alpha  = (VISUAL.alphaMin + p.size * (VISUAL.alphaMax - VISUAL.alphaMin)) * lf;
