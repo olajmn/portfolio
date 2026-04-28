@@ -56,7 +56,7 @@ const TIERS = {
     5: { pct: 0.30, size: [0.28, 0.38], mass: 4.5, inertia:  6.5, glowMult: 1.2, centerPull: 0.00005,     lifetime: [0.5, 0.7], color: 'rgba( 40,  85, 195, ' },
     6: { pct: 0.22, size: [0.38, 0.50], mass: 6.0, inertia:  8.0, glowMult: 1.6, centerPull: 0.00012,     lifetime: [0.6, 0.8], color: 'rgba( 25,  55, 165, ' },
 
-    9: { pct: 0.04, size: [0.10, 0.16], mass: 30.0, inertia: 14.0, glowMult: 6.0, minCount: 1, maxCount: 3, lifetime: [1.4, 1.6], fadeStart: 0.55, spin: 1, color: 'rgba(240, 245, 255, ' },
+    9: { pct: 0.04, size: [0.10, 0.16], mass: 30.0, inertia: 14.0, glowMult: 6.0, minCount: 1, maxCount: 3, lifetime: [1.4, 1.6], fadeStart: 0.45, fadeIn: 220, spin: 1, color: 'rgba(240, 245, 255, ' },
 };
 // ────────────────────────────────────────────────────────────
 
@@ -97,7 +97,7 @@ function spawnParticle() {
         centerPull: t.centerPull ?? 0.00025 / t.mass,
         repelDist:  t.repelDist ?? CONFIG.attract.repelDist,
         lifeMax:    rnd(t.lifetime[0], t.lifetime[1]) * 1800,
-        life: 0, fadeIn: 60,
+        life: 0, fadeIn: t.fadeIn ?? 60,
         color: t.color,
         spin:       t.spin ?? (Math.random() < 0.5 ? 1 : -1),
         ecc:        0.6 + Math.random() * 0.8,
@@ -116,6 +116,45 @@ function project(x, y, z) {
     return { sx: canvas.width / 2 + x * sc, sy: canvas.height / 2 + y * sc, scale: Z_CENTER / Math.max(z, 1) };
 }
 
+// ── TIER 10 — MUSEKLIKK ──
+let mouseParticle = null;
+
+function screenToWorld(ex, ey) {
+    const r = canvas.getBoundingClientRect();
+    return { x: ex - r.left - canvas.width / 2, y: ey - r.top - canvas.height / 2 };
+}
+
+canvas.addEventListener('mousedown', e => {
+    const { x, y } = screenToWorld(e.clientX, e.clientY);
+    mouseParticle = {
+        tier: 10, x, y, cx: x, cy: y,
+        z: Z_CENTER, vx: 0, vy: 0, vz: 0,
+        size: 0.12, mass: 80, inertia: 20, glowMult: 0,
+        centerPull: 0, repelDist: 8,
+        lifeMax: Infinity, life: 0, fadeIn: 1, fadeStart: 0.85,
+        color: 'rgba(255, 255, 255, ',
+        spin: 1, ecc: 1.0, orbitAngle: 0, trail: [],
+    };
+    particles.push(mouseParticle);
+});
+
+canvas.addEventListener('mousemove', e => {
+    if (!mouseParticle) return;
+    const { x, y } = screenToWorld(e.clientX, e.clientY);
+    mouseParticle.x  = x;
+    mouseParticle.y  = y;
+    mouseParticle.vx = 0;
+    mouseParticle.vy = 0;
+});
+
+function releaseMouse() {
+    if (!mouseParticle) return;
+    particles.splice(particles.indexOf(mouseParticle), 1);
+    mouseParticle = null;
+}
+canvas.addEventListener('mouseup',    releaseMouse);
+canvas.addEventListener('mouseleave', releaseMouse);
+
 
 // ── ANIMASJON ──
 function animate() {
@@ -127,12 +166,19 @@ function animate() {
     const heavy = [], light = [];
     for (const p of particles) (p.mass >= 1 ? heavy : light).push(p);
 
-    const tier9Range = Math.min(canvas.width, canvas.height) * 0.3;
+    const tier9Range  = Math.min(canvas.width, canvas.height) * 0.3;
+    const tier10Range = Math.min(canvas.width, canvas.height) * 0.55;
+
+    function getTierRange(p) {
+        if (p.tier === 10) return tier10Range;
+        if (p.tier === 9)  return tier9Range;
+        return cfg.maxDist;
+    }
 
     function applyForces(a, b, bidirectional) {
         const dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;
         const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
-        const maxDist = (a.tier === 9 || b.tier === 9) ? tier9Range : cfg.maxDist;
+        const maxDist = Math.max(getTierRange(a), getTierRange(b));
         if (dist < 1 || dist > maxDist) return;
 
         const nx = dx/dist, ny = dy/dist, nz = dz/dist;
@@ -178,6 +224,29 @@ function animate() {
     animate.frame = (animate.frame ?? 0) + 1;
 
     particles.forEach(p => {
+        // Tier 10 følger musa — ingen fysikk, bare tegning (ser ut som tier 9)
+        if (p.tier === 10) {
+            const { sx, sy, scale } = project(p.x, p.y, p.z);
+            const t9color = 'rgba(240, 245, 255, ';
+            const r       = Math.max(0.4, 0.13 * VISUAL.maxRadius * scale);
+            const haloR   = r * 6;
+            const grad    = ctx.createRadialGradient(sx, sy, r, sx, sy, haloR);
+            grad.addColorStop(0, 'rgba(220, 230, 255, 0.18)');
+            grad.addColorStop(1, 'rgba(200, 215, 255, 0)');
+            ctx.shadowBlur = 0;
+            ctx.fillStyle  = grad;
+            ctx.beginPath(); ctx.arc(sx, sy, haloR, 0, Math.PI * 2); ctx.fill();
+            ctx.shadowColor = t9color + '0.9)';
+            ctx.shadowBlur  = r * VISUAL.maxGlow * scale * 6.0 * 2;
+            ctx.fillStyle   = t9color + '0.92)';
+            ctx.beginPath(); ctx.arc(sx, sy, r, 0, Math.PI * 2); ctx.fill();
+            ctx.shadowBlur  = r * VISUAL.maxGlow * scale * 6.0 * 0.4;
+            ctx.fillStyle   = t9color + '1)';
+            ctx.beginPath(); ctx.arc(sx, sy, r * 0.5, 0, Math.PI * 2); ctx.fill();
+            ctx.shadowBlur  = 0;
+            return;
+        }
+
         p.vx *= CONFIG.friction;
         p.vy *= CONFIG.friction;
         p.vx += (Math.random() - 0.5) * CONFIG.brownian / p.inertia;
@@ -204,18 +273,30 @@ function animate() {
         const { sx, sy, scale } = project(p.x, p.y, p.z);
         if (scale < 0.05) return;
 
-        const fadeIn    = Math.min(1, p.life / p.fadeIn);
+        const smooth    = t => t * t * (3 - 2 * t);   // smoothstep: S-kurve 0→1
+        const fadeIn    = smooth(Math.min(1, p.life / p.fadeIn));
         const fadeStart = p.fadeStart ?? 0.85;
-        const fadeOut   = Math.max(0, 1 - Math.max(0, p.life - p.lifeMax * fadeStart) / (p.lifeMax * (1 - fadeStart)));
+        const fadeOut   = smooth(Math.max(0, 1 - Math.max(0, p.life - p.lifeMax * fadeStart) / (p.lifeMax * (1 - fadeStart))));
         const lf        = fadeIn * fadeOut;
 
         const radius = Math.max(0.4, p.size * VISUAL.maxRadius * scale);
         const alpha  = (VISUAL.alphaMin + p.size * (VISUAL.alphaMax - VISUAL.alphaMin)) * lf;
-        const glow   = p.size * VISUAL.maxGlow * scale * lf * p.glowMult;
 
-        // Hale — antall punkter skalerer med hastighet
-        const numPts  = p.tier === 9 ? 0 : Math.min(
-            Math.floor(Math.max(0, spd - 0.25) * 14),
+        // Felles avstandsberegning til cursor — brukes av glow og hale
+        const distToMouse = mouseParticle
+            ? Math.hypot(p.x - mouseParticle.x, p.y - mouseParticle.y)
+            : Infinity;
+        const mouseProx  = distToMouse < tier10Range
+            ? 1 - distToMouse / tier10Range
+            : 0;
+
+        const glowBoost  = 1 + mouseProx * 1.8;
+        const trailBoost = 1 + mouseProx * 2.5;
+        const glow       = p.size * VISUAL.maxGlow * scale * lf * p.glowMult * glowBoost;
+
+        // Hale — antall punkter skalerer med hastighet (+ boost nær cursor)
+        const numPts = p.tier === 9 ? 0 : Math.min(
+            Math.floor(Math.max(0, spd - 0.25) * 14 * trailBoost),
             p.trail.length - 1
         );
         if (numPts > 0) {
@@ -223,8 +304,8 @@ function animate() {
             for (let i = 0; i < numPts; i++) {
                 const pt   = p.trail[p.trail.length - 1 - i];
                 const pos  = project(pt.x, pt.y, p.z);
-                const frac = (numPts - i) / numPts;   // 1 nær partikkelen, ~0 i halen
-                ctx.fillStyle = p.color + (alpha * frac * 0.4) + ')';
+                const frac = (numPts - i) / numPts;
+                ctx.fillStyle = p.color + (alpha * frac * Math.min(0.8, 0.4 * trailBoost)) + ')';
                 ctx.beginPath();
                 ctx.arc(pos.sx, pos.sy, Math.max(0.15, radius * frac * 0.55), 0, Math.PI * 2);
                 ctx.fill();
