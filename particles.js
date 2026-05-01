@@ -13,7 +13,7 @@ const Z_CENTER = 600;
 // Dette er det eneste du trenger å endre.
 
 const CONFIG = {
-    count:         350,      // totalt antall partikler
+    count:         333,      // totalt antall partikler
     bg:       '0, 0, 0',    // bakgrunnsfarge (r, g, b)
     speed:        0.55,      // global fartsmultiplikator (1.0 = full, 0.5 = halvfart)
     brownian:    0.003,      // tilfeldig jitter per frame
