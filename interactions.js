@@ -29,6 +29,7 @@ function toggleNightMode() {
         });
         impulseRings.length = 0;
         pulseTimer = 0;
+        firstPulse = true;
     }
 }
 

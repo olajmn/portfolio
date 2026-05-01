@@ -15,10 +15,10 @@ const Z_CENTER = 600;
 const CONFIG = {
     count:         333,      // totalt antall partikler
     bg:       '0, 0, 0',    // bakgrunnsfarge (r, g, b)
-    speed:        0.55,      // global fartsmultiplikator (1.0 = full, 0.5 = halvfart)
-    brownian:    0.003,      // tilfeldig jitter per frame
+    speed:        0.38,      // global fartsmultiplikator (1.0 = full, 0.5 = halvfart)
+    brownian:    0.002,      // tilfeldig jitter per frame
     friction:    0.975,      // bremsing per frame (1.0 = ingen, 0.95 = mye)
-    clickTier9Max:  5,       // maks antall klikk-spawnede tier 9 om gangen
+    clickTier9Max:  3,       // maks antall klikk-spawnede tier 9 om gangen
 
     attract: {
         maxDist:   90,       // gravitasjonsrekkevidde (px)
@@ -121,7 +121,7 @@ particles.push({
     mass:        _t9.mass,
     inertia:     _t9.inertia,
     glowMult:    _t9.glowMult,
-    centerPull:  0.000005,
+    centerPull:  0,
     repelDist:   CONFIG.attract.repelDist,
     lifeMax:     Infinity,
     life: _t9.fadeIn, fadeIn: _t9.fadeIn,
@@ -141,10 +141,11 @@ function project(x, y, z) {
 
 // ── NEURON IMPULS ──
 const impulseRings = [];
-const RING_SPEED   = 1.8;
+const RING_SPEED   = 1.2;
 const RING_BAND    = 35;
 let pulseTimer    = 480; // frames til neste puls-syklus (8 sek @ 60fps)
-let tier45Delay   = 0;   // frames til tier 4/5 ekko etter tier 9
+let firstPulse    = true;
+let cascadeTimer  = 0;   // frames der sekundærringer er tillatt etter puls
 
 // ── TIER 10 — MUSEKLIKK ──
 let mouseParticle = null;
@@ -181,6 +182,8 @@ canvas.addEventListener('mousedown', e => {
     };
     particles.push(mouseParticle);
     applyClickImpulse(x, y);
+    impulseRings.push({ x, y, r: 0, maxR: 380, alpha: 1.0 });
+    cascadeTimer = 900;
 
     const clickTier9 = particles.filter(p => p.isClickTier9);
     if (clickTier9.length >= CONFIG.clickTier9Max) {
@@ -299,26 +302,20 @@ function animate() {
     if (animate.frame % 3 === 0) particles.sort((a, b) => b.z - a.z);
     animate.frame = (animate.frame ?? 0) + 1;
 
+    if (cascadeTimer > 0) cascadeTimer--;
+
     pulseTimer--;
     if (pulseTimer <= 0) {
-        const tier9 = particles.filter(p => p.isDefaultTier9);
-        if (tier9.length > 0) {
-            const p = tier9[Math.floor(Math.random() * tier9.length)];
+        const pool = firstPulse
+            ? particles.filter(p => p.isDefaultTier9)
+            : particles.filter(p => p.tier !== 10);
+        firstPulse = false;
+        if (pool.length > 0) {
+            const p = pool[Math.floor(Math.random() * pool.length)];
             impulseRings.push({ x: p.x, y: p.y, r: 0, maxR: 380, alpha: 1.0 });
         }
-        tier45Delay = 30 + Math.round(Math.random() * 30); // 0.5–1 sek etter tier 9
-        pulseTimer = 480;
-    }
-
-    if (tier45Delay > 0) {
-        tier45Delay--;
-        if (tier45Delay === 0) {
-            const tier45 = particles.filter(p => p.tier === 4 || p.tier === 5);
-            if (tier45.length > 0) {
-                const p = tier45[Math.floor(Math.random() * tier45.length)];
-                impulseRings.push({ x: p.x, y: p.y, r: 0, maxR: 380, alpha: 0.6 });
-            }
-        }
+        cascadeTimer = 360; // 6 sek med aktiv cascade
+        pulseTimer = 1500 + Math.round(Math.random() * 600); // 25–35 sek
     }
 
     const newRings = [];
@@ -397,8 +394,8 @@ function animate() {
                 p.pulseCooldown--;
                 if (p.pulseCooldown === 0) p.pulsesLeft = 2;
             }
-            if (impulse > 0.55 && (p.tier === 4 || p.tier === 5) && Math.random() < 0.04 && (p.pulsesLeft ?? 2) > 0) {
-                newRings.push({ x: p.x, y: p.y, r: 0, maxR: 222, alpha: 0.5 });
+            if (impulse > 0.55 && (p.tier === 4 || p.tier === 5) && Math.random() < 0.05 && (p.pulsesLeft ?? 2) > 0 && impulseRings.length + newRings.length < 12) {
+                newRings.push({ x: p.x, y: p.y, r: 0, maxR: 300, alpha: 0.75 });
                 p.pulsesLeft = (p.pulsesLeft ?? 2) - 1;
                 if (p.pulsesLeft === 0) p.pulseCooldown = 700;
             }
@@ -456,7 +453,7 @@ function animate() {
 
     for (const ring of newRings) impulseRings.push(ring);
 
-    for (const ring of impulseRings) ring.r += RING_SPEED;
+    for (const ring of impulseRings) { ring.r += RING_SPEED; ring.alpha *= 0.9985; }
     for (let i = impulseRings.length - 1; i >= 0; i--)
         if (impulseRings[i].r > impulseRings[i].maxR) impulseRings.splice(i, 1);
 
