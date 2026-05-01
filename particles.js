@@ -409,7 +409,7 @@ function animate() {
             for (const ring of impulseRings) {
                 const dist = Math.hypot(p.x - ring.x, p.y - ring.y);
                 const bandFrac = 1 - Math.abs(dist - ring.r) / RING_BAND;
-                if (bandFrac > 0) impulse = Math.max(impulse, bandFrac * ring.alpha * (1 - ring.r / ring.maxR));
+                if (bandFrac > 0) impulse = Math.max(impulse, bandFrac * ring.alpha);
             }
             // Partikkel modnes gradvis — pulseStrength følger fadeIn-kurven
             const maturity = Math.min(1, p.life / (p.fadeIn * 3));
