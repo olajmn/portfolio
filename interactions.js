@@ -56,7 +56,7 @@ if (homeSection) {
     const homeTitle = homeSection.querySelector('.title');
     const scrollRange = 340;
 
-    window.addEventListener('scroll', function () {
+    function updateScroll() {
         const progress   = Math.min(window.scrollY / scrollRange, 1);
         const scale      = 1 - 0.88 * progress;
         const translateY = -(progress * 220);
@@ -68,7 +68,10 @@ if (homeSection) {
             homeTitle.style.transform = `translateY(${translateY}px)`;
             homeTitle.style.opacity   = progress >= 1 ? '0' : '1';
         }
-    });
+    }
+
+    window.addEventListener('scroll', updateScroll);
+    updateScroll();
 }                     
 
 
