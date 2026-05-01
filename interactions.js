@@ -1,5 +1,5 @@
 // ============================================================
-//  app.js — Ola Jin Myhre Nymoen Portfolio
+//  interactions.js — Ola Jin Myhre Nymoen Portfolio
 //  All JavaScript lives here, separate from the HTML
 // ============================================================
 
@@ -85,10 +85,6 @@ function addTypewriter(element) {
     if (!element) return;
 
     const fullText = element.textContent;
-    const cursor   = document.createElement('span');
-    cursor.className   = 'typing-cursor';
-    cursor.textContent = '.';
-
     let activeInterval = null;
 
     function startTyping() {

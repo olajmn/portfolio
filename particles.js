@@ -18,7 +18,7 @@ const CONFIG = {
     speed:        0.55,      // global fartsmultiplikator (1.0 = full, 0.5 = halvfart)
     brownian:    0.003,      // tilfeldig jitter per frame
     friction:    0.975,      // bremsing per frame (1.0 = ingen, 0.95 = mye)
-    clickTier9Max:  8,       // maks antall klikk-spawnede tier 9 om gangen
+    clickTier9Max:  5,       // maks antall klikk-spawnede tier 9 om gangen
 
     attract: {
         maxDist:   90,       // gravitasjonsrekkevidde (px)
@@ -67,11 +67,6 @@ const TIERS = {
 function rnd(min, max) { return min + Math.random() * (max - min); }
 
 function pickTier() {
-    for (const id of MIX) {
-        const t = TIERS[id];
-        if (t.minCount !== undefined && particles.filter(p => p.tier === id).length < t.minCount)
-            return { tier: id, ...t };
-    }
     const pool  = MIX.filter(id => {
         const t = TIERS[id];
         return t.maxCount === undefined || particles.filter(p => p.tier === id).length < t.maxCount;
@@ -398,13 +393,16 @@ function animate() {
             ctx.shadowBlur  = 0;
         }
 
-        const canGlow = (p.tier === 5 || p.tier === 6 || p.tier === 9);
+        const canGlow = (p.tier === 5 || p.tier === 6 || p.tier === 9) || (p.tier >= 3 && impulse > 0.6);
+        const pulseAlpha  = Math.min(1, alpha * (1 + impulse * 2.0));
+        const growMult    = p.tier <= 2 ? 0.2 : 0.02;
+        const pulseRadius = radius * (1 + impulse * growMult);
         if (canGlow && glow > 4) {
-            ctx.shadowColor = p.color + Math.min(1, alpha * 1.5) + ')';
+            ctx.shadowColor = p.color + Math.min(1, pulseAlpha * 1.5) + ')';
             ctx.shadowBlur  = glow * 2;
         }
-        ctx.fillStyle = p.color + alpha + ')';
-        ctx.beginPath(); ctx.arc(sx, sy, radius, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = p.color + pulseAlpha + ')';
+        ctx.beginPath(); ctx.arc(sx, sy, pulseRadius, 0, Math.PI * 2); ctx.fill();
 
         if (impulse > 0.3) {
             ctx.shadowBlur = 0;
