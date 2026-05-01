@@ -137,7 +137,7 @@ canvas.addEventListener('mousedown', e => {
     mouseParticle = {
         tier: 10, x, y, cx: x, cy: y,
         z: Z_CENTER, vx: 0, vy: 0, vz: 0,
-        size: 0.12, mass: 200, inertia: 20, glowMult: 0, pullMult: 25,
+        size: 0.12, mass: 200, inertia: 20, glowMult: 0, pullMult: 8,
         centerPull: 0, repelDist: 8,
         lifeMax: Infinity, life: 0, fadeIn: 1, fadeStart: 0.85,
         color: 'rgba(255, 255, 255, ',

@@ -95,7 +95,8 @@ nav, section, footer {
 body.night-mode section {
     pointer-events: none;
 }
-body.night-mode section * {
+body.night-mode #name-toggle,
+body.night-mode section a {
     pointer-events: auto;
 }
 
