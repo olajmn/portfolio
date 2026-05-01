@@ -132,21 +132,41 @@ function screenToWorld(ex, ey) {
     return { x: ex - r.left - canvas.width / 2, y: ey - r.top - canvas.height / 2 };
 }
 
+function applyClickImpulse(x, y) {
+    const range = Math.hypot(canvas.width, canvas.height);
+    for (const p of particles) {
+        if (p === mouseParticle) continue;
+        const dx = x - p.x, dy = y - p.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 1) continue;
+        const falloff = Math.max(0, 1 - dist / range);
+        const force = falloff * 20.0;
+        const useInertia = false; // sett til true for å ta tilbake
+        p.vx += (dx / dist) * force / (useInertia ? p.inertia : 1);
+        p.vy += (dy / dist) * force / (useInertia ? p.inertia : 1);
+    }
+}
+
 canvas.addEventListener('mousedown', e => {
     const { x, y } = screenToWorld(e.clientX, e.clientY);
     mouseParticle = {
         tier: 10, x, y, cx: x, cy: y,
         z: Z_CENTER, vx: 0, vy: 0, vz: 0,
-        size: 0.12, mass: 200, inertia: 20, glowMult: 0, pullMult: 8,
-        centerPull: 0, repelDist: 8,
+        size: 0.12, mass: 0, inertia: 20, glowMult: 0, pullMult: 0,
+        centerPull: 0, repelDist: 0,
         lifeMax: Infinity, life: 0, fadeIn: 1, fadeStart: 0.85,
         color: 'rgba(255, 255, 255, ',
-        spin: 0.3, ecc: 1.0, orbitAngle: 0,
+        spin: 0, ecc: 1.0, orbitAngle: 0,
     };
     particles.push(mouseParticle);
+    applyClickImpulse(x, y);
 
     const clickTier9 = particles.filter(p => p.isClickTier9);
-    if (clickTier9.length < CONFIG.clickTier9Max) {
+    if (clickTier9.length >= CONFIG.clickTier9Max) {
+        const oldest = clickTier9[0];
+        particles.splice(particles.indexOf(oldest), 1);
+    }
+    if (true) {
         const t = TIERS[9];
         particles.push({
             tier: 9, x, y, cx: x, cy: y,
