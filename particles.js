@@ -15,7 +15,7 @@ const Z_CENTER = 600;
 const CONFIG = {
     count:         333,      // totalt antall partikler
     bg:       '0, 0, 0',    // bakgrunnsfarge (r, g, b)
-    speed:        0.38,      // global fartsmultiplikator (1.0 = full, 0.5 = halvfart)
+    speed:        0.28,      // global fartsmultiplikator (1.0 = full, 0.5 = halvfart)
     brownian:    0.002,      // tilfeldig jitter per frame
     friction:    0.975,      // bremsing per frame (1.0 = ingen, 0.95 = mye)
     clickTier9Max:  3,       // maks antall klikk-spawnede tier 9 om gangen
@@ -142,12 +142,15 @@ function project(x, y, z) {
 
 // ── NEURON IMPULS ──
 const impulseRings = [];
-const RING_SPEED   = 1.2;
-const RING_BAND    = 35;
+let RING_SPEED   = 2.8;
+let RING_BAND    = 55;
 let firstPulse    = true;
 let firstPulseTimer = 100; // ingen forsinkelse — første puls kommer med en gang
 let cascadeTimer  = 0;   // frames der sekundærringer er tillatt etter puls
 let pulseReady    = false; // blokkerer ny puls mens systemet er utmattet
+let silenceTimer  = 0;    // obligatorisk stillhet mellom puljer
+let burstRemain   = 0;    // antall gjenstående pulser i pågående pulje
+let burstTimer    = 0;    // frames til neste puls i puljen
 
 // ── TIER 10 — MUSEKLIKK ──
 let mouseParticle = null;
@@ -184,7 +187,7 @@ canvas.addEventListener('mousedown', e => {
     };
     particles.push(mouseParticle);
     applyClickImpulse(x, y);
-    impulseRings.push({ x, y, r: 0, maxR: 380, alpha: 1.0 });
+    impulseRings.push({ x, y, r: 0, maxR: 550, alpha: 1.0 });
     cascadeTimer = 900;
 
     const clickTier9 = particles.filter(p => p.isClickTier9);
@@ -311,7 +314,7 @@ function animate() {
         if (firstPulseTimer > 0) { firstPulseTimer--; }
         else {
             const t9 = particles.find(p => p.isDefaultTier9);
-            if (t9) impulseRings.push({ x: t9.x, y: t9.y, r: 0, maxR: 380, alpha: 1.0 });
+            if (t9) impulseRings.push({ x: t9.x, y: t9.y, r: 0, maxR: 550, alpha: 1.0 });
             cascadeTimer = 900;
             firstPulse = false;
         }
@@ -326,17 +329,38 @@ function animate() {
     // Puls kan bare starte når systemet er tilstrekkelig ladet
     if (!pulseReady && avgCharge > 0.82) pulseReady = true;
 
-    if (!firstPulse && pulseReady && avgCharge > 0.75 && Math.random() < 0.0008) {
-        // Finn tyngdepunktet av de mest ladede partiklene
+    if (silenceTimer > 0) silenceTimer--;
+    if (burstTimer   > 0) burstTimer--;
+
+    const doPulse = () => {
         const charged = reactors.filter(p => (p.pulseStrength ?? 0) > 0.8);
         const source  = charged.length ? charged : reactors;
         let wx = 0, wy = 0, wt = 0;
         for (const p of source) { const w = p.pulseStrength ?? 0; wx += p.x * w; wy += p.y * w; wt += w; }
         const ox = wt > 0 ? wx / wt : 0;
         const oy = wt > 0 ? wy / wt : 0;
-        impulseRings.push({ x: ox, y: oy, r: 0, maxR: 380, alpha: 1.0 });
+        impulseRings.push({ x: ox, y: oy, r: 0, maxR: 550, alpha: 1.0 });
         cascadeTimer = 900;
-        pulseReady = false;
+    };
+
+    // Fortsett pågående pulje
+    if (burstRemain > 0 && burstTimer === 0) {
+        doPulse();
+        burstRemain--;
+        if (burstRemain > 0) {
+            burstTimer = 30 + Math.floor(Math.random() * 40);
+        } else {
+            silenceTimer = 240 + Math.floor(Math.random() * 300); // 4–9s stillhet
+            pulseReady   = false;
+        }
+    }
+
+    // Start ny pulje
+    if (!firstPulse && pulseReady && avgCharge > 0.75 && silenceTimer === 0 && burstRemain === 0 && Math.random() < 0.0008) {
+        doPulse();
+        burstRemain = 1 + Math.floor(Math.random() * 3); // 1–3 ekstra pulser
+        burstTimer  = 30 + Math.floor(Math.random() * 40);
+        pulseReady  = false;
     }
 
     const newRings = [];
@@ -415,8 +439,8 @@ function animate() {
             const maturity = Math.min(1, p.life / (p.fadeIn * 3));
             if ((p.pulseStrength ?? 0) < maturity) p.pulseStrength = Math.min(maturity, (p.pulseStrength ?? 0) + 0.0013);
             const reactivity = p.pulseStrength ?? 1;
-            if (impulse > 0.55 && (p.tier === 4 || p.tier === 5) && Math.random() < 0.05 * reactivity && impulseRings.length + newRings.length < 12) {
-                newRings.push({ x: p.x, y: p.y, r: 0, maxR: 300, alpha: 0.75 });
+            if (impulse > 0.22 && (p.tier === 4 || p.tier === 5) && Math.random() < 0.10 * reactivity && impulseRings.length + newRings.length < 12) {
+                newRings.push({ x: p.x, y: p.y, r: 0, maxR: 420, alpha: 1.0 });
                 p.pulseStrength = reactivity * 0.25;
             }
         }

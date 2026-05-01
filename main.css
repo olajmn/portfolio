@@ -420,6 +420,7 @@ footer p {
    @media means "apply these styles only when..."
 =========================== */
 
+
 @media (max-width: 768px) {
 
     nav {
