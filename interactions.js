@@ -28,8 +28,9 @@ function toggleNightMode() {
             orbitAngle: Math.random() * Math.PI * 2, isPulser: false, isDefaultTier9: true,
         });
         impulseRings.length = 0;
-        pulseTimer = 0;
         firstPulse = true;
+        firstPulseTimer = 0;
+        pulseReady = false;
     }
 }
 
