@@ -99,12 +99,38 @@ function spawnParticle() {
         spin:       t.spin ?? (Math.random() < 0.5 ? 1 : -1),
         ecc:        0.6 + Math.random() * 0.8,
         orbitAngle: Math.random() * Math.PI * 2,
-        isPulser:   false,
     };
 }
 
 const particles = [];
 for (let i = 0; i < CONFIG.count; i++) particles.push(spawnParticle());
+
+// Permanent tier 9 — flyter alltid rundt
+const _t9 = TIERS[9];
+particles.push({
+    tier: 9,
+    x: (Math.random() - 0.5) * canvas.width  * 0.85,
+    y: (Math.random() - 0.5) * canvas.height * 0.85,
+    cx: (Math.random() - 0.5) * canvas.width  * 0.5,
+    cy: (Math.random() - 0.5) * canvas.height * 0.5,
+    z:  Z_CENTER,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
+    vz: 0,
+    size:        rnd(_t9.size[0], _t9.size[1]),
+    mass:        _t9.mass,
+    inertia:     _t9.inertia,
+    glowMult:    _t9.glowMult,
+    centerPull:  0.000005,
+    repelDist:   CONFIG.attract.repelDist,
+    lifeMax:     Infinity,
+    life: _t9.fadeIn, fadeIn: _t9.fadeIn,
+    color:       _t9.color,
+    spin:        1,
+    ecc:         0.6 + Math.random() * 0.8,
+    orbitAngle:  Math.random() * Math.PI * 2,
+    isDefaultTier9: true,
+});
 
 
 // ── PROJEKSJON ──
@@ -116,8 +142,9 @@ function project(x, y, z) {
 // ── NEURON IMPULS ──
 const impulseRings = [];
 const RING_SPEED   = 1.8;
-const RING_BAND    = 20;
-let pulseTimer = 120; // frames til neste puls
+const RING_BAND    = 35;
+let pulseTimer    = 480; // frames til neste puls-syklus (8 sek @ 60fps)
+let tier45Delay   = 0;   // frames til tier 4/5 ekko etter tier 9
 
 // ── TIER 10 — MUSEKLIKK ──
 let mouseParticle = null;
@@ -180,7 +207,6 @@ canvas.addEventListener('mousedown', e => {
             spin:        Math.random() < 0.5 ? 1 : -1,
             ecc:         0.6 + Math.random() * 0.8,
             orbitAngle:  Math.random() * Math.PI * 2,
-            isPulser:    false,
             isClickTier9: true,
         });
     }
@@ -275,21 +301,24 @@ function animate() {
 
     pulseTimer--;
     if (pulseTimer <= 0) {
-        const tier6 = particles.filter(p => p.tier === 6);
-
-        // Fyll opp til 5 pulsere om noen har dødd og respawnet
-        const pulsers = tier6.filter(p => p.isPulser);
-        tier6.filter(p => !p.isPulser)
-             .slice(0, 2 - pulsers.length)
-             .forEach(p => p.isPulser = true);
-
-        const tier9active = particles.filter(p => p.isClickTier9);
-        const active = [...tier6.filter(p => p.isPulser), ...tier9active];
-        if (active.length > 0) {
-            const p = active[Math.floor(Math.random() * active.length)];
-            impulseRings.push({ x: p.x, y: p.y, r: 0, maxR: 300, alpha: 1.0 });
+        const tier9 = particles.filter(p => p.isDefaultTier9);
+        if (tier9.length > 0) {
+            const p = tier9[Math.floor(Math.random() * tier9.length)];
+            impulseRings.push({ x: p.x, y: p.y, r: 0, maxR: 380, alpha: 1.0 });
         }
-        pulseTimer = Math.round(120 + Math.random() * 120);
+        tier45Delay = 30 + Math.round(Math.random() * 30); // 0.5–1 sek etter tier 9
+        pulseTimer = 480;
+    }
+
+    if (tier45Delay > 0) {
+        tier45Delay--;
+        if (tier45Delay === 0) {
+            const tier45 = particles.filter(p => p.tier === 4 || p.tier === 5);
+            if (tier45.length > 0) {
+                const p = tier45[Math.floor(Math.random() * tier45.length)];
+                impulseRings.push({ x: p.x, y: p.y, r: 0, maxR: 380, alpha: 0.6 });
+            }
+        }
     }
 
     const newRings = [];
@@ -364,8 +393,15 @@ function animate() {
                 const bandFrac = 1 - Math.abs(dist - ring.r) / RING_BAND;
                 if (bandFrac > 0) impulse = Math.max(impulse, bandFrac * ring.alpha);
             }
-            if (impulse > 0.55 && (p.tier === 4 || p.tier === 5) && Math.random() < 0.12)
-                newRings.push({ x: p.x, y: p.y, r: 0, maxR: 220, alpha: 0.55 });
+            if (p.pulseCooldown > 0) {
+                p.pulseCooldown--;
+                if (p.pulseCooldown === 0) p.pulsesLeft = 2;
+            }
+            if (impulse > 0.55 && (p.tier === 4 || p.tier === 5) && Math.random() < 0.04 && (p.pulsesLeft ?? 2) > 0) {
+                newRings.push({ x: p.x, y: p.y, r: 0, maxR: 222, alpha: 0.5 });
+                p.pulsesLeft = (p.pulsesLeft ?? 2) - 1;
+                if (p.pulsesLeft === 0) p.pulseCooldown = 700;
+            }
         }
 
         const glowBoost  = 1 + mouseProx * 1.8 + impulse * 2.5;
