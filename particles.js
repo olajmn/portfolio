@@ -145,7 +145,7 @@ const impulseRings = [];
 const RING_SPEED   = 1.2;
 const RING_BAND    = 35;
 let firstPulse    = true;
-let firstPulseTimer = 60; // ingen forsinkelse — første puls kommer med en gang
+let firstPulseTimer = 100; // ingen forsinkelse — første puls kommer med en gang
 let cascadeTimer  = 0;   // frames der sekundærringer er tillatt etter puls
 let pulseReady    = false; // blokkerer ny puls mens systemet er utmattet
 
