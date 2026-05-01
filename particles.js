@@ -135,7 +135,7 @@ function applyClickImpulse(x, y) {
         const dist = Math.hypot(dx, dy);
         if (dist < 1) continue;
         const falloff = Math.max(0, 1 - dist / range);
-        const force = falloff * 20.0;
+        const force = falloff * 12.0;
         p.vx += (dx / dist) * force;
         p.vy += (dy / dist) * force;
     }
