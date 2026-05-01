@@ -7,6 +7,18 @@
 
 
 // ============================================================
+//  NIGHT MODE — klikk på navnet for å slå på partikler
+// ============================================================
+
+const nameToggle = document.getElementById('name-toggle');
+if (nameToggle) {
+    nameToggle.addEventListener('click', function () {
+        document.body.classList.toggle('night-mode');
+    });
+}
+
+
+// ============================================================
 //  ANCHOR SCROLL FIX
 //  Sørger for at nav-lenker alltid lander på riktig sted,
 //  uavhengig av hvor på siden du er.
@@ -29,20 +41,23 @@ document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
 const homeSection = document.getElementById('home');
 
 if (homeSection) {
-    const frame = homeSection.querySelector('.particle-frame');
+    const homeH1    = homeSection.querySelector('h1');
+    const homeTitle = homeSection.querySelector('.title');
     const scrollRange = 340;
 
-    function updateFrame() {
+    window.addEventListener('scroll', function () {
         const progress   = Math.min(window.scrollY / scrollRange, 1);
-        const scale      = 1 - 0.5 * progress;
+        const scale      = 1 - 0.88 * progress;
         const translateY = -(progress * 220);
 
-        frame.style.transform = `translateY(${translateY}px) scale(${scale})`;
-        frame.style.opacity   = progress >= 1 ? '0' : '1';
-    }
+        homeH1.style.transform = `translateY(${translateY}px) scale(${scale})`;
+        homeH1.style.opacity   = progress >= 1 ? '0' : '1';
 
-    window.addEventListener('scroll', updateFrame);
-    updateFrame();
+        if (homeTitle) {
+            homeTitle.style.transform = `translateY(${translateY}px)`;
+            homeTitle.style.opacity   = progress >= 1 ? '0' : '1';
+        }
+    });
 }                     
 
 

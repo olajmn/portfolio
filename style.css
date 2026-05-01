@@ -32,6 +32,63 @@ body {
     background: var(--white);
     font-size: 16px;
     line-height: 1.6;
+    transition: background 0.8s ease, color 0.8s ease;
+}
+
+body.night-mode {
+    background: #000;
+    color: var(--white);
+}
+
+body.night-mode nav {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.night-mode .nav-home,
+body.night-mode .nav-links a {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+body.night-mode .nav-home:hover,
+body.night-mode .nav-links a:hover {
+    color: #fff;
+}
+
+body.night-mode .nav-divider {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+body.night-mode #home h1 {
+    color: var(--white);
+}
+
+body.night-mode #about p,
+body.night-mode h2 {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+body.night-mode #contact a {
+    color: var(--white);
+    border-color: var(--white);
+}
+
+body.night-mode footer p {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+body.night-mode footer {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+#name-toggle {
+    cursor: pointer;
+}
+
+/* Alle seksjoner over canvas */
+nav, section, footer {
+    position: relative;
+    z-index: 1;
 }
 
 
@@ -135,19 +192,18 @@ h2 {
 =========================== */
 
 #home {
-    padding-top: 120px;
-    padding-bottom: 120px;
+    padding-top: 260px;
+    padding-bottom: 40vh;
+    min-height: calc(500px + 40vh);
 }
 
 #home h1 {
-    /* clamp(min, preferred, max) — responsive font size */
     font-size: clamp(48px, 8vw, 96px);
-    font-weight: 130;         /* light weight = elegant */
+    font-weight: 300;
     line-height: 1.0;
-    letter-spacing: -0.02em;  /* slight tightening looks refined */
+    letter-spacing: -0.02em;
     margin-bottom: 32px;
-    color: white;
-    padding-top: 20px;
+    transform-origin: left top;
 }
 
 #home .title {
