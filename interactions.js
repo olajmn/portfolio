@@ -10,20 +10,23 @@
 //  NIGHT MODE — klikk på navnet for å slå på partikler
 // ============================================================
 
-const nameToggle = document.getElementById('name-toggle');
-if (nameToggle) {
-    nameToggle.addEventListener('click', function () {
-        const turningOn = !document.body.classList.contains('night-mode');
-        document.body.classList.toggle('night-mode');
+function toggleNightMode() {
+    const turningOn = !document.body.classList.contains('night-mode');
+    document.body.classList.toggle('night-mode');
 
-        if (turningOn) {
-            particles.length = 0;
-            for (let i = 0; i < CONFIG.count; i++) particles.push(spawnParticle());
-            impulseRings.length = 0;
-            pulseTimer = 0;
-        }
-    });
+    if (turningOn) {
+        particles.length = 0;
+        for (let i = 0; i < CONFIG.count; i++) particles.push(spawnParticle());
+        impulseRings.length = 0;
+        pulseTimer = 0;
+    }
 }
+
+const nameToggle = document.getElementById('name-toggle');
+if (nameToggle) nameToggle.addEventListener('click', toggleNightMode);
+
+const navNightToggle = document.getElementById('nav-night-toggle');
+if (navNightToggle) navNightToggle.addEventListener('click', toggleNightMode);
 
 
 // ============================================================

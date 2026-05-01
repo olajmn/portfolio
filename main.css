@@ -59,6 +59,14 @@ body.night-mode .nav-divider {
     background: rgba(255, 255, 255, 0.15);
 }
 
+body.night-mode nav:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+body.night-mode nav:hover .nav-divider {
+    background: rgba(255, 255, 255, 0.4);
+}
+
 body.night-mode #home h1 {
     color: var(--white);
 }
@@ -170,6 +178,28 @@ nav:hover .nav-divider {
 .nav-links a:hover {
     color: #000;
 }
+
+.nav-night-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.nav-night-toggle:hover { color: #000; }
+
+.icon-sun  { display: none; }
+.icon-moon { display: block; }
+
+body.night-mode .icon-sun  { display: block; }
+body.night-mode .icon-moon { display: none; }
+
+body.night-mode .nav-night-toggle       { color: rgba(255, 255, 255, 0.4); }
+body.night-mode .nav-night-toggle:hover { color: #fff; }
 
 
 /* ===========================
