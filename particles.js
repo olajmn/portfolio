@@ -58,7 +58,7 @@ const TIERS = {
     5: { pct: 0.30, size: [0.28, 0.38], mass: 4.5, inertia:  6.5, glowMult: 1.2, centerPull: 0.00005,     lifetime: [1.0, 1.4], color: 'rgba( 40,  85, 195, ' },
     6: { pct: 0.22, size: [0.38, 0.50], mass: 6.0, inertia:  8.0, glowMult: 1.6, centerPull: 0.00012,     lifetime: [1.2, 1.6], color: 'rgba( 25,  55, 165, ' },
 
-    9: { pct: 0.04, size: [0.14, 0.20], mass: 30.0, inertia: 14.0, glowMult: 6.0, minCount: 1, maxCount: 1, lifetime: [2.4, 2.6], fadeStart: 0.45, fadeIn: 220, spin: 1, color: 'rgba( 20,  50, 180, ' },
+    9: { pct: 0.04, size: [0.14, 0.20], mass: 30.0, inertia: 14.0, glowMult: 6.0, lifetime: [2.4, 2.6], fadeStart: 0.45, fadeIn: 220, spin: 1, color: 'rgba( 20,  50, 180, ' },
 };
 // ────────────────────────────────────────────────────────────
 
@@ -141,9 +141,8 @@ function applyClickImpulse(x, y) {
         if (dist < 1) continue;
         const falloff = Math.max(0, 1 - dist / range);
         const force = falloff * 20.0;
-        const useInertia = false; // sett til true for å ta tilbake
-        p.vx += (dx / dist) * force / (useInertia ? p.inertia : 1);
-        p.vy += (dy / dist) * force / (useInertia ? p.inertia : 1);
+        p.vx += (dx / dist) * force;
+        p.vy += (dy / dist) * force;
     }
 }
 
@@ -166,7 +165,7 @@ canvas.addEventListener('mousedown', e => {
         const oldest = clickTier9[0];
         particles.splice(particles.indexOf(oldest), 1);
     }
-    if (true) {
+    {
         const t = TIERS[9];
         particles.push({
             tier: 9, x, y, cx: x, cy: y,
