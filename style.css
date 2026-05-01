@@ -91,6 +91,14 @@ nav, section, footer {
     z-index: 1;
 }
 
+/* I night mode: la tomme seksjonsflater slippe klikk gjennom til canvas */
+body.night-mode section {
+    pointer-events: none;
+}
+body.night-mode section * {
+    pointer-events: auto;
+}
+
 
 /* ===========================
    NAVIGATION
