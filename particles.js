@@ -365,7 +365,7 @@ function animate() {
                 if (bandFrac > 0) impulse = Math.max(impulse, bandFrac * ring.alpha);
             }
             if (impulse > 0.55 && (p.tier === 4 || p.tier === 5) && Math.random() < 0.12)
-                newRings.push({ x: p.x, y: p.y, r: 0, maxR: 160, alpha: 0.55 });
+                newRings.push({ x: p.x, y: p.y, r: 0, maxR: 220, alpha: 0.55 });
         }
 
         const glowBoost  = 1 + mouseProx * 1.8 + impulse * 2.5;
