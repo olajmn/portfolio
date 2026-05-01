@@ -13,7 +13,15 @@
 const nameToggle = document.getElementById('name-toggle');
 if (nameToggle) {
     nameToggle.addEventListener('click', function () {
+        const turningOn = !document.body.classList.contains('night-mode');
         document.body.classList.toggle('night-mode');
+
+        if (turningOn) {
+            particles.length = 0;
+            for (let i = 0; i < CONFIG.count; i++) particles.push(spawnParticle());
+            impulseRings.length = 0;
+            pulseTimer = 0;
+        }
     });
 }
 

@@ -13,11 +13,12 @@ const Z_CENTER = 600;
 // Dette er det eneste du trenger å endre.
 
 const CONFIG = {
-    count:    350,           // totalt antall partikler
+    count:         350,      // totalt antall partikler
     bg:       '0, 0, 0',    // bakgrunnsfarge (r, g, b)
-    speed:    0.55,           // global fartsmultiplikator (1.0 = full, 0.5 = halvfart)
-    brownian: 0.003,         // tilfeldig jitter per frame
-    friction: 0.975,         // bremsing per frame (1.0 = ingen, 0.95 = mye)
+    speed:        0.55,      // global fartsmultiplikator (1.0 = full, 0.5 = halvfart)
+    brownian:    0.003,      // tilfeldig jitter per frame
+    friction:    0.975,      // bremsing per frame (1.0 = ingen, 0.95 = mye)
+    clickTier9Max:  8,       // maks antall klikk-spawnede tier 9 om gangen
 
     attract: {
         maxDist:   90,       // gravitasjonsrekkevidde (px)
@@ -36,7 +37,7 @@ const VISUAL = {
 };
 
 // MIX — hvilke tiers som er aktive
-const MIX = [1, 2, 3, 4, 5, 6, 9];
+const MIX = [1, 2, 3, 4, 5, 6, ];
 
 // TIERS — egenskaper per tier
 //   pct:        relativ spawn-sannsynlighet
@@ -140,9 +141,35 @@ canvas.addEventListener('mousedown', e => {
         centerPull: 0, repelDist: 8,
         lifeMax: Infinity, life: 0, fadeIn: 1, fadeStart: 0.85,
         color: 'rgba(255, 255, 255, ',
-        spin: 1, ecc: 1.0, orbitAngle: 0,
+        spin: 0.3, ecc: 1.0, orbitAngle: 0,
     };
     particles.push(mouseParticle);
+
+    const clickTier9 = particles.filter(p => p.isClickTier9);
+    if (clickTier9.length < CONFIG.clickTier9Max) {
+        const t = TIERS[9];
+        particles.push({
+            tier: 9, x, y, cx: x, cy: y,
+            z:  Z_CENTER + (Math.random() - 0.5) * 40,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: (Math.random() - 0.5) * 0.4,
+            vz: (Math.random() - 0.5) * 0.05,
+            size:        rnd(t.size[0], t.size[1]),
+            mass:        t.mass,
+            inertia:     t.inertia,
+            glowMult:    t.glowMult,
+            centerPull:  0,
+            repelDist:   CONFIG.attract.repelDist,
+            lifeMax:     rnd(t.lifetime[0], t.lifetime[1]) * 1800,
+            life: 0,     fadeIn: t.fadeIn ?? 60,
+            color:       t.color,
+            spin:        Math.random() < 0.5 ? 1 : -1,
+            ecc:         0.6 + Math.random() * 0.8,
+            orbitAngle:  Math.random() * Math.PI * 2,
+            isPulser:    false,
+            isClickTier9: true,
+        });
+    }
 });
 
 canvas.addEventListener('mousemove', e => {
@@ -163,6 +190,7 @@ canvas.addEventListener('mouseup',    releaseMouse);
 canvas.addEventListener('mouseleave', releaseMouse);
 
 
+
 // ── ANIMASJON ──
 function animate() {
     ctx.fillStyle = `rgba(${CONFIG.bg}, 0.80)`;
@@ -174,7 +202,7 @@ function animate() {
     for (const p of particles) (p.mass >= 1 ? heavy : light).push(p);
 
     const tier9Range  = Math.min(canvas.width, canvas.height) * 0.3;
-    const tier10Range = Math.min(canvas.width, canvas.height) * 0.80;
+    const tier10Range = Math.hypot(canvas.width, canvas.height);
 
     function getTierRange(p) {
         if (p.tier === 10) return tier10Range;
@@ -238,10 +266,11 @@ function animate() {
         // Fyll opp til 5 pulsere om noen har dødd og respawnet
         const pulsers = tier6.filter(p => p.isPulser);
         tier6.filter(p => !p.isPulser)
-             .slice(0, 1 - pulsers.length)
+             .slice(0, 2 - pulsers.length)
              .forEach(p => p.isPulser = true);
 
-        const active = tier6.filter(p => p.isPulser);
+        const tier9active = particles.filter(p => p.isClickTier9);
+        const active = [...tier6.filter(p => p.isPulser), ...tier9active];
         if (active.length > 0) {
             const p = active[Math.floor(Math.random() * active.length)];
             impulseRings.push({ x: p.x, y: p.y, r: 0, maxR: 300, alpha: 1.0 });
@@ -291,7 +320,7 @@ function animate() {
 
 
         p.life++;
-        if (p.life > p.lifeMax) { Object.assign(p, spawnParticle()); return; }
+        if (p.life > p.lifeMax) { delete p.isClickTier9; Object.assign(p, spawnParticle()); return; }
 
         const { sx, sy, scale } = project(p.x, p.y, p.z);
         if (scale < 0.05) return;
