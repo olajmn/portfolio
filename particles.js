@@ -240,13 +240,16 @@ canvas.addEventListener('mouseleave', releaseMouse);
 
 
 // ── ANIMASJON ──
+// Disse arrayene lages én gang og gjenbrukes hver frame — unngår GC-press
+const heavy = [], light = [], newRings = [];
+
 function animate() {
     ctx.fillStyle = `rgba(${CONFIG.bg}, 0.80)`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Deler partikler i tunge (mass ≥ 1) og lette for ytelse
     const cfg   = CONFIG.attract;
-    const heavy = [], light = [];
+    heavy.length = 0; light.length = 0;
     for (const p of particles) (p.mass >= 1 ? heavy : light).push(p);
 
     const tier9Range  = Math.min(canvas.width, canvas.height) * 0.3;
@@ -363,7 +366,7 @@ function animate() {
         pulseReady  = false;
     }
 
-    const newRings = [];
+    newRings.length = 0;
 
     particles.forEach(p => {
         // Tier 10 følger musa — ingen fysikk, bare tegning (ser ut som tier 9)
