@@ -374,6 +374,7 @@ h2 {
 
 #contact {
     padding-top: 160px;
+    padding-bottom: 160px;
 }
 
 #contact p {
@@ -401,13 +402,13 @@ h2 {
    FOOTER
 =========================== */
 
-footer {
+/* footer {
     border-top: 1px solid #e8e8e8;
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 28px 60px;
     padding-bottom: 70px;
-}
+} */
 
 footer p {
     font-size: 12px;
