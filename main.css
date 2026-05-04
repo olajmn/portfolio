@@ -442,6 +442,19 @@ footer p {
         grid-template-columns: 1fr;
     }
 
+    .about-inner {
+        grid-template-columns: 1fr;
+    }
+
+    .about-image {
+        order: -1;
+        width: 100%;
+    }
+
+    .about-image img {
+        height: 420px;
+    }
+
     footer {
         padding: 28px 24px;
     }
