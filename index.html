@@ -5,16 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ola Jin Myhre Nymoen — Architect</title>
 
-    <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="particles.css">
+    <link rel="stylesheet" href="css/ui/main.css">
+    <link rel="stylesheet" href="css/ui/nav.css">
 </head>
 
 <body>
 
-    <!-- NAV blir injisert her -->
     <div id="nav"></div>
 
-    <!-- PARTICLES -->
     <canvas id="particle-canvas"></canvas>
 
     <!-- HOME -->
@@ -31,15 +29,14 @@
     <!-- ABOUT -->
     <section id="about">
         <h2>About</h2>
-
         <div class="about-inner">
             <div class="about-text">
                 <p class="bio-line">Hey, I'm Ola Jin.</p>
-                <p class="bio-line">I studied architecture in Prague...</p>
-                <p class="bio-line">Code feels like digital DNA to me.</p>
-                <p class="bio-line">I'm currently a student...</p>
+                <p class="bio-line">I studied architecture in Prague — five years of learning how to think about space, people, and why cities feel the way they do. It gave me more than a degree. It gave me a way of seeing the world.</p>
+                <p class="bio-line">Somewhere along the way, I realised I wanted to make things differently. The job market didn't help, but honestly — a year of sitting with myself did more. I came out the other side wanting to build in a new medium.</p>
+                <p class="bio-line">Code feels like digital DNA to me. The same logic, the same obsession with how pieces fit together — just a different material.</p>
+                <p class="bio-line">I'm currently a student, figuring it out one project at a time. If you're building something interesting, feel free to reach out.</p>
             </div>
-
             <div class="about-image">
                 <img src="images/profile.jpg" alt="Ola Jin Myhre Nymoen">
             </div>
@@ -49,12 +46,17 @@
     <!-- WORK -->
     <section id="work">
         <h2>Work</h2>
-
         <div class="project-grid">
-            <a href="#" class="project-card">
-                <div class="project-image"></div>
-                <h3>Architecture</h3>
+
+            <a href="https://olajmn.github.io/architecture-portfolio/" class="project-card">
+                <div class="project-image" style="background: white;">
+                    <img src="images/portfolio-cover.png" alt="Architecture Portfolio" class="img-multiply">
+                </div>
+                <div class="project-info">
+                    <h3>Architecture</h3>
+                </div>
             </a>
+
         </div>
     </section>
 
@@ -64,10 +66,9 @@
         <a href="mailto:olajnym@gmail.com">olajnym@gmail.com</a>
     </section>
 
-    <!-- SCRIPTS -->
-    <script type="module" src="ui/initNav.js"></script>
-    <script src="particles.js"></script>
-    <script src="interactions.js"></script>
+    <footer></footer>
+
+    <script type="module" src="main.js"></script>
 
 </body>
 </html>

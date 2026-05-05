@@ -1,12 +1,8 @@
-import { initNightMode } from './ui/nightMode.js'
-import { initAnchorScroll } from './effects/anchorScroll.js'
-import { initHeroScroll } from './effects/heroScroll.js'
-import { initTypewriter } from './effects/typewriter.js'
-import { initBioFade } from './effects/biofade.js'
+import { initNav } from './js/ui/nav.js'
+import './js/effects/anchorscroll.js'
+import './js/effects/heroscroll.js'
+import './js/effects/typewriter.js'
+import './js/effects/textfade.js'
+import './js/particles/particles.js'
 
-initNightMode()
-initAnchorScroll()
-initHeroScroll()
-initTypewriter()
-initBioFade()
-
+initNav()

@@ -5,9 +5,7 @@
 
 
 /* ===========================
-   RESET & BASE STYLES
-   Remove browser defaults so everything
-   looks the same in all browsers
+   RESET & VARIABLER
 =========================== */
 
 *, *::before, *::after {
@@ -16,7 +14,6 @@
     box-sizing: border-box;
 }
 
-/* CSS variables — like named constants for colors/fonts */
 :root {
     --black: #0a0a0a;
     --white: #ffffff;
@@ -26,185 +23,70 @@
     --max-width: 1100px;
 }
 
+
+/* ===========================
+   BASE
+=========================== */
+
 body {
     font-family: var(--font);
     color: var(--black);
-    background: var(--white);
+    background-color: var(--white);
     font-size: 16px;
     line-height: 1.6;
-    transition: background 0.8s ease, color 0.8s ease;
+    transition: background-color 0.8s ease, color 0.8s ease;
 }
 
-body.night-mode {
-    background: #000;
-    color: var(--white);
-}
-
-body.night-mode nav {
-    background: rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.12);
-}
-
-body.night-mode .nav-home,
-body.night-mode .nav-links a {
-    color: rgba(255, 255, 255, 0.4);
-}
-
-body.night-mode .nav-home:hover,
-body.night-mode .nav-links a:hover {
-    color: #fff;
-}
-
-body.night-mode .nav-divider {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-body.night-mode nav:hover {
-    border-color: rgba(255, 255, 255, 0.4);
-}
-
-body.night-mode nav:hover .nav-divider {
-    background: rgba(255, 255, 255, 0.4);
-}
-
-body.night-mode #home h1 {
-    color: var(--white);
-}
-
-body.night-mode #about p,
-body.night-mode h2 {
-    color: rgba(255, 255, 255, 0.6);
-}
-
-body.night-mode #contact a {
-    color: var(--white);
-    border-color: var(--white);
-}
-
-body.night-mode footer p {
-    color: rgba(255, 255, 255, 0.3);
-}
-
-body.night-mode footer {
-    border-color: rgba(255, 255, 255, 0.1);
+nav, section, footer {
+    position: relative;
+    z-index: 1;
 }
 
 #name-toggle {
     cursor: pointer;
 }
 
-/* Alle seksjoner over canvas */
-nav, section, footer {
-    position: relative;
-    z-index: 1;
+
+/* ===========================
+   NATTMODUS
+=========================== */
+
+body.night-mode                        { background-color: #000; color: var(--white); }
+body.night-mode #home h1               { color: var(--white); }
+body.night-mode #about p,
+body.night-mode h2                     { color: rgba(255, 255, 255, 0.6); }
+body.night-mode #contact a             { color: var(--white); border-color: var(--white); }
+body.night-mode footer p               { color: rgba(255, 255, 255, 0.3); }
+
+body.night-mode section                { pointer-events: none; }
+body.night-mode #name-toggle,
+body.night-mode section a              { pointer-events: auto; }
+
+
+/* ===========================
+   PARTIKLER
+=========================== */
+
+#particle-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
 }
 
-/* I night mode: la tomme seksjonsflater slippe klikk gjennom til canvas */
-body.night-mode section {
-    pointer-events: none;
-}
-body.night-mode #name-toggle,
-body.night-mode section a {
+body.night-mode #particle-canvas {
+    opacity: 1;
     pointer-events: auto;
 }
 
 
 /* ===========================
-   NAVIGATION
-   Fixed at top — always visible while scrolling
-=========================== */
-
-
-nav {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: inline-flex;
-    align-items: center;
-    gap: 16px;
-    padding: 12px 24px;
-    background: rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 100px;
-    z-index: 100;
-    white-space: nowrap;
-    overflow: hidden;
-    transition: border-color 0.2s;
-}
-
-nav:hover {
-    border-color: #b0b0b0;
-}
-
-nav:hover .nav-divider {
-    background: #b0b0b0;
-}
-
-.nav-home {
-    color: #aaa;
-    display: flex;
-    align-items: center;
-    transition: color 0.2s;
-}
-
-.nav-home:hover {
-    color: #000;
-}
-
-.nav-divider {
-    width: 1px;
-    height: 16px;
-    background: #e0e0e0;
-    transition: background 0.2s;
-}
-
-
-.nav-links {
-    display: flex;
-    gap: 32px;
-}
-
-.nav-links a {
-    font-size: 13px;
-    letter-spacing: 0.04em;
-    text-decoration: none;
-    color: #aaa;
-    transition: color 0.2s;
-}
-
-.nav-links a:hover {
-    color: #000;
-}
-
-.nav-night-toggle {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #aaa;
-    display: flex;
-    align-items: center;
-    padding: 0;
-    transition: color 0.2s;
-}
-
-.nav-night-toggle:hover { color: #000; }
-
-.icon-sun  { display: none; }
-.icon-moon { display: block; }
-
-body.night-mode .icon-sun  { display: block; }
-body.night-mode .icon-moon { display: none; }
-
-body.night-mode .nav-night-toggle       { color: rgba(255, 255, 255, 0.4); }
-body.night-mode .nav-night-toggle:hover { color: #fff; }
-
-
-/* ===========================
-   SECTIONS — shared styles
-   Each section gets the same max-width and padding
+   SEKSJONER
 =========================== */
 
 section {
@@ -214,8 +96,6 @@ section {
     scroll-margin-top: 70px;
 }
 
-
-/* Section headings "ABOUT" "WORK" "CONTACT" */
 h2 {
     font-size: 11px;
     letter-spacing: 0.18em;
@@ -227,7 +107,6 @@ h2 {
 
 /* ===========================
    HOME
-   The first big section — name and title
 =========================== */
 
 #home {
@@ -252,21 +131,6 @@ h2 {
     text-transform: uppercase;
     color: var(--gray);
     margin-bottom: 8px;
-}
-
-
-/* ===========================
-   TYPEWRITER CURSOR
-=========================== */
-
-.typing-cursor {
-    animation: blink 1s step-end infinite;
-}
-
-/* @keyframes definerer en animasjon — her blinker vi opacity av og på */
-@keyframes blink {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0; }
 }
 
 
@@ -314,14 +178,13 @@ h2 {
 
 
 /* ===========================
-   PROJECTS
-   2-column grid of cards
+   PROSJEKTER
 =========================== */
 
 .project-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);   /* 2 equal columns */
-    gap: 48px 40px;                          /* row gap, column gap */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 48px 40px;
 }
 
 .project-card {
@@ -331,18 +194,15 @@ h2 {
     cursor: pointer;
 }
 
-/* The image placeholder box */
 .project-image {
     width: 100%;
-    aspect-ratio: 4 / 3;     /* keeps a consistent shape */
-    background: var(--light-gray);
+    aspect-ratio: 4 / 3;
+    background-color: var(--light-gray);
     margin-bottom: 16px;
     transition: opacity 0.3s;
 }
 
-.project-card:hover .project-image {
-    opacity: 0.75;
-}
+.project-card:hover .project-image  { opacity: 0.75; }
 
 .project-card h3 {
     font-size: 15px;
@@ -364,12 +224,12 @@ h2 {
 
 .img-multiply {
     mix-blend-mode: multiply;
-    background: white;
+    background-color: white;
 }
 
 
 /* ===========================
-   CONTACT
+   KONTAKT
 =========================== */
 
 #contact {
@@ -393,22 +253,12 @@ h2 {
     transition: opacity 0.2s;
 }
 
-#contact a:hover {
-    opacity: 0.35;
-}
+#contact a:hover { opacity: 0.35; }
 
 
 /* ===========================
    FOOTER
 =========================== */
-
-/* footer {
-    border-top: 1px solid #e8e8e8;
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 28px 60px;
-    padding-bottom: 70px;
-} */
 
 footer p {
     font-size: 12px;
@@ -417,27 +267,20 @@ footer p {
 
 
 /* ===========================
-   RESPONSIVE — Mobile screens
-   @media means "apply these styles only when..."
+   MOBIL
 =========================== */
 
-
 @media (max-width: 768px) {
-
-    nav {
-        padding: 16px 24px;
-    }
 
     section {
         padding: 72px 24px;
     }
 
-    #hero {
-        padding-top: 120px;
+    #home {
+        padding-top: 160px;
         padding-bottom: 80px;
     }
 
-    /* Stack projects to 1 column on mobile */
     .project-grid {
         grid-template-columns: 1fr;
     }

@@ -1,0 +1,107 @@
+/* ===========================
+   NAV — struktur
+=========================== */
+
+nav {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 100px;
+    z-index: 100;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.nav-home {
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.nav-divider {
+    width: 1px;
+    height: 16px;
+    background: #e0e0e0;
+    transition: background 0.2s;
+}
+
+.nav-links {
+    display: flex;
+    gap: 32px;
+}
+
+.nav-links a {
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    color: #aaa;
+    transition: color 0.2s;
+}
+
+.nav-night-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.icon-sun  { display: none; }
+.icon-moon { display: block; }
+
+
+/* ===========================
+   NAV — hover
+=========================== */
+
+nav:hover                  { border-color: #b0b0b0; }
+nav:hover .nav-divider     { background: #b0b0b0; }
+.nav-home:hover            { color: #000; }
+.nav-links a:hover         { color: #000; }
+.nav-night-toggle:hover    { color: #000; }
+
+
+/* ===========================
+   NAV — nattmodus
+=========================== */
+
+body.night-mode nav                  { background: rgba(0, 0, 0, 0.3); border-color: rgba(255, 255, 255, 0.12); }
+body.night-mode nav:hover            { border-color: rgba(255, 255, 255, 0.4); }
+body.night-mode nav:hover .nav-divider { background: rgba(255, 255, 255, 0.4); }
+
+body.night-mode .nav-home            { color: rgba(255, 255, 255, 0.4); }
+body.night-mode .nav-home:hover      { color: #fff; }
+
+body.night-mode .nav-links a         { color: rgba(255, 255, 255, 0.4); }
+body.night-mode .nav-links a:hover   { color: #fff; }
+
+body.night-mode .nav-divider         { background: rgba(255, 255, 255, 0.15); }
+
+body.night-mode .nav-night-toggle    { color: rgba(255, 255, 255, 0.4); }
+body.night-mode .nav-night-toggle:hover { color: #fff; }
+
+body.night-mode .icon-sun            { display: block; }
+body.night-mode .icon-moon           { display: none; }
+
+
+/* ===========================
+   NAV — mobil
+=========================== */
+
+@media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+}
