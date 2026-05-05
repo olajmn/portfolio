@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ola Jin Myhre Nymoen — Architect</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="particles.css">
+</head>
+<body>
+
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <a href="#home" class="nav-home" aria-label="Home">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
+                <path d="M9 21V12h6v9"/>
+            </svg>
+        </a>
+        <span class="nav-divider"></span>
+        <div class="nav-links">
+            <a href="#about">About</a>
+            <a href="#work">Work</a>
+            <a href="#contact">Contact</a>
+        </div>
+        <span class="nav-divider"></span>
+        <button class="nav-night-toggle" id="nav-night-toggle" aria-label="Toggle night mode">
+            <svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+            <svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="5"/>
+                <line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+        </button>
+    </nav>
+
+    <!-- HOME -->
+    <section id="home">
+        <h1><span id="name-toggle">Ola Jin Myhre<br><span class="name-nymoen">Nymoen</span></span></h1>
+        <p class="title">portfolio</p>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+        <h2>About</h2>
+            <div class="about-inner">
+            <!-- TEXT -->
+                <div class="about-text">
+                    <p class="bio-line"> Hey, I'm Ola Jin.</p>
+                    <p class="bio-line"> I studied architecture in Prague — five years of learning how to think about space, people, and why cities feel the way they do. It gave me more than a degree. It gave me a way of seeing the world.</p>
+                    <p class="bio-line"> Somewhere along the way, I realised I wanted to make things differently. The job market didn't help, but honestly — a year of sitting with myself did more. I came out the other side wanting to build in a new  medium.</p>
+                    <p class="bio-line"> Code feels like digital DNA to me. The same logic, the same obsession with how pieces fit together — just a different material.</p>
+                    <p class="bio-line"> I'm currently a student, figuring it out one project at a time. If you're building something interesting, feel free to reach out.</p>
+                </div>
+            <!-- IMAGE -->
+                <div class="about-image">
+                    <img src="images/profile.jpg" alt="Ola Jin Myhre Nymoen">
+                </div>
+            </div>
+    </section>
+
+
+    <!-- WORK -->
+    <section id="work">
+        <h2>Work</h2>
+        <div class="project-grid">
+
+            <a href="https://olajmn.github.io/architecture-portfolio/" class="project-card">
+                <div class="project-image" style="background: white;">
+                    <img src="images/portfolio-cover.png" alt="Architecture Portfolio" class="img-multiply">
+                </div>
+                <div class="project-info">
+                    <h3>Architecture</h3>
+                </div>
+            </a>
+
+            <a href="projects/programming/this-portfolio.html" class="project-card project-card--coming-soon">
+                <div class="project-image project-image--placeholder">
+                </div>
+                <div class="project-info">
+                    <h3>Placeholder</h3>
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+        <h2>Contact</h2>
+            <!-- <p>Available for new opportunities.</p>  -->
+            <a href="mailto:olajnym@gmail.com">olajnym@gmail.com</a>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <!-- <p>© 2025 Ola Jin Myhre Nymoen</p> -->
+    </footer>
+
+    <script src="particles.js"></script>
+    <script src="interactions.js"></script>
+
+</body>
+</html>
