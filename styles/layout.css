@@ -111,7 +111,7 @@ h2 {
 .project-image {
     width: 100%;
     aspect-ratio: 4 / 3;
-    background-color: var(--light-gray);
+    background-color: transparent;
     margin-bottom: 16px;
     transition: opacity 0.3s;
 }
@@ -137,8 +137,8 @@ h2 {
 }
 
 .img-multiply {
+    transition: filter 0.8s ease;
     mix-blend-mode: multiply;
-    background-color: white;
 }
 
 
