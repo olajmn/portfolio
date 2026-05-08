@@ -26,3 +26,4 @@ body.night-mode .project-image img { filter: invert(1); }
 body.night-mode .img-multiply {
     mix-blend-mode: normal;
 }
+
