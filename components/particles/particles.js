@@ -15,7 +15,7 @@ const Z_CENTER = 600;
 const CONFIG = {
     count:         333,      // totalt antall partikler
     bg:       '0, 0, 0',    // bakgrunnsfarge (r, g, b)
-    speed:        0.28,      // global fartsmultiplikator (1.0 = full, 0.5 = halvfart)
+    speed:        0.01,      // global fartsmultiplikator (1.0 = full, 0.5 = halvfart)
     brownian:    0.002,      // tilfeldig jitter per frame
     friction:    0.975,      // bremsing per frame (1.0 = ingen, 0.95 = mye)
     clickTier9Max:  3,       // maks antall klikk-spawnede tier 9 om gangen
