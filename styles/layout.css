@@ -127,8 +127,9 @@ h2 {
     align-items: center;
     justify-content: center;
     pointer-events: none; 
+    opacity: 0.75;
 }
-.project-card:hover .project-image  { opacity: 0.75; }
+.project-card:hover .project-image  { opacity: 1; }
 
  .project-info {
       padding-top: 50px;                                                                                                           
@@ -137,12 +138,13 @@ h2 {
   }        
 
 .project-card h3 {
-    font-size: 25px;
+    font-size: 18px;
     font-weight: 100;
     margin-bottom: 0px;
     text-decoration: underline;
     text-decoration-thickness: 0.7px;
     text-underline-offset: 7px;
+    opacity: 0.5;
 }
 
 .project-card p {

@@ -27,3 +27,6 @@ body.night-mode .img-multiply {
     mix-blend-mode: normal;
 }
 
+
+body.night-mode .project-card      { pointer-events: none; }
+body.night-mode .project-image img { pointer-events: auto; }
