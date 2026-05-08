@@ -130,6 +130,7 @@ h2 {
     opacity: 0.75;
 }
 .project-card:hover .project-image  { opacity: 1; }
+.project-card:has(.project-image img:hover) h3 { opacity: 0.75; }
 
  .project-info {
       padding-top: 50px;                                                                                                           
@@ -145,6 +146,7 @@ h2 {
     text-decoration-thickness: 0.7px;
     text-underline-offset: 7px;
     opacity: 0.5;
+    transition: opacity 0.3s ease;  
 }
 
 .project-card p {
