@@ -1,8 +1,8 @@
-import { initNav } from './js/ui/nav.js'
-import './js/effects/anchorscroll.js'
-import './js/effects/heroscroll.js'
-import './js/effects/typewriter.js'
-import './js/effects/textfade.js'
-import './js/particles/particles.js'
+import { initNav } from './components/nav/nav.js'
+import './effects/anchorScroll.js'
+import './effects/heroScroll.js'
+import './effects/typewriter.js'
+import './effects/textFade.js'
+import './components/particles/particles.js'
 
 initNav()

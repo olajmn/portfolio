@@ -1,0 +1,20 @@
+/* ===========================
+   NATTMODUS
+=========================== */
+
+body.night-mode                        { background-color: #000; color: var(--white); }
+body.night-mode #home h1               { color: var(--white); }
+body.night-mode #about p,
+body.night-mode h2                     { color: rgba(255, 255, 255, 0.6); }
+body.night-mode #contact a             { color: var(--white); border-color: var(--white); }
+body.night-mode footer p               { color: rgba(255, 255, 255, 0.3); }
+
+body.night-mode section                { pointer-events: none; }
+body.night-mode #name-toggle,
+body.night-mode section a              { pointer-events: auto; }
+
+body.night-mode #particle-canvas {
+    opacity: 1;
+    pointer-events: auto;
+}
+
