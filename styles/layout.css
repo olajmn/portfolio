@@ -195,6 +195,30 @@ h2 {
 
 #contact a:hover { opacity: 0.35; }
 
+.contact-icons {
+    margin-top: 32px;
+    display: flex;
+    gap: 20px;
+}
+
+#contact .contact-icons a {
+    color: var(--black);
+    opacity: 1;
+    transition: opacity 0.2s;  
+    border-bottom: none;
+    padding-bottom: 0; 
+    font-size: inherit;
+}
+
+#contact .contact-icons a:hover {
+    opacity: 0.35;
+}
+
+.contact-icons svg {
+    width: 40px;
+    height: 40px;
+    fill: currentColor;
+}
 
 /* ===========================
    FOOTER
