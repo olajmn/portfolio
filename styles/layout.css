@@ -56,10 +56,6 @@ h2 {
     padding-top: 40px;
 }
 
- #work {
-      scroll-margin-top: 20px;                                                                                                     
-  }
-
 .about-inner {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -98,10 +94,6 @@ h2 {
 /* ===========================
    EDUCATION
 =========================== */
-
-#education {
-    scroll-margin-top: 70px;
-}
 
 .education-list {
     display: flex;
@@ -150,11 +142,7 @@ h2 {
     pointer-events: none;
 }
 
-.project-card:not(:has(.project-image)) {
-    text-align: center;
-}
-
-.project-card:not(:has(.project-image)):hover h3 {
+.project-card:has(.img-soltrack):hover h3 {
     opacity: 1;
 }
 
@@ -162,7 +150,6 @@ h2 {
     font-size: 13px;
     color: var(--black);
     text-decoration: none;
-    border-bottom: none;
     opacity: 0.75;
     transition: opacity 0.3s ease;
     pointer-events: auto;
@@ -174,39 +161,32 @@ h2 {
 
 .project-image {
     width: 100%;
-    /* aspect-ratio: 4 / 3; */
     background-color: transparent;
     margin-bottom: 16px;
     transition: opacity 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
-    pointer-events: none; 
+    pointer-events: none;
     opacity: 0.75;
 }
-.project-card:hover .project-image  { opacity: 1; }
+
+.project-card:hover .project-image { opacity: 1; }
 .project-card:has(.project-image img:hover) h3 { opacity: 0.75; }
 
- .project-info {
-      padding-top: 50px;                                                                                                           
-      margin-bottom: 120px;     
-      margin-left: 0px;                                                                                                    
-  }        
+.project-info {
+    padding-top: 50px;
+    margin-bottom: 120px;
+}
 
 .project-card h3 {
     font-size: 18px;
     font-weight: 100;
-    margin-bottom: 0px;
     text-decoration: underline;
     text-decoration-thickness: 0.7px;
     text-underline-offset: 7px;
     opacity: 0.5;
-    transition: opacity 0.3s ease;  
-}
-
-.project-card p {
-    font-size: 13px;
-    color: var(--gray);
+    transition: opacity 0.3s ease;
 }
 
 .project-image img {
@@ -222,6 +202,22 @@ h2 {
     mix-blend-mode: multiply;
 }
 
+.project-image a {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.img-soltrack {
+    width: 28% !important;
+    border-radius: 16px;
+}
+
+.project-card:has(.img-soltrack) .project-info {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
 
 /* ===========================
    KONTAKT
@@ -230,12 +226,6 @@ h2 {
 #contact {
     padding-top: 160px;
     padding-bottom: 160px;
-}
-
-#contact p {
-    font-size: 15px;
-    color: var(--gray);
-    margin-bottom: 28px;
 }
 
 #contact a {
@@ -259,9 +249,9 @@ h2 {
 #contact .contact-icons a {
     color: var(--black);
     opacity: 1;
-    transition: opacity 0.2s;  
+    transition: opacity 0.2s;
     border-bottom: none;
-    padding-bottom: 0; 
+    padding-bottom: 0;
     font-size: inherit;
 }
 
@@ -273,15 +263,6 @@ h2 {
     width: 40px;
     height: 40px;
     fill: currentColor;
-}
-
-/* ===========================
-   FOOTER
-=========================== */
-
-footer p {
-    font-size: 12px;
-    color: var(--gray);
 }
 
 
