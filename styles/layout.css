@@ -99,6 +99,10 @@ h2 {
    EDUCATION
 =========================== */
 
+#education {
+    scroll-margin-top: 30px;
+}
+
 .education-list {
     display: flex;
     flex-direction: column;
@@ -144,7 +148,28 @@ h2 {
     align-items: center;
     cursor: pointer;
     pointer-events: none;
-    
+}
+
+.project-card:not(:has(.project-image)) {
+    text-align: center;
+}
+
+.project-card:not(:has(.project-image)):hover h3 {
+    opacity: 1;
+}
+
+.project-link {
+    font-size: 13px;
+    color: var(--black);
+    text-decoration: none;
+    border-bottom: none;
+    opacity: 0.75;
+    transition: opacity 0.3s ease;
+    pointer-events: auto;
+}
+
+.project-link:hover {
+    opacity: 1;
 }
 
 .project-image {

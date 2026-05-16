@@ -32,3 +32,4 @@ body.night-mode .img-multiply {
 
 body.night-mode .project-card      { pointer-events: none; }
 body.night-mode .project-image img { pointer-events: auto; }
+body.night-mode .project-link      { color: var(--white); }
