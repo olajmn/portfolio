@@ -12,6 +12,7 @@ function createNav() {
 
         <div class="nav-links">
             <a href="#about">About</a>
+            <a href="#education">Education</a>
             <a href="#work">Work</a>
             <a href="#contact">Contact</a>
         </div>

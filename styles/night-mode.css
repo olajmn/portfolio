@@ -21,6 +21,8 @@ body.night-mode #particle-canvas {
 
 
 
+body.night-mode .edu-meta          { color: var(--white); }
+
 body.night-mode .project-image img { filter: invert(1); }                                                                                
 
 body.night-mode .img-multiply {

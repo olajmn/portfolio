@@ -96,6 +96,36 @@ h2 {
 
 
 /* ===========================
+   EDUCATION
+=========================== */
+
+.education-list {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.education-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.edu-meta {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--black);
+}
+
+.edu-degree,
+.edu-school {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--gray);
+}
+
+
+/* ===========================
    PROSJEKTER
 =========================== */
 
