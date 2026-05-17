@@ -5,6 +5,8 @@ function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = can
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
+const isMobile = window.innerWidth < 768;
+
 const FOCAL    = 600;
 const Z_CENTER = 600;
 
@@ -13,7 +15,7 @@ const Z_CENTER = 600;
 // Dette er det eneste du trenger å endre.
 
 const CONFIG = {
-    count:         333,      // totalt antall partikler
+    count:         isMobile ? 80 : 333,      // totalt antall partikler
     bg:       '0, 0, 0',    // bakgrunnsfarge (r, g, b)
     speed:        0.01,      // global fartsmultiplikator (1.0 = full, 0.5 = halvfart)
     brownian:    0.002,      // tilfeldig jitter per frame
@@ -454,26 +456,30 @@ function animate() {
         ctx.shadowBlur = 0;
 
         if (p.tier === 9) {
-            const haloR = radius * 10;
-            const grad  = ctx.createRadialGradient(sx, sy, radius, sx, sy, haloR);
-            grad.addColorStop(0, 'rgba( 40,  90, 220, 0.28)');
-            grad.addColorStop(1, 'rgba( 20,  50, 180, 0)');
-            ctx.shadowBlur = 0;
-            ctx.fillStyle  = grad;
-            ctx.beginPath(); ctx.arc(sx, sy, haloR, 0, Math.PI * 2); ctx.fill();
+            if (!isMobile) {
+                const haloR = radius * 10;
+                const grad  = ctx.createRadialGradient(sx, sy, radius, sx, sy, haloR);
+                grad.addColorStop(0, 'rgba( 40,  90, 220, 0.28)');
+                grad.addColorStop(1, 'rgba( 20,  50, 180, 0)');
+                ctx.shadowBlur = 0;
+                ctx.fillStyle  = grad;
+                ctx.beginPath(); ctx.arc(sx, sy, haloR, 0, Math.PI * 2); ctx.fill();
 
-            ctx.shadowColor = 'rgba(80, 140, 255, 1.0)';
-            ctx.shadowBlur  = radius * 32;
+                ctx.shadowColor = 'rgba(80, 140, 255, 1.0)';
+                ctx.shadowBlur  = radius * 32;
+            }
             ctx.fillStyle   = 'rgba(80, 140, 255, ' + (alpha * 0.85) + ')';
             ctx.beginPath(); ctx.arc(sx, sy, radius * 2.2, 0, Math.PI * 2); ctx.fill();
 
-            ctx.shadowBlur  = radius * 14;
+            if (!isMobile) {
+                ctx.shadowBlur  = radius * 14;
+            }
             ctx.fillStyle   = 'rgba(160, 200, 255, ' + (alpha * 0.9) + ')';
             ctx.beginPath(); ctx.arc(sx, sy, radius * 0.7, 0, Math.PI * 2); ctx.fill();
             ctx.shadowBlur  = 0;
         }
 
-        const canGlow = (p.tier === 5 || p.tier === 6 || p.tier === 9) || (p.tier >= 3 && impulse > 0.6);
+        const canGlow = !isMobile && ((p.tier === 5 || p.tier === 6 || p.tier === 9) || (p.tier >= 3 && impulse > 0.6));
         const pulseAlpha  = Math.min(1, alpha * (1 + impulse * 2.0));
         const growMult    = p.tier <= 2 ? 0.2 : 0.02;
         const pulseRadius = radius * (1 + impulse * growMult);
@@ -484,7 +490,7 @@ function animate() {
         ctx.fillStyle = p.color + pulseAlpha + ')';
         ctx.beginPath(); ctx.arc(sx, sy, pulseRadius, 0, Math.PI * 2); ctx.fill();
 
-        if (impulse > 0.3) {
+        if (!isMobile && impulse > 0.3) {
             ctx.shadowBlur = 0;
             ctx.fillStyle  = `rgba(200, 225, 255, ${impulse * alpha * 0.9})`;
             ctx.beginPath(); ctx.arc(sx, sy, radius, 0, Math.PI * 2); ctx.fill();

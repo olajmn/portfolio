@@ -279,12 +279,17 @@ h2 {
     }
 
     #home {
-        padding-top: 160px;
-        padding-bottom: 80px;
+        padding-top: 140px;
+        padding-bottom: 60px;
+        min-height: 0;
     }
 
     .project-grid {
         grid-template-columns: 1fr;
+    }
+
+    .project-image {
+        order: -1;
     }
 
     .project-image img {
@@ -296,12 +301,13 @@ h2 {
     }
 
     .project-info {
-        padding-top: 20px;
-        margin-bottom: 48px;
+        padding-top: 0;
+        margin-bottom: 16px;
+        margin-top: 16px;
     }
 
     .project-card:has(.img-soltrack) .project-info {
-        margin-bottom: 12px;
+        margin-bottom: 0;
     }
 
     .about-inner {

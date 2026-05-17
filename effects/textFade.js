@@ -27,6 +27,6 @@ if (bioLines.length) {
         });
     }
 
-    window.addEventListener('scroll', updateBioWeights);
+    window.addEventListener('scroll', updateBioWeights, { passive: true });
     updateBioWeights(); // kjør én gang ved lasting
 }
