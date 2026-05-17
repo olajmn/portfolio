@@ -103,5 +103,22 @@ body.night-mode .icon-moon           { display: none; }
 =========================== */
 
 @media (max-width: 768px) {
-    nav { padding: 16px 24px; }
+    nav {
+        padding: 10px 16px;
+        gap: 10px;
+    }
+
+    .nav-links {
+        gap: 16px;
+    }
+}
+
+@media (max-width: 400px) {
+    .nav-links {
+        gap: 10px;
+    }
+
+    .nav-links a {
+        font-size: 12px;
+    }
 }

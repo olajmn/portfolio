@@ -285,6 +285,23 @@ h2 {
         grid-template-columns: 1fr;
     }
 
+    .project-image img {
+        width: 65%;
+    }
+
+    .img-soltrack {
+        width: 55% !important;
+    }
+
+    .project-info {
+        padding-top: 20px;
+        margin-bottom: 48px;
+    }
+
+    .project-card:has(.img-soltrack) .project-info {
+        margin-bottom: 12px;
+    }
+
     .about-inner {
         grid-template-columns: 1fr;
     }
@@ -296,6 +313,11 @@ h2 {
 
     .about-image img {
         height: 420px;
+    }
+
+    #contact {
+        padding-top: 80px;
+        padding-bottom: 80px;
     }
 
     footer {
