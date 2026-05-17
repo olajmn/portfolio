@@ -288,10 +288,6 @@ h2 {
         grid-template-columns: 1fr;
     }
 
-    .project-image {
-        order: -1;
-    }
-
     .project-image img {
         width: 65%;
     }
