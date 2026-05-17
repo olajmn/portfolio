@@ -109,7 +109,7 @@ h2 {
 
 .edu-meta {
     font-size: 15px;
-    font-weight: 500;
+    font-weight: 400;
     color: var(--black);
 }
 
@@ -203,6 +203,7 @@ h2 {
 }
 
 .project-image a {
+    pointer-events: none;
     display: flex;
     justify-content: center;
     width: 100%;
@@ -211,6 +212,7 @@ h2 {
 .img-soltrack {
     width: 28% !important;
     border-radius: 16px;
+    pointer-events: auto;
 }
 
 .project-card:has(.img-soltrack) .project-info {
