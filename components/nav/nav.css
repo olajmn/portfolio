@@ -50,18 +50,33 @@ nav {
 }
 
 .nav-night-toggle {
+    position: relative;
+    width: 15px;
+    height: 15px;
     background: none;
     border: none;
     cursor: pointer;
     color: #aaa;
-    display: flex;
-    align-items: center;
     padding: 0;
     transition: color 0.2s;
 }
 
-.icon-sun  { display: none; }
-.icon-moon { display: block; }
+.icon-moon, .icon-sun {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.icon-moon {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+}
+
+.icon-sun {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(-90deg) scale(0.5);
+}
 
 
 /* ===========================
@@ -94,8 +109,8 @@ body.night-mode .nav-divider         { background: rgba(255, 255, 255, 0.15); }
 body.night-mode .nav-night-toggle    { color: rgba(255, 255, 255, 0.4); }
 body.night-mode .nav-night-toggle:hover { color: #fff; }
 
-body.night-mode .icon-sun            { display: block; }
-body.night-mode .icon-moon           { display: none; }
+body.night-mode .icon-moon { opacity: 0; transform: translate(-50%, -50%) rotate(90deg) scale(0.5); }
+body.night-mode .icon-sun  { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) scale(1); }
 
 
 /* ===========================
