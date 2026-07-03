@@ -1,4 +1,4 @@
-//  Sørger for at nav-lenker alltid lander på riktig sted,
+//  Makes sure nav links always land in the right place,
 
 
 document.addEventListener('click', function(e) {

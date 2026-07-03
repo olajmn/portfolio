@@ -1,4 +1,4 @@
-//  HERO — tittelen krymper og sklir opp på scroll
+//  HERO — the title shrinks and slides up on scroll
 
 
 const homeSection = document.getElementById('home');

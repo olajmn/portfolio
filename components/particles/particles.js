@@ -11,46 +11,46 @@ const FOCAL    = 600;
 const Z_CENTER = 600;
 
 
-// ── KONTROLLER ──────────────────────────────────────────────
-// Dette er det eneste du trenger å endre.
+// ── CONTROLS ──────────────────────────────────────────────
+// This is the only thing you need to change.
 
 const CONFIG = {
-    count:         isMobile ? 80 : 333,      // totalt antall partikler
-    bg:       '0, 0, 0',    // bakgrunnsfarge (r, g, b)
-    speed:        0.01,      // global fartsmultiplikator (1.0 = full, 0.5 = halvfart)
-    brownian:    0.002,      // tilfeldig jitter per frame
-    friction:    0.975,      // bremsing per frame (1.0 = ingen, 0.95 = mye)
-    clickTier9Max:  3,       // maks antall klikk-spawnede tier 9 om gangen
+    count:         isMobile ? 80 : 333,      // total number of particles
+    bg:       '0, 0, 0',    // background color (r, g, b)
+    speed:        0.01,      // global speed multiplier (1.0 = full, 0.5 = half speed)
+    brownian:    0.002,      // random jitter per frame
+    friction:    0.975,      // deceleration per frame (1.0 = none, 0.95 = a lot)
+    clickTier9Max:  3,       // max number of click-spawned tier 9 at a time
 
     attract: {
-        maxDist:   90,       // gravitasjonsrekkevidde (px)
-        repelDist: 28,       // avstand der frastøtning starter
-        pull:      0.002,    // attraksjonskraft
-        push:      0.014,    // frastøtningskraft
-        swirl:     0.006,    // svirlingskraft (skaper baner)
+        maxDist:   90,       // gravity range (px)
+        repelDist: 28,       // distance where repulsion starts
+        pull:      0.002,    // attraction force
+        push:      0.014,    // repulsion force
+        swirl:     0.006,    // swirl force (creates orbits)
     },
 };
 
 const VISUAL = {
-    maxRadius: 6,     // størst mulig radius (px)
-    alphaMin:  0.14,  // minste opacity
-    alphaMax:  0.95,  // største opacity
-    maxGlow:   18,    // største glow-blur (px)
+    maxRadius: 6,     // largest possible radius (px)
+    alphaMin:  0.14,  // smallest opacity
+    alphaMax:  0.95,  // largest opacity
+    maxGlow:   18,    // largest glow blur (px)
 };
 
-// MIX — hvilke tiers som er aktive
+// MIX — which tiers are active
 const MIX = [1, 2, 3, 4, 5, 6, ];
 
-// TIERS — egenskaper per tier
-//   pct:        relativ spawn-sannsynlighet
-//   size:       [min, max] abstrakt størrelse → radius, alpha, glow
-//   mass:       gravitasjonsstyrke
-//   inertia:    treighet — høy = motstår krefter
-//   glowMult:   glow-multiplier
-//   centerPull: hvor hardt partikkelen trekkes mot spawn-punktet
-//   lifetime:   [min, max] levetid som andel av 1800 frames
-//   minCount:   alltid minst dette mange på skjermen
-//   maxCount:   aldri mer enn dette mange på skjermen
+// TIERS — properties per tier
+//   pct:        relative spawn probability
+//   size:       [min, max] abstract size → radius, alpha, glow
+//   mass:       gravity strength
+//   inertia:    inertia — high = resists forces
+//   glowMult:   glow multiplier
+//   centerPull: how hard the particle is pulled toward its spawn point
+//   lifetime:   [min, max] lifetime as a fraction of 1800 frames
+//   minCount:   always at least this many on screen
+//   maxCount:   never more than this many on screen
 const TIERS = {
     1: { pct: 1.00, size: [0.18, 0.28], mass: 0.3, inertia:  3.0, glowMult: 0.3, repelDist:  5,            lifetime: [0.2, 0.5], color: 'rgba( 75, 130, 230, ' },
     2: { pct: 0.90, size: [0.24, 0.33], mass: 0.5, inertia:  3.0, glowMult: 0.5, repelDist:  8,            lifetime: [0.3, 0.6], color: 'rgba( 65, 120, 225, ' },
@@ -101,14 +101,14 @@ function spawnParticle() {
         spin:       t.spin ?? (Math.random() < 0.5 ? 1 : -1),
         ecc:          0.6 + Math.random() * 0.8,
         orbitAngle:   Math.random() * Math.PI * 2,
-        pulseStrength: 0, // umodne partikler starter uladet
+        pulseStrength: 0, // immature particles start uncharged
     };
 }
 
 const particles = [];
 for (let i = 0; i < CONFIG.count; i++) particles.push(spawnParticle());
 
-// Permanent tier 9 — flyter alltid rundt
+// Permanent tier 9 — always floating around
 const _t9 = TIERS[9];
 particles.push({
     tier: 9,
@@ -136,25 +136,25 @@ particles.push({
 });
 
 
-// ── PROJEKSJON ──
+// ── PROJECTION ──
 function project(x, y, z) {
     const sc = FOCAL / Math.max(z, 1);
     return { sx: canvas.width / 2 + x * sc, sy: canvas.height / 2 + y * sc, scale: Z_CENTER / Math.max(z, 1) };
 }
 
-// ── NEURON IMPULS ──
+// ── NEURON IMPULSE ──
 const impulseRings = [];
 let RING_SPEED   = 2.8;
 let RING_BAND    = 55;
 let firstPulse    = true;
-let firstPulseTimer = 100; // ingen forsinkelse — første puls kommer med en gang
-let cascadeTimer  = 0;   // frames der sekundærringer er tillatt etter puls
-let pulseReady    = false; // blokkerer ny puls mens systemet er utmattet
-let silenceTimer  = 0;    // obligatorisk stillhet mellom puljer
-let burstRemain   = 0;    // antall gjenstående pulser i pågående pulje
-let burstTimer    = 0;    // frames til neste puls i puljen
+let firstPulseTimer = 100; // no delay — the first pulse comes right away
+let cascadeTimer  = 0;   // frames during which secondary rings are allowed after a pulse
+let pulseReady    = false; // blocks a new pulse while the system is exhausted
+let silenceTimer  = 0;    // mandatory silence between bursts
+let burstRemain   = 0;    // number of remaining pulses in the ongoing burst
+let burstTimer    = 0;    // frames until the next pulse in the burst
 
-// ── TIER 10 — MUSEKLIKK ──
+// ── TIER 10 — MOUSE CLICK ──
 let mouseParticle = null;
 
 function screenToWorld(ex, ey) {
@@ -241,15 +241,15 @@ canvas.addEventListener('mouseleave', releaseMouse);
 
 
 
-// ── ANIMASJON ──
-// Disse arrayene lages én gang og gjenbrukes hver frame — unngår GC-press
+// ── ANIMATION ──
+// These arrays are created once and reused every frame — avoids GC pressure
 const heavy = [], light = [], newRings = [];
 
 function animate() {
     ctx.fillStyle = `rgba(${CONFIG.bg}, 0.80)`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Deler partikler i tunge (mass ≥ 1) og lette for ytelse
+    // Splits particles into heavy (mass ≥ 1) and light for performance
     const cfg   = CONFIG.attract;
     heavy.length = 0; light.length = 0;
     for (const p of particles) (p.mass >= 1 ? heavy : light).push(p);
@@ -314,7 +314,7 @@ function animate() {
 
     if (cascadeTimer > 0) cascadeTimer--;
 
-    // Første puls alltid fra tier 9, etter kort forsinkelse
+    // First pulse always from tier 9, after a short delay
     if (firstPulse) {
         if (firstPulseTimer > 0) { firstPulseTimer--; }
         else {
@@ -325,13 +325,13 @@ function animate() {
         }
     }
 
-    // Finn gjennomsnittlig ladning blant tier 4/5
+    // Find the average charge among tier 4/5
     const reactors = particles.filter(p => p.tier === 4 || p.tier === 5);
     const avgCharge = reactors.length
         ? reactors.reduce((s, p) => s + (p.pulseStrength ?? 0), 0) / reactors.length
         : 0;
 
-    // Puls kan bare starte når systemet er tilstrekkelig ladet
+    // A pulse can only start when the system is sufficiently charged
     if (!pulseReady && avgCharge > 0.82) pulseReady = true;
 
     if (silenceTimer > 0) silenceTimer--;
@@ -348,22 +348,22 @@ function animate() {
         cascadeTimer = 900;
     };
 
-    // Fortsett pågående pulje
+    // Continue the ongoing burst
     if (burstRemain > 0 && burstTimer === 0) {
         doPulse();
         burstRemain--;
         if (burstRemain > 0) {
             burstTimer = 30 + Math.floor(Math.random() * 40);
         } else {
-            silenceTimer = 240 + Math.floor(Math.random() * 300); // 4–9s stillhet
+            silenceTimer = 240 + Math.floor(Math.random() * 300); // 4–9s silence
             pulseReady   = false;
         }
     }
 
-    // Start ny pulje
+    // Start a new burst
     if (!firstPulse && pulseReady && avgCharge > 0.75 && silenceTimer === 0 && burstRemain === 0 && Math.random() < 0.0008) {
         doPulse();
-        burstRemain = 1 + Math.floor(Math.random() * 3); // 1–3 ekstra pulser
+        burstRemain = 1 + Math.floor(Math.random() * 3); // 1–3 extra pulses
         burstTimer  = 30 + Math.floor(Math.random() * 40);
         pulseReady  = false;
     }
@@ -371,7 +371,7 @@ function animate() {
     newRings.length = 0;
 
     particles.forEach(p => {
-        // Tier 10 følger musa — ingen fysikk, bare tegning (ser ut som tier 9)
+        // Tier 10 follows the mouse — no physics, just drawing (looks like tier 9)
         if (p.tier === 10) {
             const { sx, sy, scale } = project(p.x, p.y, p.z);
             const t9color = 'rgba(240, 245, 255, ';
@@ -415,7 +415,7 @@ function animate() {
         const { sx, sy, scale } = project(p.x, p.y, p.z);
         if (scale < 0.05) return;
 
-        const smooth    = t => t * t * (3 - 2 * t);   // smoothstep: S-kurve 0→1
+        const smooth    = t => t * t * (3 - 2 * t);   // smoothstep: S-curve 0→1
         const fadeIn    = smooth(Math.min(1, p.life / p.fadeIn));
         const fadeStart = p.fadeStart ?? 0.85;
         const fadeOut   = smooth(Math.max(0, 1 - Math.max(0, p.life - p.lifeMax * fadeStart) / (p.lifeMax * (1 - fadeStart))));
@@ -424,7 +424,7 @@ function animate() {
         const radius = Math.max(0.4, p.size * VISUAL.maxRadius * scale);
         const alpha  = (VISUAL.alphaMin + p.size * (VISUAL.alphaMax - VISUAL.alphaMin)) * lf;
 
-        // Felles avstandsberegning til cursor — brukes av glow og hale
+        // Shared distance calculation to the cursor — used by glow and trail
         const distToMouse = mouseParticle
             ? Math.hypot(p.x - mouseParticle.x, p.y - mouseParticle.y)
             : Infinity;
@@ -440,7 +440,7 @@ function animate() {
                 const bandFrac = 1 - Math.abs(dist - ring.r) / RING_BAND;
                 if (bandFrac > 0) impulse = Math.max(impulse, bandFrac * ring.alpha * (1 - ring.r / ring.maxR));
             }
-            // Partikkel modnes gradvis — pulseStrength følger fadeIn-kurven
+            // Particle matures gradually — pulseStrength follows the fadeIn curve
             const maturity = Math.min(1, p.life / (p.fadeIn * 3));
             if ((p.pulseStrength ?? 0) < maturity) p.pulseStrength = Math.min(maturity, (p.pulseStrength ?? 0) + 0.0013);
             const reactivity = p.pulseStrength ?? 1;

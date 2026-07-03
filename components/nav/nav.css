@@ -1,5 +1,5 @@
 /* ===========================
-   NAV — struktur
+   NAV — structure
 =========================== */
 
 nav {
@@ -76,7 +76,7 @@ nav:hover .nav-divider     { background: #b0b0b0; }
 
 
 /* ===========================
-   NAV — nattmodus
+   NAV — night mode
 =========================== */
 
 body.night-mode nav                  { background: rgba(0, 0, 0, 0.3); border-color: rgba(255, 255, 255, 0.12); }
@@ -99,7 +99,7 @@ body.night-mode .icon-moon           { display: none; }
 
 
 /* ===========================
-   NAV — mobil
+   NAV — mobile
 =========================== */
 
 @media (max-width: 768px) {

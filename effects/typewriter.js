@@ -1,14 +1,14 @@
 // ============================================================
-//  TYPEWRITER — "About" skriver seg selv når siden laster
+//  TYPEWRITER — "About" types itself out when the page loads
 //
-//  Slik fungerer det:
-//  1. Vi tømmer h2-teksten med en gang
-//  2. Vi bruker setInterval() — en funksjon som gjentar seg
-//     med et fast tidsintervall (her: hver 40ms)
-//  3. For hver gang legger vi til én bokstav
-//  4. Når alle bokstavene er skrevet, stopper vi
+//  How it works:
+//  1. We clear the h2 text immediately
+//  2. We use setInterval() — a function that repeats itself
+//     at a fixed time interval (here: every 40ms)
+//  3. Each time, we add one letter
+//  4. When all the letters have been typed, we stop
 // ============================================================
-// Gjenbrukbar funksjon — tar et h2-element og setter opp typewriter på det
+// Reusable function — takes an h2 element and sets up a typewriter on it
 
 
 
@@ -27,7 +27,7 @@ function addTypewriter(element) {
             element.textContent += fullText[i];
             i++;
             if (i === fullText.length) clearInterval(activeInterval);
-        }, 40);  // 40ms per bokstav — rask "skudd"-effekt
+        }, 40);  // 40ms per letter — fast "burst" effect
     }
 
     const observer = new IntersectionObserver(function (entries) {
@@ -39,7 +39,7 @@ function addTypewriter(element) {
     observer.observe(element);
 }
 
-// Bruk funksjonen på ABOUT WORK CONTACT
+// Use the function on ABOUT WORK CONTACT
 addTypewriter(document.querySelector('#about h2'));
 addTypewriter(document.querySelector('#education h2'));
 addTypewriter(document.querySelector('#work h2'));
