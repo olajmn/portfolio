@@ -142,10 +142,6 @@ h2 {
     pointer-events: none;
 }
 
-.project-card:has(.img-soltrack):hover h3 {
-    opacity: 1;
-}
-
 .project-link {
     font-size: 13px;
     color: var(--black);
@@ -207,17 +203,6 @@ h2 {
     display: flex;
     justify-content: center;
     width: 100%;
-}
-
-.img-soltrack {
-    width: 28% !important;
-    border-radius: 16px;
-    pointer-events: auto;
-}
-
-.project-card:has(.img-soltrack) .project-info {
-    text-align: center;
-    margin-bottom: 32px;
 }
 
 
@@ -292,18 +277,10 @@ h2 {
         width: 65%;
     }
 
-    .img-soltrack {
-        width: 55% !important;
-    }
-
     .project-info {
         padding-top: 0;
         margin-bottom: 16px;
         margin-top: 16px;
-    }
-
-    .project-card:has(.img-soltrack) .project-info {
-        margin-bottom: 0;
     }
 
     .about-inner {

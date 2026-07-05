@@ -1,25 +1,25 @@
-function createNav() {
+function createNavbar() {
     return `
     <nav>
-        <a href="#home" class="nav-home" aria-label="Home">
+        <a href="#home" class="navbar-home" aria-label="Home">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
                 <path d="M9 21V12h6v9"/>
             </svg>
         </a>
 
-        <span class="nav-divider"></span>
+        <span class="navbar-divider"></span>
 
-        <div class="nav-links">
+        <div class="navbar-links">
             <a href="#about">About</a>
             <a href="#education">Education</a>
             <a href="#work">Work</a>
             <a href="#contact">Contact</a>
         </div>
 
-        <span class="nav-divider"></span>
+        <span class="navbar-divider"></span>
 
-        <button class="nav-night-toggle" id="nav-night-toggle">
+        <button class="navbar-night-toggle" id="navbar-night-toggle">
             <svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
             </svg>
@@ -39,19 +39,18 @@ function createNav() {
     `;
 }
 
-export function initNav() {
-    const container = document.getElementById('nav');
-    if (container) container.innerHTML = createNav();
+function toggleNightMode() {
+    document.body.classList.toggle('night-mode');
+    document.dispatchEvent(new CustomEvent('nightmode-toggle'));
+}
 
-    const toggle = document.getElementById('nav-night-toggle');
-    if (toggle) toggle.addEventListener('click', () => {
-        document.body.classList.toggle('night-mode');
-        document.dispatchEvent(new CustomEvent('nightmode-toggle'));
-    });
+export function initNavbar() {
+    const container = document.getElementById('navbar');
+    if (container) container.innerHTML = createNavbar();
+
+    const toggle = document.getElementById('navbar-night-toggle');
+    if (toggle) toggle.addEventListener('click', toggleNightMode);
 
     const nameToggle = document.getElementById('name-toggle');
-    if (nameToggle) nameToggle.addEventListener('click', () => {
-        document.body.classList.toggle('night-mode');
-        document.dispatchEvent(new CustomEvent('nightmode-toggle'));
-    });
+    if (nameToggle) nameToggle.addEventListener('click', toggleNightMode);
 }

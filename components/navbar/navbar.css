@@ -1,5 +1,5 @@
 /* ===========================
-   NAV — structure
+   NAVBAR — structure
 =========================== */
 
 nav {
@@ -22,26 +22,26 @@ nav {
     transition: border-color 0.2s;
 }
 
-.nav-home {
+.navbar-home {
     color: #aaa;
     display: flex;
     align-items: center;
     transition: color 0.2s;
 }
 
-.nav-divider {
+.navbar-divider {
     width: 1px;
     height: 16px;
     background: #e0e0e0;
     transition: background 0.2s;
 }
 
-.nav-links {
+.navbar-links {
     display: flex;
     gap: 32px;
 }
 
-.nav-links a {
+.navbar-links a {
     font-size: 13px;
     letter-spacing: 0.04em;
     text-decoration: none;
@@ -49,7 +49,7 @@ nav {
     transition: color 0.2s;
 }
 
-.nav-night-toggle {
+.navbar-night-toggle {
     position: relative;
     width: 15px;
     height: 15px;
@@ -80,41 +80,41 @@ nav {
 
 
 /* ===========================
-   NAV — hover
+   NAVBAR — hover
 =========================== */
 
 nav:hover                  { border-color: #b0b0b0; }
-nav:hover .nav-divider     { background: #b0b0b0; }
-.nav-home:hover            { color: #000; }
-.nav-links a:hover         { color: #000; }
-.nav-night-toggle:hover    { color: #000; }
+nav:hover .navbar-divider     { background: #b0b0b0; }
+.navbar-home:hover            { color: #000; }
+.navbar-links a:hover         { color: #000; }
+.navbar-night-toggle:hover    { color: #000; }
 
 
 /* ===========================
-   NAV — night mode
+   NAVBAR — night mode
 =========================== */
 
 body.night-mode nav                  { background: rgba(0, 0, 0, 0.3); border-color: rgba(255, 255, 255, 0.12); }
 body.night-mode nav:hover            { border-color: rgba(255, 255, 255, 0.4); }
-body.night-mode nav:hover .nav-divider { background: rgba(255, 255, 255, 0.4); }
+body.night-mode nav:hover .navbar-divider { background: rgba(255, 255, 255, 0.4); }
 
-body.night-mode .nav-home            { color: rgba(255, 255, 255, 0.4); }
-body.night-mode .nav-home:hover      { color: #fff; }
+body.night-mode .navbar-home            { color: rgba(255, 255, 255, 0.4); }
+body.night-mode .navbar-home:hover      { color: #fff; }
 
-body.night-mode .nav-links a         { color: rgba(255, 255, 255, 0.4); }
-body.night-mode .nav-links a:hover   { color: #fff; }
+body.night-mode .navbar-links a         { color: rgba(255, 255, 255, 0.4); }
+body.night-mode .navbar-links a:hover   { color: #fff; }
 
-body.night-mode .nav-divider         { background: rgba(255, 255, 255, 0.15); }
+body.night-mode .navbar-divider         { background: rgba(255, 255, 255, 0.15); }
 
-body.night-mode .nav-night-toggle    { color: rgba(255, 255, 255, 0.4); }
-body.night-mode .nav-night-toggle:hover { color: #fff; }
+body.night-mode .navbar-night-toggle    { color: rgba(255, 255, 255, 0.4); }
+body.night-mode .navbar-night-toggle:hover { color: #fff; }
 
 body.night-mode .icon-moon { opacity: 0; transform: translate(-50%, -50%) rotate(90deg) scale(0.5); }
 body.night-mode .icon-sun  { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) scale(1); }
 
 
 /* ===========================
-   NAV — mobile
+   NAVBAR — mobile
 =========================== */
 
 @media (max-width: 768px) {
@@ -123,17 +123,17 @@ body.night-mode .icon-sun  { opacity: 1; transform: translate(-50%, -50%) rotate
         gap: 10px;
     }
 
-    .nav-links {
+    .navbar-links {
         gap: 16px;
     }
 }
 
 @media (max-width: 400px) {
-    .nav-links {
+    .navbar-links {
         gap: 10px;
     }
 
-    .nav-links a {
+    .navbar-links a {
         font-size: 12px;
     }
 }
