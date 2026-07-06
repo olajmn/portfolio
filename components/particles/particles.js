@@ -105,35 +105,43 @@ function spawnParticle() {
     };
 }
 
+// Builds a tier-9 particle from TIERS[9] defaults, overridden by whatever varies per spawn site
+function makeTier9(props) {
+    const t = TIERS[9];
+    return {
+        tier: 9,
+        size:       rnd(t.size[0], t.size[1]),
+        mass:       t.mass,
+        inertia:    t.inertia,
+        glowMult:   t.glowMult,
+        repelDist:  CONFIG.attract.repelDist,
+        lifeMax:    Infinity,
+        fadeIn:     t.fadeIn,
+        color:      t.color,
+        ecc:        0.6 + Math.random() * 0.8,
+        orbitAngle: Math.random() * Math.PI * 2,
+        ...props,
+    };
+}
+
 const particles = [];
 for (let i = 0; i < CONFIG.count; i++) particles.push(spawnParticle());
 
 // Permanent tier 9 — always floating around
-const _t9 = TIERS[9];
-particles.push({
-    tier: 9,
-    x: (Math.random() - 0.5) * canvas.width  * 0.85,
-    y: (Math.random() - 0.5) * canvas.height * 0.85,
+particles.push(makeTier9({
+    x:  (Math.random() - 0.5) * canvas.width  * 0.85,
+    y:  (Math.random() - 0.5) * canvas.height * 0.85,
     cx: (Math.random() - 0.5) * canvas.width  * 0.5,
     cy: (Math.random() - 0.5) * canvas.height * 0.5,
     z:  Z_CENTER,
     vx: (Math.random() - 0.5) * 0.3,
     vy: (Math.random() - 0.5) * 0.3,
     vz: 0,
-    size:        rnd(_t9.size[0], _t9.size[1]),
-    mass:        _t9.mass,
-    inertia:     _t9.inertia,
-    glowMult:    _t9.glowMult,
-    centerPull:  0,
-    repelDist:   CONFIG.attract.repelDist,
-    lifeMax:     Infinity,
-    life: _t9.fadeIn, fadeIn: _t9.fadeIn,
-    color:       _t9.color,
-    spin:        1,
-    ecc:         0.6 + Math.random() * 0.8,
-    orbitAngle:  Math.random() * Math.PI * 2,
+    centerPull: 0,
+    life: TIERS[9].fadeIn,
+    spin: 1,
     isDefaultTier9: true,
-});
+}));
 
 
 // ── PROJECTION ──
@@ -148,7 +156,6 @@ let RING_SPEED   = 2.8;
 let RING_BAND    = 55;
 let firstPulse    = true;
 let firstPulseTimer = 100; // no delay — the first pulse comes right away
-let cascadeTimer  = 0;   // frames during which secondary rings are allowed after a pulse
 let pulseReady    = false; // blocks a new pulse while the system is exhausted
 let silenceTimer  = 0;    // mandatory silence between bursts
 let burstRemain   = 0;    // number of remaining pulses in the ongoing burst
@@ -181,45 +188,33 @@ canvas.addEventListener('mousedown', e => {
     mouseParticle = {
         tier: 10, x, y, cx: x, cy: y,
         z: Z_CENTER, vx: 0, vy: 0, vz: 0,
-        size: 0.12, mass: 0, inertia: 20, glowMult: 0, pullMult: 0,
+        mass: 0, inertia: 20,
         centerPull: 0, repelDist: 0,
-        lifeMax: Infinity, life: 0, fadeIn: 1, fadeStart: 0.85,
+        lifeMax: Infinity, life: 0, fadeIn: 1,
         color: 'rgba(255, 255, 255, ',
         spin: 0, ecc: 1.0, orbitAngle: 0,
     };
     particles.push(mouseParticle);
     applyClickImpulse(x, y);
     impulseRings.push({ x, y, r: 0, maxR: 550, alpha: 1.0 });
-    cascadeTimer = 900;
 
     const clickTier9 = particles.filter(p => p.isClickTier9);
     if (clickTier9.length >= CONFIG.clickTier9Max) {
         const oldest = clickTier9[0];
         particles.splice(particles.indexOf(oldest), 1);
     }
-    {
-        const t = TIERS[9];
-        particles.push({
-            tier: 9, x, y, cx: x, cy: y,
-            z:  Z_CENTER + (Math.random() - 0.5) * 40,
-            vx: (Math.random() - 0.5) * 0.4,
-            vy: (Math.random() - 0.5) * 0.4,
-            vz: (Math.random() - 0.5) * 0.05,
-            size:        rnd(t.size[0], t.size[1]),
-            mass:        t.mass,
-            inertia:     t.inertia,
-            glowMult:    t.glowMult,
-            centerPull:  0,
-            repelDist:   CONFIG.attract.repelDist,
-            lifeMax:     rnd(t.lifetime[0], t.lifetime[1]) * 1800,
-            life: 0,     fadeIn: t.fadeIn ?? 60,
-            color:       t.color,
-            spin:        Math.random() < 0.5 ? 1 : -1,
-            ecc:         0.6 + Math.random() * 0.8,
-            orbitAngle:  Math.random() * Math.PI * 2,
-            isClickTier9: true,
-        });
-    }
+    particles.push(makeTier9({
+        x, y, cx: x, cy: y,
+        z:  Z_CENTER + (Math.random() - 0.5) * 40,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        vz: (Math.random() - 0.5) * 0.05,
+        centerPull: 0,
+        lifeMax: rnd(TIERS[9].lifetime[0], TIERS[9].lifetime[1]) * 1800,
+        life: 0,
+        spin: Math.random() < 0.5 ? 1 : -1,
+        isClickTier9: true,
+    }));
 });
 
 canvas.addEventListener('mousemove', e => {
@@ -272,8 +267,7 @@ function animate() {
         const nx = dx/dist, ny = dy/dist, nz = dz/dist;
         const repelDist = Math.min(a.repelDist, b.repelDist);
         const attract   = dist > repelDist;
-        const pullMult  = b.pullMult ?? 1;
-        const baseForce = attract ? cfg.pull * pullMult * (1 - dist/maxDist) : cfg.push * (1 - dist/repelDist);
+        const baseForce = attract ? cfg.pull * (1 - dist/maxDist) : cfg.push * (1 - dist/repelDist);
 
         const fa = baseForce * b.mass * (attract ? 1 : -1);
         a.vx += nx * fa / a.inertia;
@@ -312,15 +306,12 @@ function animate() {
     if (animate.frame % 3 === 0) particles.sort((a, b) => b.z - a.z);
     animate.frame = (animate.frame ?? 0) + 1;
 
-    if (cascadeTimer > 0) cascadeTimer--;
-
     // First pulse always from tier 9, after a short delay
     if (firstPulse) {
         if (firstPulseTimer > 0) { firstPulseTimer--; }
         else {
             const t9 = particles.find(p => p.isDefaultTier9);
             if (t9) impulseRings.push({ x: t9.x, y: t9.y, r: 0, maxR: 550, alpha: 1.0 });
-            cascadeTimer = 900;
             firstPulse = false;
         }
     }
@@ -345,7 +336,6 @@ function animate() {
         const ox = wt > 0 ? wx / wt : 0;
         const oy = wt > 0 ? wy / wt : 0;
         impulseRings.push({ x: ox, y: oy, r: 0, maxR: 550, alpha: 1.0 });
-        cascadeTimer = 900;
     };
 
     // Continue the ongoing burst
@@ -520,16 +510,17 @@ document.addEventListener('nightmode-toggle', () => {
     if (turningOn) {
         particles.length = 0;
         for (let i = 0; i < CONFIG.count; i++) particles.push(spawnParticle());
-        const _t9 = TIERS[9];
-        particles.push({
-            tier: 9, x: 0, y: 0, cx: 0, cy: 0,
-            z: Z_CENTER, vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3, vz: 0,
-            size: rnd(_t9.size[0], _t9.size[1]), mass: _t9.mass, inertia: _t9.inertia,
-            glowMult: _t9.glowMult, centerPull: 0.00003, repelDist: CONFIG.attract.repelDist,
-            lifeMax: Infinity, life: _t9.fadeIn, fadeIn: _t9.fadeIn,
-            color: _t9.color, spin: 1, ecc: 0.6 + Math.random() * 0.8,
-            orbitAngle: Math.random() * Math.PI * 2, isPulser: false, isDefaultTier9: true,
-        });
+        particles.push(makeTier9({
+            x: 0, y: 0, cx: 0, cy: 0,
+            z: Z_CENTER,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: (Math.random() - 0.5) * 0.3,
+            vz: 0,
+            centerPull: 0.00003,
+            life: TIERS[9].fadeIn,
+            spin: 1,
+            isDefaultTier9: true,
+        }));
         impulseRings.length = 0;
         firstPulse = true;
         firstPulseTimer = 0;
