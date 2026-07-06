@@ -19,9 +19,9 @@ const Z_CENTER = 600;
 // This is the only thing you need to change.
 
 const CONFIG = {
-    count:         isMobile ? 80 : 333,      // total number of particles
+    count:         isMobile ? 80 : 250,      // total number of particles
     bg:       '0, 0, 0',    // background color (r, g, b)
-    speed:        0.02,      // global speed multiplier (1.0 = full, 0.5 = half speed)
+    speed:        0.015,      // global speed multiplier (1.0 = full, 0.5 = half speed)
     brownian:    0.002,      // random jitter per frame
     friction:    0.975,      // deceleration per frame (1.0 = none, 0.95 = a lot)
 
