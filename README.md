@@ -6,7 +6,7 @@ Personal developer portfolio — built with plain HTML, CSS, and vanilla JavaScr
 
 ## Highlights
 
-- Canvas-based particle animation background
+- Custom canvas particle system (pseudo-3D projection, physics-based movement, no library) — revealed in dark mode
 - Dark/light mode toggle
 - Scroll-driven effects (typewriter, fade, hero transform)
 

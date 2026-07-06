@@ -1,4 +1,6 @@
-// ── CANVAS ──
+// ──────────────────────────────────────────────
+// SETUP
+// ──────────────────────────────────────────────
 const canvas = document.getElementById('particle-canvas');
 const ctx    = canvas.getContext('2d');
 function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
@@ -11,16 +13,17 @@ const FOCAL    = 600;
 const Z_CENTER = 600;
 
 
-// ── CONTROLS ──────────────────────────────────────────────
+// ──────────────────────────────────────────────
+// CONFIG
+// ──────────────────────────────────────────────
 // This is the only thing you need to change.
 
 const CONFIG = {
     count:         isMobile ? 80 : 333,      // total number of particles
     bg:       '0, 0, 0',    // background color (r, g, b)
-    speed:        0.01,      // global speed multiplier (1.0 = full, 0.5 = half speed)
+    speed:        0.02,      // global speed multiplier (1.0 = full, 0.5 = half speed)
     brownian:    0.002,      // random jitter per frame
     friction:    0.975,      // deceleration per frame (1.0 = none, 0.95 = a lot)
-    clickTier9Max:  3,       // max number of click-spawned tier 9 at a time
 
     attract: {
         maxDist:   90,       // gravity range (px)
@@ -62,10 +65,11 @@ const TIERS = {
 
     9: { pct: 0.04, size: [0.14, 0.20], mass: 30.0, inertia: 14.0, glowMult: 6.0, lifetime: [2.4, 2.6], fadeStart: 0.45, fadeIn: 220, spin: 1, color: 'rgba( 20,  50, 180, ' },
 };
-// ────────────────────────────────────────────────────────────
 
 
-// ── SPAWN ──
+// ──────────────────────────────────────────────
+// SPAWN
+// ──────────────────────────────────────────────
 function rnd(min, max) { return min + Math.random() * (max - min); }
 
 function pickTier() {
@@ -144,13 +148,9 @@ particles.push(makeTier9({
 }));
 
 
-// ── PROJECTION ──
-function project(x, y, z) {
-    const sc = FOCAL / Math.max(z, 1);
-    return { sx: canvas.width / 2 + x * sc, sy: canvas.height / 2 + y * sc, scale: Z_CENTER / Math.max(z, 1) };
-}
-
-// ── NEURON IMPULSE ──
+// ──────────────────────────────────────────────
+// PULSE
+// ──────────────────────────────────────────────
 const impulseRings = [];
 let RING_SPEED   = 2.8;
 let RING_BAND    = 55;
@@ -161,82 +161,15 @@ let silenceTimer  = 0;    // mandatory silence between bursts
 let burstRemain   = 0;    // number of remaining pulses in the ongoing burst
 let burstTimer    = 0;    // frames until the next pulse in the burst
 
-// ── TIER 10 — MOUSE CLICK ──
-let mouseParticle = null;
 
-function screenToWorld(ex, ey) {
-    const r = canvas.getBoundingClientRect();
-    return { x: ex - r.left - canvas.width / 2, y: ey - r.top - canvas.height / 2 };
+// ──────────────────────────────────────────────
+// ANIMATION
+// ──────────────────────────────────────────────
+function project(x, y, z) {
+    const sc = FOCAL / Math.max(z, 1);
+    return { sx: canvas.width / 2 + x * sc, sy: canvas.height / 2 + y * sc, scale: Z_CENTER / Math.max(z, 1) };
 }
 
-function applyClickImpulse(x, y) {
-    const range = Math.hypot(canvas.width, canvas.height);
-    for (const p of particles) {
-        if (p === mouseParticle) continue;
-        const dx = x - p.x, dy = y - p.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist < 1) continue;
-        const falloff = Math.max(0, 1 - dist / range);
-        const force = falloff * 12.0;
-        p.vx += (dx / dist) * force;
-        p.vy += (dy / dist) * force;
-    }
-}
-
-canvas.addEventListener('mousedown', e => {
-    const { x, y } = screenToWorld(e.clientX, e.clientY);
-    mouseParticle = {
-        tier: 10, x, y, cx: x, cy: y,
-        z: Z_CENTER, vx: 0, vy: 0, vz: 0,
-        mass: 0, inertia: 20,
-        centerPull: 0, repelDist: 0,
-        lifeMax: Infinity, life: 0, fadeIn: 1,
-        color: 'rgba(255, 255, 255, ',
-        spin: 0, ecc: 1.0, orbitAngle: 0,
-    };
-    particles.push(mouseParticle);
-    applyClickImpulse(x, y);
-    impulseRings.push({ x, y, r: 0, maxR: 550, alpha: 1.0 });
-
-    const clickTier9 = particles.filter(p => p.isClickTier9);
-    if (clickTier9.length >= CONFIG.clickTier9Max) {
-        const oldest = clickTier9[0];
-        particles.splice(particles.indexOf(oldest), 1);
-    }
-    particles.push(makeTier9({
-        x, y, cx: x, cy: y,
-        z:  Z_CENTER + (Math.random() - 0.5) * 40,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        vz: (Math.random() - 0.5) * 0.05,
-        centerPull: 0,
-        lifeMax: rnd(TIERS[9].lifetime[0], TIERS[9].lifetime[1]) * 1800,
-        life: 0,
-        spin: Math.random() < 0.5 ? 1 : -1,
-        isClickTier9: true,
-    }));
-});
-
-canvas.addEventListener('mousemove', e => {
-    if (!mouseParticle) return;
-    const { x, y } = screenToWorld(e.clientX, e.clientY);
-    mouseParticle.x  = x;
-    mouseParticle.y  = y;
-    mouseParticle.vx = 0;
-    mouseParticle.vy = 0;
-});
-
-function releaseMouse() {
-    if (!mouseParticle) return;
-    particles.splice(particles.indexOf(mouseParticle), 1);
-    mouseParticle = null;
-}
-canvas.addEventListener('mouseup',    releaseMouse);
-canvas.addEventListener('mouseleave', releaseMouse);
-
-
-
-// ── ANIMATION ──
 // These arrays are created once and reused every frame — avoids GC pressure
 const heavy = [], light = [], newRings = [];
 
@@ -250,11 +183,9 @@ function animate() {
     for (const p of particles) (p.mass >= 1 ? heavy : light).push(p);
 
     const tier9Range  = Math.min(canvas.width, canvas.height) * 0.3;
-    const tier10Range = Math.hypot(canvas.width, canvas.height);
 
     function getTierRange(p) {
-        if (p.tier === 10) return tier10Range;
-        if (p.tier === 9)  return tier9Range;
+        if (p.tier === 9) return tier9Range;
         return cfg.maxDist;
     }
 
@@ -361,29 +292,6 @@ function animate() {
     newRings.length = 0;
 
     particles.forEach(p => {
-        // Tier 10 follows the mouse — no physics, just drawing (looks like tier 9)
-        if (p.tier === 10) {
-            const { sx, sy, scale } = project(p.x, p.y, p.z);
-            const t9color = 'rgba(240, 245, 255, ';
-            const r       = Math.max(0.4, 0.13 * VISUAL.maxRadius * scale);
-            const haloR   = r * 6;
-            const grad    = ctx.createRadialGradient(sx, sy, r, sx, sy, haloR);
-            grad.addColorStop(0, 'rgba(220, 230, 255, 0.18)');
-            grad.addColorStop(1, 'rgba(200, 215, 255, 0)');
-            ctx.shadowBlur = 0;
-            ctx.fillStyle  = grad;
-            ctx.beginPath(); ctx.arc(sx, sy, haloR, 0, Math.PI * 2); ctx.fill();
-            ctx.shadowColor = t9color + '0.9)';
-            ctx.shadowBlur  = r * VISUAL.maxGlow * scale * 6.0 * 2;
-            ctx.fillStyle   = t9color + '0.92)';
-            ctx.beginPath(); ctx.arc(sx, sy, r, 0, Math.PI * 2); ctx.fill();
-            ctx.shadowBlur  = r * VISUAL.maxGlow * scale * 6.0 * 0.4;
-            ctx.fillStyle   = t9color + '1)';
-            ctx.beginPath(); ctx.arc(sx, sy, r * 0.5, 0, Math.PI * 2); ctx.fill();
-            ctx.shadowBlur  = 0;
-            return;
-        }
-
         p.vx *= CONFIG.friction;
         p.vy *= CONFIG.friction;
         p.vx += (Math.random() - 0.5) * CONFIG.brownian / p.inertia;
@@ -414,17 +322,8 @@ function animate() {
         const radius = Math.max(0.4, p.size * VISUAL.maxRadius * scale);
         const alpha  = (VISUAL.alphaMin + p.size * (VISUAL.alphaMax - VISUAL.alphaMin)) * lf;
 
-        // Shared distance calculation to the cursor — used by glow and trail
-        const distToMouse = mouseParticle
-            ? Math.hypot(p.x - mouseParticle.x, p.y - mouseParticle.y)
-            : Infinity;
-        const mouseProx  = distToMouse < tier10Range
-            ? 1 - distToMouse / tier10Range
-            : 0;
-
-
         let impulse = 0;
-        if (p.tier !== 9 && p.tier !== 10) {
+        if (p.tier !== 9) {
             for (const ring of impulseRings) {
                 const dist = Math.hypot(p.x - ring.x, p.y - ring.y);
                 const bandFrac = 1 - Math.abs(dist - ring.r) / RING_BAND;
@@ -440,7 +339,7 @@ function animate() {
             }
         }
 
-        const glowBoost  = 1 + mouseProx * 1.8 + impulse * 2.5;
+        const glowBoost  = 1 + impulse * 2.5;
         const glow       = p.size * VISUAL.maxGlow * scale * lf * p.glowMult * glowBoost;
 
         ctx.shadowBlur = 0;
