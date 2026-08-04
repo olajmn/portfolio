@@ -127,8 +127,8 @@ h2 {
 
 .project-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 48px 40px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 300px));
+    gap: 64px 80px;
     justify-content: center;
 }
 
@@ -139,7 +139,6 @@ h2 {
     flex-direction: column;
     align-items: center;
     cursor: pointer;
-    pointer-events: none;
 }
 
 .project-link {
@@ -157,6 +156,8 @@ h2 {
 
 .project-image {
     width: 100%;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
     background-color: transparent;
     margin-bottom: 16px;
     transition: opacity 0.3s;
@@ -175,6 +176,12 @@ h2 {
     margin-bottom: 120px;
 }
 
+.project-tags {
+    font-size: 12px;
+    opacity: 0.5;
+    margin-top: 8px;
+}
+
 .project-card h3 {
     font-size: 18px;
     font-weight: 100;
@@ -187,27 +194,40 @@ h2 {
 
 .project-description {
     font-size: 13px;
-    opacity: 0.6;
-    margin-top: 8px;
+    opacity: 0;
+    margin-top: 0;
     max-width: 480px;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.3s ease, max-height 0.3s ease, margin-top 0.3s ease;
 }
 
-.project-image--placeholder {
-    width: 100%;
-    aspect-ratio: 3 / 2;
-    pointer-events: auto;
-    overflow: hidden;
+.project-card:hover .project-description {
+    opacity: 0.6;
+    margin-top: 8px;
+    max-height: 200px;
+}
+
+.project-card--reveal-image .project-image {
+    max-height: 0;
+    opacity: 0;
+    margin-bottom: 0;
+    transition: opacity 0.3s ease, max-height 0.3s ease, margin-bottom 0.3s ease;
+}
+
+.project-card--reveal-image:hover .project-image {
+    max-height: 400px;
+    opacity: 0.75;
+    margin-bottom: 16px;
 }
 
 .project-image.project-image--placeholder img {
-    width: 100%;
-    height: 100%;
     object-fit: cover;
 }
 
 .project-image img {
     pointer-events: auto;
-    width: 30%;
+    width: 100%;
     height: 100%;
     object-fit: contain;
     display: block;
@@ -291,10 +311,6 @@ h2 {
 
     .project-grid {
         grid-template-columns: 1fr;
-    }
-
-    .project-image img {
-        width: 65%;
     }
 
     .project-info {
