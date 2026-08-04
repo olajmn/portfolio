@@ -195,30 +195,26 @@ h2 {
 .project-description {
     font-size: 13px;
     opacity: 0;
-    margin-top: 0;
+    margin-top: 8px;
     max-width: 480px;
-    max-height: 0;
-    overflow: hidden;
-    transition: opacity 0.3s ease, max-height 0.3s ease, margin-top 0.3s ease;
+    transform: translateY(-8px);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
 
 .project-card:hover .project-description {
     opacity: 0.6;
-    margin-top: 8px;
-    max-height: 200px;
+    transform: translateY(0);
 }
 
 .project-card--reveal-image .project-image {
-    max-height: 0;
     opacity: 0;
-    margin-bottom: 0;
-    transition: opacity 0.3s ease, max-height 0.3s ease, margin-bottom 0.3s ease;
+    transform: translateY(-8px);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
 
 .project-card--reveal-image:hover .project-image {
-    max-height: 400px;
     opacity: 0.75;
-    margin-bottom: 16px;
+    transform: translateY(0);
 }
 
 .project-image.project-image--placeholder img {
