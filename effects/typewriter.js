@@ -42,5 +42,5 @@ function addTypewriter(element) {
 // Use the function on ABOUT WORK CONTACT
 addTypewriter(document.querySelector('#about h2'));
 addTypewriter(document.querySelector('#education h2'));
-addTypewriter(document.querySelector('#work h2'));
+addTypewriter(document.querySelector('#projects h2'));
 addTypewriter(document.querySelector('#contact h2'));

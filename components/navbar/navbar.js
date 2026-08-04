@@ -13,7 +13,7 @@ function createNavbar() {
         <div class="navbar-links">
             <a href="#about">About</a>
             <a href="#education">Education</a>
-            <a href="#work">Work</a>
+            <a href="#projects">Projects</a>
             <a href="#contact">Contact</a>
         </div>
 

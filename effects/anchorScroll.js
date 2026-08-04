@@ -12,7 +12,7 @@ document.addEventListener('click', function(e) {
         '#home':      70,
         '#about':     70,
         '#education': 30,
-        '#work':       0,
+        '#projects':   0,
         '#contact':   70,
     };
     const offset = offsets[href] ?? 70;

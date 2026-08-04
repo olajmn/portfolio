@@ -137,7 +137,7 @@ h2 {
     color: inherit;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     cursor: pointer;
 }
 
@@ -173,7 +173,7 @@ h2 {
 
 .project-info {
     padding-top: 50px;
-    margin-bottom: 120px;
+    margin-bottom: 36px;
 }
 
 .project-tags {
@@ -203,17 +203,6 @@ h2 {
 
 .project-card:hover .project-description {
     opacity: 0.6;
-    transform: translateY(0);
-}
-
-.project-card--reveal-image .project-image {
-    opacity: 0;
-    transform: translateY(-8px);
-    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-}
-
-.project-card--reveal-image:hover .project-image {
-    opacity: 0.75;
     transform: translateY(0);
 }
 
