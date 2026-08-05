@@ -10,7 +10,8 @@ body.night-mode #contact a             { color: var(--white); border-color: var(
 
 body.night-mode section                { pointer-events: none; }
 body.night-mode #name-toggle,
-body.night-mode section a              { pointer-events: auto; }
+body.night-mode section a,
+body.night-mode .project-summary       { pointer-events: auto; }
 
 body.night-mode #particle-canvas {
     opacity: 1;
@@ -29,7 +30,6 @@ body.night-mode .img-multiply {
 }
 
 
-body.night-mode .project-card      { pointer-events: none; }
-body.night-mode .project-image a   { pointer-events: none; }
-body.night-mode .project-image img { pointer-events: auto; }
+body.night-mode .project-card:not(:first-child) { border-color: rgba(255, 255, 255, 0.12); }
+body.night-mode .project-tag       { border-color: rgba(255, 255, 255, 0.18); }
 body.night-mode .project-link      { color: var(--white); }
