@@ -133,7 +133,7 @@ h2 {
 
 .project-card {
     color: inherit;
-    width: 300px;
+    width: 480px;
 }
 
 .project-card:not(:first-child) {
@@ -146,12 +146,42 @@ h2 {
     list-style: none;
 }
 
-.project-summary:hover h3 {
-    opacity: 1;
-}
-
 .project-summary::-webkit-details-marker {
     display: none;
+}
+
+.project-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.project-title-col {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+}
+
+.project-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.project-thumb {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.project-thumb--contain {
+    object-fit: contain;
+    padding: 4px;
 }
 
 .project-body {
@@ -194,19 +224,36 @@ h2 {
 .project-tag {
     font-size: 11px;
     opacity: 0.6;
-    padding: 3px 8px;
+    padding: 3px 10px;
     border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 6px;
+    border-radius: 100px;
 }
 
 .project-card h3 {
-    font-size: 18px;
-    font-weight: 100;
-    text-decoration: underline;
-    text-decoration-thickness: 0.7px;
-    text-underline-offset: 7px;
-    opacity: 0.5;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--black);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     transition: opacity 0.3s ease;
+}
+
+.project-year {
+    font-size: 12px;
+    opacity: 0.5;
+}
+
+.project-meta::after {
+    content: '\203A';
+    font-weight: 300;
+    opacity: 0.6;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.project-card[open] .project-meta::after {
+    transform: rotate(90deg);
 }
 
 .project-description {
