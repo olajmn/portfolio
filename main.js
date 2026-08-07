@@ -3,6 +3,7 @@ import './effects/anchorScroll.js'
 import './effects/heroScroll.js'
 import './effects/typewriter.js'
 import './effects/textFade.js'
+import './effects/projectAccordion.js'
 import './components/particles/particles.js'
 
 initNavbar()

@@ -136,9 +136,14 @@ h2 {
     width: 480px;
 }
 
-.project-card:not(:first-child) {
+.project-card {
     border-top: 1px solid rgba(0, 0, 0, 0.08);
     padding-top: 40px;
+}
+
+.project-card:last-child {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    padding-bottom: 40px;
 }
 
 .project-summary {
@@ -189,6 +194,8 @@ h2 {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    overflow: hidden;
+    transition: height 0.3s ease;
 }
 
 .project-link {

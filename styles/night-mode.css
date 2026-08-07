@@ -31,7 +31,7 @@ body.night-mode .img-multiply {
 }
 
 
-body.night-mode .project-card:not(:first-child) { border-color: rgba(255, 255, 255, 0.12); }
+body.night-mode .project-card       { border-color: rgba(255, 255, 255, 0.12); }
 body.night-mode .project-tag       { border-color: rgba(255, 255, 255, 0.18); }
 body.night-mode .project-link      { color: var(--white); }
 body.night-mode .project-card h3   { color: var(--white); }
