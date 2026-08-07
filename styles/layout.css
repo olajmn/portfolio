@@ -128,7 +128,7 @@ h2 {
 .project-grid {
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: 24px;
 }
 
 .project-card {
@@ -138,12 +138,12 @@ h2 {
 
 .project-card {
     border-top: 1px solid rgba(0, 0, 0, 0.08);
-    padding-top: 40px;
+    padding-top: 24px;
 }
 
 .project-card:last-child {
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    padding-bottom: 40px;
+    padding-bottom: 24px;
 }
 
 .project-summary {
