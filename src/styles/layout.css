@@ -42,9 +42,10 @@ h2 {
 }
 
 #home .title {
+    font-family: var(--font-mono);
     font-size: 13px;
     font-weight: 400;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     color: var(--gray);
     margin-bottom: 8px;
