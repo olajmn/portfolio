@@ -399,14 +399,34 @@ function animate() {
     for (let i = impulseRings.length - 1; i >= 0; i--)
         if (impulseRings[i].r > impulseRings[i].maxR) impulseRings.splice(i, 1);
 
-    requestAnimationFrame(animate);
+    if (running) requestAnimationFrame(animate);
 }
 
-animate();
+
+// ──────────────────────────────────────────────
+// NIGHT MODE — run only while the canvas is visible
+// ──────────────────────────────────────────────
+// The scene starts fresh the first time night mode turns on, then pauses
+// in day mode and resumes where it left off.
+let running = false;
+let started = false;
+
+// Keep drawing until the fade-out finishes, then stop
+canvas.addEventListener('transitionend', () => {
+    if (!document.body.classList.contains('night-mode')) running = false;
+});
 
 document.addEventListener('nightmode-toggle', () => {
     const turningOn = document.body.classList.contains('night-mode');
-    if (turningOn) {
+    if (!turningOn) return;
+
+    if (!running) {
+        running = true;
+        requestAnimationFrame(animate);
+    }
+
+    if (!started) {
+        started = true;
         particles.length = 0;
         for (let i = 0; i < CONFIG.count; i++) particles.push(spawnParticle());
         particles.push(makeTier9({

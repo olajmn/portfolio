@@ -8,15 +8,7 @@ body.night-mode #about p,
 body.night-mode h2                     { color: rgba(255, 255, 255, 0.6); }
 body.night-mode #contact a             { color: var(--white); border-color: var(--white); }
 
-body.night-mode section                { pointer-events: none; }
-body.night-mode #name-toggle,
-body.night-mode section a,
-body.night-mode .project-summary       { pointer-events: auto; }
-
-body.night-mode #particle-canvas {
-    opacity: 1;
-    pointer-events: auto;
-}
+body.night-mode #particle-canvas       { opacity: 1; }
 
 
 
