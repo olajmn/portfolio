@@ -19,15 +19,20 @@ Personal developer portfolio — built with plain HTML, CSS, and vanilla JavaScr
 ## Structure
 
 ```
-index.html          Page markup (home, about, education, work, contact)
-main.js              Entry point — imports and initializes everything below
-components/
-  navbar/            Navbar markup + dark/light mode toggle
-  particles/         Canvas particle animation
-effects/
-  anchorScroll.js    Smooth scroll to sections
-  heroScroll.js      Hero title shrinks/moves on scroll
-  typewriter.js      Section titles type themselves in on scroll
-  textFade.js        Bio lines fade based on scroll position
-styles/              Base, layout, and night-mode styles
+index.html              Page markup (home, about, education, work, contact)
+CLAUDE.md               AI session instructions (loads global-standards/)
+assets/images/          Images
+global-standards/       Reusable code, documentation, and AI-collaboration guides
+src/
+  main.js               Entry point — imports and initializes everything below
+  components/
+    navbar/             Navbar markup + dark/light mode toggle
+    particles/          Canvas particle animation
+  effects/
+    anchorScroll.js     Smooth scroll to sections
+    heroScroll.js       Hero title shrinks/moves on scroll
+    typewriter.js       Section titles type themselves in on scroll
+    textFade.js         Bio lines fade based on scroll position
+    projectAccordion.js Project cards open/close as a smooth slide
+  styles/               Base, layout, and night-mode styles
 ```
