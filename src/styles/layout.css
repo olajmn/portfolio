@@ -11,8 +11,11 @@ section {
 }
 
 h2 {
+    font-family: var(--font-mono);
     font-size: 11px;
-    letter-spacing: 0.18em;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
     color: var(--gray);
     margin-bottom: 60px;
     min-height: 1.6em;
