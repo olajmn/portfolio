@@ -28,11 +28,11 @@ src/
   components/
     navbar/             Navbar markup + dark/light mode toggle
     particles/          Canvas particle animation
+    projectCards/       Project grid, hover zoom and mouse spotlight
   effects/
     anchorScroll.js     Smooth scroll to sections
     heroScroll.js       Hero title shrinks/moves on scroll
     typewriter.js       Section titles type themselves in on scroll
     textFade.js         Bio lines fade based on scroll position
-    projectAccordion.js Project cards open/close as a smooth slide
   styles/               Base, layout, and night-mode styles
 ```

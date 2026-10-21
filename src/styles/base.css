@@ -20,6 +20,8 @@
     --gray: #888888;
     --light-gray: #f0f0f0;
     --font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+    --line: rgba(0, 0, 0, 0.12);
     --max-width: 1100px;
 }
 
