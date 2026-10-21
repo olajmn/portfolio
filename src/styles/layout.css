@@ -111,14 +111,14 @@ h2 {
 }
 
 .edu-meta {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 400;
     color: var(--black);
 }
 
 .edu-degree,
 .edu-school {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 400;
     color: var(--gray);
 }
