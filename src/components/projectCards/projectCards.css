@@ -17,7 +17,6 @@
     border-right: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
     --tint: rgba(0, 0, 0, 0.025);
-    --spot-border: rgba(0, 0, 0, 0.7);
 }
 
 .project-image {
@@ -183,7 +182,7 @@
     transition: opacity 0.3s ease;
 }
 
-/* A spotlight that follows the mouse (--spot-x / --spot-y from projectCards.js),
+/* A spotlight that follows the mouse (--spot-x / --spot-y from effects/frameSpotlight.js),
    masked to a 1px ring over the card's frame.
    inset: -1px reaches the shared lines on the top/left owned by neighbours. */
 .project-card::before {
@@ -229,7 +228,7 @@
    NIGHT MODE
 =========================== */
 
-body.night-mode .project-card      { --tint: rgba(255, 255, 255, 0.04); --spot-border: rgba(255, 255, 255, 0.7); }
+body.night-mode .project-card      { --tint: rgba(255, 255, 255, 0.04); }
 body.night-mode .project-link,
 body.night-mode .password-text     { color: var(--white); }
 body.night-mode .project-card h3   { color: var(--white); }

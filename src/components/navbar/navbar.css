@@ -10,16 +10,42 @@ nav {
     display: inline-flex;
     align-items: center;
     gap: 16px;
-    padding: 12px 24px;
+    padding: 13px 25px;   /* 12px 24px + the 1px frame drawn by ::before */
     background: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 100px;
     z-index: 100;
     white-space: nowrap;
     overflow: hidden;
-    transition: border-color 0.2s;
+    --nav-line: rgba(0, 0, 0, 0.08);
+}
+
+/* The frame is drawn as a 1px ring instead of a border, because overflow: hidden
+   would clip a highlight placed over a real border.
+   ::before is the resting line, ::after the spotlight that follows the mouse
+   (--spot-x / --spot-y from effects/frameSpotlight.js). */
+nav::before,
+nav::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+}
+
+nav::before {
+    background: var(--nav-line);
+}
+
+nav::after {
+    background: radial-gradient(150px circle at var(--spot-x, 50%) var(--spot-y, 50%), var(--spot-border), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .navbar-home {
@@ -83,7 +109,7 @@ nav {
    NAVBAR — hover
 =========================== */
 
-nav:hover                  { border-color: #b0b0b0; }
+nav:hover::after              { opacity: 1; }
 nav:hover .navbar-divider     { background: #b0b0b0; }
 .navbar-home:hover            { color: #000; }
 .navbar-links a:hover         { color: #000; }
@@ -94,8 +120,7 @@ nav:hover .navbar-divider     { background: #b0b0b0; }
    NAVBAR — night mode
 =========================== */
 
-body.night-mode nav                  { background: rgba(0, 0, 0, 0.3); border-color: rgba(255, 255, 255, 0.12); }
-body.night-mode nav:hover            { border-color: rgba(255, 255, 255, 0.4); }
+body.night-mode nav                  { background: rgba(0, 0, 0, 0.3); --nav-line: rgba(255, 255, 255, 0.12); }
 body.night-mode nav:hover .navbar-divider { background: rgba(255, 255, 255, 0.4); }
 
 body.night-mode .navbar-home            { color: rgba(255, 255, 255, 0.4); }
@@ -119,7 +144,7 @@ body.night-mode .icon-sun  { opacity: 1; transform: translate(-50%, -50%) rotate
 
 @media (max-width: 768px) {
     nav {
-        padding: 10px 16px;
+        padding: 11px 17px;
         gap: 10px;
     }
 

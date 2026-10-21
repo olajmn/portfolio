@@ -1,5 +1,20 @@
+//  PARTICLES — canvas particle system (pseudo-3D, physics-based) revealed in
+//  night mode. Runs only while night mode is on; see 6. Night mode.
+
+// Contents
+//  1. Setup
+//  2. Config
+//     - CONFIG, VISUAL, MIX, TIERS
+//  3. Spawn
+//     - rnd(), pickTier(), spawnParticle(), makeTier9(), spawnScene()
+//  4. Pulse state
+//  5. Animation
+//     - project(), animate()
+//  6. Night mode
+
+
 // ──────────────────────────────────────────────
-// SETUP
+// 1. SETUP
 // ──────────────────────────────────────────────
 const canvas = document.getElementById('particle-canvas');
 const ctx    = canvas.getContext('2d');
@@ -14,9 +29,9 @@ const Z_CENTER = 600;
 
 
 // ──────────────────────────────────────────────
-// CONFIG
+// 2. CONFIG
 // ──────────────────────────────────────────────
-// This is the only thing you need to change.
+// Everything tunable lives in this section.
 
 const CONFIG = {
     count:         isMobile ? 80 : 250,      // total number of particles
@@ -52,8 +67,7 @@ const MIX = [1, 2, 3, 4, 5, 6, ];
 //   glowMult:   glow multiplier
 //   centerPull: how hard the particle is pulled toward its spawn point
 //   lifetime:   [min, max] lifetime as a fraction of 1800 frames
-//   minCount:   always at least this many on screen
-//   maxCount:   never more than this many on screen
+//   tier 9 is never spawned randomly (not in MIX) — see makeTier9()
 const TIERS = {
     1: { pct: 1.00, size: [0.18, 0.28], mass: 0.3, inertia:  3.0, glowMult: 0.3, repelDist:  5,            lifetime: [0.2, 0.5], color: 'rgba( 75, 130, 230, ' },
     2: { pct: 0.90, size: [0.24, 0.33], mass: 0.5, inertia:  3.0, glowMult: 0.5, repelDist:  8,            lifetime: [0.3, 0.6], color: 'rgba( 65, 120, 225, ' },
@@ -63,24 +77,20 @@ const TIERS = {
     5: { pct: 0.30, size: [0.28, 0.38], mass: 4.5, inertia:  6.5, glowMult: 1.2, centerPull: 0.00005,     lifetime: [1.0, 1.4], color: 'rgba( 40,  85, 195, ' },
     6: { pct: 0.22, size: [0.38, 0.50], mass: 6.0, inertia:  8.0, glowMult: 1.6, centerPull: 0.00012,     lifetime: [1.2, 1.6], color: 'rgba( 25,  55, 165, ' },
 
-    9: { pct: 0.04, size: [0.14, 0.20], mass: 30.0, inertia: 14.0, glowMult: 6.0, lifetime: [2.4, 2.6], fadeStart: 0.45, fadeIn: 220, spin: 1, color: 'rgba( 20,  50, 180, ' },
+    9: {             size: [0.14, 0.20], mass: 30.0, inertia: 14.0, glowMult: 6.0,                          fadeIn: 220, spin: 1, color: 'rgba( 20,  50, 180, ' },
 };
 
 
 // ──────────────────────────────────────────────
-// SPAWN
+// 3. SPAWN
 // ──────────────────────────────────────────────
 function rnd(min, max) { return min + Math.random() * (max - min); }
 
 function pickTier() {
-    const pool  = MIX.filter(id => {
-        const t = TIERS[id];
-        return t.maxCount === undefined || particles.filter(p => p.tier === id).length < t.maxCount;
-    });
-    const total = pool.reduce((s, id) => s + TIERS[id].pct, 0);
+    const total = MIX.reduce((s, id) => s + TIERS[id].pct, 0);
     let r = Math.random() * total;
-    for (const id of pool) { r -= TIERS[id].pct; if (r <= 0) return { tier: id, ...TIERS[id] }; }
-    return { tier: pool.at(-1), ...TIERS[pool.at(-1)] };
+    for (const id of MIX) { r -= TIERS[id].pct; if (r <= 0) return { tier: id, ...TIERS[id] }; }
+    return { tier: MIX.at(-1), ...TIERS[MIX.at(-1)] };
 }
 
 function spawnParticle() {
@@ -122,40 +132,40 @@ function makeTier9(props) {
         lifeMax:    Infinity,
         fadeIn:     t.fadeIn,
         color:      t.color,
+        spin:       t.spin,
         ecc:        0.6 + Math.random() * 0.8,
         orbitAngle: Math.random() * Math.PI * 2,
         ...props,
     };
 }
 
+// Filled by spawnScene() the first time night mode turns on
 const particles = [];
-for (let i = 0; i < CONFIG.count; i++) particles.push(spawnParticle());
 
-// Permanent tier 9 — always floating around
-particles.push(makeTier9({
-    x:  (Math.random() - 0.5) * canvas.width  * 0.85,
-    y:  (Math.random() - 0.5) * canvas.height * 0.85,
-    cx: (Math.random() - 0.5) * canvas.width  * 0.5,
-    cy: (Math.random() - 0.5) * canvas.height * 0.5,
-    z:  Z_CENTER,
-    vx: (Math.random() - 0.5) * 0.3,
-    vy: (Math.random() - 0.5) * 0.3,
-    vz: 0,
-    centerPull: 0,
-    life: TIERS[9].fadeIn,
-    spin: 1,
-    isDefaultTier9: true,
-}));
+function spawnScene() {
+    for (let i = 0; i < CONFIG.count; i++) particles.push(spawnParticle());
+
+    // Permanent tier 9 — starts in the center, where the first pulse comes from
+    particles.push(makeTier9({
+        x: 0, y: 0, cx: 0, cy: 0,
+        z: Z_CENTER,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        vz: 0,
+        centerPull: 0.00003,
+        life: TIERS[9].fadeIn,
+        isDefaultTier9: true,
+    }));
+}
 
 
 // ──────────────────────────────────────────────
-// PULSE
+// 4. PULSE STATE
 // ──────────────────────────────────────────────
 const impulseRings = [];
-let RING_SPEED   = 2.8;
-let RING_BAND    = 55;
-let firstPulse    = true;
-let firstPulseTimer = 100; // no delay — the first pulse comes right away
+const RING_SPEED = 2.8;
+const RING_BAND  = 55;
+let firstPulse    = true;  // the first pulse comes right away, from tier 9
 let pulseReady    = false; // blocks a new pulse while the system is exhausted
 let silenceTimer  = 0;    // mandatory silence between bursts
 let burstRemain   = 0;    // number of remaining pulses in the ongoing burst
@@ -163,7 +173,7 @@ let burstTimer    = 0;    // frames until the next pulse in the burst
 
 
 // ──────────────────────────────────────────────
-// ANIMATION
+// 5. ANIMATION
 // ──────────────────────────────────────────────
 function project(x, y, z) {
     const sc = FOCAL / Math.max(z, 1);
@@ -237,14 +247,11 @@ function animate() {
     if (animate.frame % 3 === 0) particles.sort((a, b) => b.z - a.z);
     animate.frame = (animate.frame ?? 0) + 1;
 
-    // First pulse always from tier 9, after a short delay
+    // First pulse always from tier 9
     if (firstPulse) {
-        if (firstPulseTimer > 0) { firstPulseTimer--; }
-        else {
-            const t9 = particles.find(p => p.isDefaultTier9);
-            if (t9) impulseRings.push({ x: t9.x, y: t9.y, r: 0, maxR: 550, alpha: 1.0 });
-            firstPulse = false;
-        }
+        const t9 = particles.find(p => p.isDefaultTier9);
+        if (t9) impulseRings.push({ x: t9.x, y: t9.y, r: 0, maxR: 550, alpha: 1.0 });
+        firstPulse = false;
     }
 
     // Find the average charge among tier 4/5
@@ -306,16 +313,15 @@ function animate() {
         p.vx += (p.cx - p.x) * p.centerPull;
         p.vy += (p.cy - p.y) * p.centerPull;
 
-
         p.life++;
-        if (p.life > p.lifeMax) { delete p.isClickTier9; Object.assign(p, spawnParticle()); return; }
+        if (p.life > p.lifeMax) { Object.assign(p, spawnParticle()); return; }
 
         const { sx, sy, scale } = project(p.x, p.y, p.z);
         if (scale < 0.05) return;
 
         const smooth    = t => t * t * (3 - 2 * t);   // smoothstep: S-curve 0→1
         const fadeIn    = smooth(Math.min(1, p.life / p.fadeIn));
-        const fadeStart = p.fadeStart ?? 0.85;
+        const fadeStart = 0.85;   // fade-out starts at 85% of the lifetime
         const fadeOut   = smooth(Math.max(0, 1 - Math.max(0, p.life - p.lifeMax * fadeStart) / (p.lifeMax * (1 - fadeStart))));
         const lf        = fadeIn * fadeOut;
 
@@ -350,7 +356,6 @@ function animate() {
                 const grad  = ctx.createRadialGradient(sx, sy, radius, sx, sy, haloR);
                 grad.addColorStop(0, 'rgba( 40,  90, 220, 0.28)');
                 grad.addColorStop(1, 'rgba( 20,  50, 180, 0)');
-                ctx.shadowBlur = 0;
                 ctx.fillStyle  = grad;
                 ctx.beginPath(); ctx.arc(sx, sy, haloR, 0, Math.PI * 2); ctx.fill();
 
@@ -404,7 +409,7 @@ function animate() {
 
 
 // ──────────────────────────────────────────────
-// NIGHT MODE — run only while the canvas is visible
+// 6. NIGHT MODE — run only while the canvas is visible
 // ──────────────────────────────────────────────
 // The scene starts fresh the first time night mode turns on, then pauses
 // in day mode and resumes where it left off.
@@ -420,29 +425,13 @@ document.addEventListener('nightmode-toggle', () => {
     const turningOn = document.body.classList.contains('night-mode');
     if (!turningOn) return;
 
+    if (!started) {
+        started = true;
+        spawnScene();
+    }
+
     if (!running) {
         running = true;
         requestAnimationFrame(animate);
-    }
-
-    if (!started) {
-        started = true;
-        particles.length = 0;
-        for (let i = 0; i < CONFIG.count; i++) particles.push(spawnParticle());
-        particles.push(makeTier9({
-            x: 0, y: 0, cx: 0, cy: 0,
-            z: Z_CENTER,
-            vx: (Math.random() - 0.5) * 0.3,
-            vy: (Math.random() - 0.5) * 0.3,
-            vz: 0,
-            centerPull: 0.00003,
-            life: TIERS[9].fadeIn,
-            spin: 1,
-            isDefaultTier9: true,
-        }));
-        impulseRings.length = 0;
-        firstPulse = true;
-        firstPulseTimer = 0;
-        pulseReady = false;
     }
 });

@@ -1,5 +1,5 @@
-//  PROJECT CARDS — pass the mouse position to CSS for the hover spotlight,
-//  and let visitors show/hide and copy the demo password
+//  PROJECT CARDS — let visitors show/hide and copy the demo password
+//  (the frame spotlight is effects/frameSpotlight.js)
 
 
 const EYE_ICON     = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -7,14 +7,6 @@ const EYE_OFF_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
 const COPY_ICON    = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
 const CHECK_ICON   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12.5l5 5L20 6.5"/></svg>';
 
-
-document.querySelectorAll('.project-card').forEach(function(card) {
-    card.addEventListener('pointermove', function(e) {
-        const rect = card.getBoundingClientRect();
-        card.style.setProperty('--spot-x', (e.clientX - rect.left) + 'px');
-        card.style.setProperty('--spot-y', (e.clientY - rect.top) + 'px');
-    });
-});
 
 document.querySelectorAll('.project-password').forEach(function(box) {
     const password = box.dataset.password;
@@ -27,9 +19,9 @@ document.querySelectorAll('.project-password').forEach(function(box) {
     const toggle     = box.querySelector('.password-toggle');
     const copyButton = box.querySelector('.password-copy');
     let visible = false;
+    text.textContent = password;
 
     function render() {
-        text.textContent = visible ? password : '';
         text.hidden = !visible;
         copyButton.hidden = !visible;
         toggle.innerHTML = visible ? EYE_OFF_ICON : 'Show password ' + EYE_ICON;
