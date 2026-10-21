@@ -21,7 +21,7 @@
     --font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     --font-mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
     --line: rgba(0, 0, 0, 0.12);
-    --spot-border: rgba(0, 0, 0, 0.7);   /* frame spotlight, see effects/frameSpotlight.js */
+    --spot-border: rgba(0, 0, 0, 0.85);   /* frame spotlight, see effects/frameSpotlight.js */
     --max-width: 1100px;
 }
 
