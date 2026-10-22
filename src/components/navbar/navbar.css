@@ -62,7 +62,7 @@ nav::after {
     width: 1px;
     height: 16px;
     background: #e0e0e0;
-    transition: background 0.2s;
+    transition: background 0.6s ease;
 }
 
 .navbar-links {
@@ -113,7 +113,7 @@ nav::after {
 =========================== */
 
 nav:hover::after              { opacity: 1; }
-nav:hover .navbar-divider     { background: #b0b0b0; }
+nav:hover .navbar-divider     { background: #cfcfcf; }   /* a hint, not a flash — the frame spotlight does the main work */
 .navbar-home:hover            { color: #000; }
 .navbar-links a:hover         { color: #000; }
 .navbar-night-toggle:hover    { color: #000; }
@@ -124,7 +124,7 @@ nav:hover .navbar-divider     { background: #b0b0b0; }
 =========================== */
 
 body.night-mode nav                  { background: rgba(0, 0, 0, 0.3); --nav-line: rgba(255, 255, 255, 0.12); --nav-cap: rgba(255, 255, 255, 0.35); }
-body.night-mode nav:hover .navbar-divider { background: rgba(255, 255, 255, 0.4); }
+body.night-mode nav:hover .navbar-divider { background: rgba(255, 255, 255, 0.22); }
 
 body.night-mode .navbar-home            { color: rgba(255, 255, 255, 0.4); }
 body.night-mode .navbar-home:hover      { color: #fff; }
