@@ -112,7 +112,12 @@ nav::after {
    NAVBAR — hover
 =========================== */
 
-nav:hover::after              { opacity: 1; }
+/* Mouse: light while hovering. Touch: .spot-active stays on the last tap
+   (see effects/frameSpotlight.js); phones' "sticky" hover is ignored. */
+@media (hover: hover) {
+    nav:hover::after          { opacity: 1; }
+}
+nav.spot-active::after        { opacity: 1; }
 nav:hover .navbar-divider     { background: #cfcfcf; }   /* a hint, not a flash — the frame spotlight does the main work */
 .navbar-home:hover            { color: #000; }
 .navbar-links a:hover         { color: #000; }

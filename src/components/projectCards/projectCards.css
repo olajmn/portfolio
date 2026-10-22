@@ -201,8 +201,14 @@
     transition: opacity 0.3s ease;
 }
 
-.project-card:hover::before,
-.project-card:hover::after { opacity: 1; }
+/* Mouse: light while hovering. Touch: a tap adds .spot-active briefly
+   (see effects/frameSpotlight.js); phones' "sticky" hover is ignored. */
+@media (hover: hover) {
+    .project-card:hover::before,
+    .project-card:hover::after { opacity: 1; }
+}
+.project-card.spot-active::before,
+.project-card.spot-active::after { opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) {
     .project-card:hover .project-image img,
