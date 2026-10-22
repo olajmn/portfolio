@@ -231,22 +231,21 @@
 }
 
 /* Set by demoPassword.js after copying, until the mouse leaves the button */
+/* Hidden instantly, so "Copy password" seems to turn into "Copied!" */
 .project-password [data-tooltip].tooltip-hidden::after {
     opacity: 0;
-    transition-delay: 0s;
+    transition: none;
 }
 
-/* "Copied!" pops up above the icon, floats upward and fades out */
+/* "Copied!" appears exactly where the tooltip was, then floats upward and fades */
 .copied-bubble {
-    bottom: calc(100% + 6px);
+    top: calc(100% + 8px);
     animation: copied-float 1.2s ease-out forwards;
 }
 
 @keyframes copied-float {
-    0%   { opacity: 0; transform: translate(-50%, 4px) scale(0.9); }
-    15%  { opacity: 1; transform: translate(-50%, 0) scale(1); }
-    60%  { opacity: 1; transform: translate(-50%, -6px); }
-    100% { opacity: 0; transform: translate(-50%, -18px); }
+    0%, 35% { opacity: 1; transform: translate(-50%, 0); }
+    100%    { opacity: 0; transform: translate(-50%, -12px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
