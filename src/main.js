@@ -5,6 +5,7 @@ import './effects/typewriter.js'
 import './effects/textFade.js'
 import './effects/frameSpotlight.js'
 import './components/particles/particles.js'
-import './components/projectCards/projectCards.js'
+import './components/projectCards/carousel.js'
+import './components/projectCards/demoPassword.js'
 
 initNavbar()

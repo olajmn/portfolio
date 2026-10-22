@@ -34,7 +34,7 @@
     transition: transform 0.5s ease;
 }
 
-/* Images stacked on top of each other; projectCards.js fades between them */
+/* Images stacked on top of each other; carousel.js fades between them */
 .project-image--carousel {
     position: relative;
 }
@@ -112,7 +112,7 @@
     gap: 8px 24px;
 }
 
-/* Filled in by projectCards.js: "Show password" + eye, or the password + hide + copy */
+/* Filled in by demoPassword.js: "Show password" + eye, or the password + hide + copy */
 .project-password {
     display: inline-flex;
     align-items: center;
