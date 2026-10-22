@@ -1,54 +1,26 @@
-//  FRAME SPOTLIGHT — passes the mouse position to any element with
-//  [data-spotlight] as --spot-x / --spot-y, for the frame highlight in CSS.
+//  FRAME SPOTLIGHT — places the frame highlight on any element with
+//  [data-spotlight] by setting --spot-x / --spot-y (the light itself is CSS).
 //  Delegated from document, so it also covers the navbar, which is inserted later.
-//
-//  Touch screens have no hover or mouse movement, so a tap places the light
-//  instead and adds .spot-active: [data-spotlight="hold"] keeps it until the
-//  next tap (the navbar, like an app's tab bar); anything else lets it fade.
-//  On a "hold" element the light snaps to the centre of the nearest link or
-//  button, so it marks that item rather than the exact finger position, and it
-//  clears once the user scrolls with a finger.
+
+// Contents
+//  1. Helpers       - setSpot(), nearestItem()
+//  2. Mouse         - the light follows the pointer
+//  3. Touch tap     - [data-spotlight="hold"] (navbar) keeps a mark on the tapped
+//                     item, like an app's tab bar; anything else glows briefly
+//  4. Touch scroll  - a finger scroll clears the held mark
 
 
 const TAP_GLOW    = 700;   // ms a tap lights up a card before it fades
 const SCROLL_DRAG = 10;    // px a finger must move before it counts as scrolling
 
 
+// 1. Helpers
+
 function setSpot(target, x, y) {
     const rect = target.getBoundingClientRect();
     target.style.setProperty('--spot-x', (x - rect.left) + 'px');
     target.style.setProperty('--spot-y', (y - rect.top) + 'px');
 }
-
-
-document.addEventListener('pointermove', function(e) {
-    if (e.pointerType !== 'mouse') return;
-    const target = e.target.closest('[data-spotlight]');
-    if (target) setSpot(target, e.clientX, e.clientY);
-}, { passive: true });
-
-
-document.addEventListener('pointerdown', function(e) {
-    if (e.pointerType === 'mouse') return;
-    const target = e.target.closest('[data-spotlight]');
-    if (!target) return;
-
-    if (target.dataset.spotlight === 'hold') {
-        const item = nearestItem(target, e.clientX);
-        if (!item) return;
-        const r = item.getBoundingClientRect();
-        setSpot(target, r.left + r.width / 2, r.top + r.height / 2);
-        target.classList.add('spot-active');
-        return;
-    }
-
-    setSpot(target, e.clientX, e.clientY);
-    target.classList.add('spot-active');
-
-    clearTimeout(target.spotTimer);
-    target.spotTimer = setTimeout(function() { target.classList.remove('spot-active'); }, TAP_GLOW);
-}, { passive: true });
-
 
 // The link or button whose horizontal centre is closest to x, so a tap in the
 // gap between two items still marks one of them
@@ -63,8 +35,43 @@ function nearestItem(container, x) {
 }
 
 
-// A finger scroll clears the held mark. Taps on a nav link also scroll the page
-// (smooth scroll to the section), so only real finger drags count, not scroll events.
+// 2. Mouse
+
+document.addEventListener('pointermove', function(e) {
+    if (e.pointerType !== 'mouse') return;
+    const target = e.target.closest('[data-spotlight]');
+    if (target) setSpot(target, e.clientX, e.clientY);
+}, { passive: true });
+
+
+// 3. Touch tap — touch screens have no hover, so a tap places the light and
+//    adds .spot-active (shown by the components' CSS)
+
+document.addEventListener('pointerdown', function(e) {
+    if (e.pointerType === 'mouse') return;
+    const target = e.target.closest('[data-spotlight]');
+    if (!target) return;
+
+    if (target.dataset.spotlight === 'hold') {
+        // Mark the item, not the exact finger position
+        const item = nearestItem(target, e.clientX);
+        if (!item) return;
+        const r = item.getBoundingClientRect();
+        setSpot(target, r.left + r.width / 2, r.top + r.height / 2);
+        target.classList.add('spot-active');
+        return;
+    }
+
+    setSpot(target, e.clientX, e.clientY);
+    target.classList.add('spot-active');
+    clearTimeout(target.spotTimer);
+    target.spotTimer = setTimeout(function() { target.classList.remove('spot-active'); }, TAP_GLOW);
+}, { passive: true });
+
+
+// 4. Touch scroll — tapping a nav link also scrolls the page (smooth scroll to
+//    the section), so only real finger drags clear the mark, not scroll events
+
 let touchStartY = null;
 
 document.addEventListener('touchstart', function(e) {

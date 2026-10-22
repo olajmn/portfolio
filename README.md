@@ -34,6 +34,6 @@ src/
     heroScroll.js       Hero title shrinks/moves on scroll
     typewriter.js       Section titles type themselves in on scroll
     textFade.js         Bio lines fade based on scroll position
-    frameSpotlight.js   Mouse position for the frame spotlight (cards, navbar)
+    frameSpotlight.js   Frame highlight for cards and navbar (mouse and touch)
   styles/               Base, layout, and night-mode styles
 ```
