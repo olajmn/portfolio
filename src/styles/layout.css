@@ -112,10 +112,14 @@ h2 {
     gap: 4px;
 }
 
+/* Metadata (years, place) in mono, content in Helvetica — same rule as the project cards */
 .edu-meta {
-    font-size: 15px;
-    font-weight: 400;
-    color: var(--black);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 4px;
 }
 
 .edu-degree,
@@ -123,6 +127,10 @@ h2 {
     font-size: 15px;
     font-weight: 400;
     color: var(--gray);
+}
+
+.edu-degree {
+    color: var(--black);
 }
 
 

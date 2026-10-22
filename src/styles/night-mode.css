@@ -10,4 +10,4 @@ body.night-mode #contact a             { color: var(--white); border-color: var(
 
 body.night-mode #particle-canvas       { opacity: 1; }
 
-body.night-mode .edu-meta              { color: var(--white); }
+body.night-mode .edu-degree            { color: var(--white); }
