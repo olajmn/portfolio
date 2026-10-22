@@ -168,6 +168,9 @@ const TIERS = {
 
 // PALETTES — one colour per tier, plus the bright core shared by all particles.
 // Same pattern in every palette: small tiers lightest, large tiers deepest.
+// Every palette is matched to blue in perceived brightness (relative luminance)
+// per tier, so glows look equally soft in every colour — the eye is far more
+// sensitive to green and red than to blue.
 // Colours are 'rgba(r, g, b, ' prefixes; the alpha is added when drawing.
 const PALETTES = {
     blue: {
@@ -181,24 +184,24 @@ const PALETTES = {
         core: 'rgba(210, 228, 255, ',
     },
     red: {
-        1:    'rgba(235,  95,  90, ',
-        2:    'rgba(225,  80,  78, ',
-        3:    'rgba(215,  68,  66, ',
-        4:    'rgba(222,  76,  72, ',
-        5:    'rgba(190,  50,  50, ',
-        6:    'rgba(160,  32,  36, ',
-        9:    'rgba(170,  30,  35, ',
-        core: 'rgba(255, 222, 215, ',
+        1:    'rgba(221,  89,  84, ',
+        2:    'rgba(214,  76,  74, ',
+        3:    'rgba(203,  64,  62, ',
+        4:    'rgba(210,  71,  68, ',
+        5:    'rgba(173,  45,  45, ',
+        6:    'rgba(132,  25,  28, ',
+        9:    'rgba(134,  21,  26, ',
+        core: 'rgba(252, 219, 213, ',
     },
     green: {
-        1:    'rgba( 90, 215, 140, ',
-        2:    'rgba( 78, 200, 128, ',
-        3:    'rgba( 66, 188, 116, ',
-        4:    'rgba( 72, 195, 122, ',
-        5:    'rgba( 45, 160,  95, ',
-        6:    'rgba( 28, 128,  72, ',
-        9:    'rgba( 25, 135,  75, ',
-        core: 'rgba(220, 255, 230, ',
+        1:    'rgba( 60, 149,  95, ',
+        2:    'rgba( 52, 139,  88, ',
+        3:    'rgba( 42, 128,  78, ',
+        4:    'rgba( 47, 135,  83, ',
+        5:    'rgba( 27, 106,  61, ',
+        6:    'rgba( 13,  78,  42, ',
+        9:    'rgba( 10,  78,  41, ',
+        core: 'rgba(202, 234, 211, ',
     },
 };
 
