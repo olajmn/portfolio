@@ -3,7 +3,8 @@
 =========================== */
 
 /* "Click anywhere", shown just under the navbar when night mode turns on.
-   Loaded and positioned by colorWave.js; same look as the password tooltips. */
+   Loaded and positioned by colorWave.js. Shape like the password tooltips,
+   fill and frame like the navbar in night mode, so it doesn't pop. */
 .color-wave-hint {
     position: fixed;
     left: 50%;
@@ -11,8 +12,10 @@
     z-index: 100;
     padding: 5px 9px;
     border-radius: 4px;
-    background: #1a1a1a;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: var(--white);
     font-family: var(--font);
     font-size: 12px;
