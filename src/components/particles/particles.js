@@ -171,6 +171,7 @@ const TIERS = {
 // Every palette is matched to blue in perceived brightness (relative luminance)
 // per tier, so glows look equally soft in every colour — the eye is far more
 // sensitive to green and red than to blue.
+// The order here is the order the colour wave cycles through.
 // Colours are 'rgba(r, g, b, ' prefixes; the alpha is added when drawing.
 const PALETTES = {
     blue: {
@@ -183,6 +184,16 @@ const PALETTES = {
         9:    'rgba( 20,  50, 180, ',
         core: 'rgba(210, 228, 255, ',
     },
+    purple: {
+        1:    'rgba(156, 107, 229, ',
+        2:    'rgba(149,  94, 227, ',
+        3:    'rgba(138,  82, 220, ',
+        4:    'rgba(145,  90, 224, ',
+        5:    'rgba(114,  60, 199, ',
+        6:    'rgba( 82,  34, 165, ',
+        9:    'rgba( 85,  28, 171, ',
+        core: 'rgba(233, 221, 255, ',
+    },
     red: {
         1:    'rgba(221,  89,  84, ',
         2:    'rgba(214,  76,  74, ',
@@ -193,6 +204,16 @@ const PALETTES = {
         9:    'rgba(134,  21,  26, ',
         core: 'rgba(252, 219, 213, ',
     },
+    gold: {
+        1:    'rgba(168, 125,  60, ',
+        2:    'rgba(163, 114,  49, ',
+        3:    'rgba(156, 101,  39, ',
+        4:    'rgba(161, 109,  46, ',
+        5:    'rgba(136,  79,  25, ',
+        6:    'rgba(104,  54,  14, ',
+        9:    'rgba(105,  54,  12, ',
+        core: 'rgba(239, 225, 201, ',
+    },
     green: {
         1:    'rgba( 60, 149,  95, ',
         2:    'rgba( 52, 139,  88, ',
@@ -202,6 +223,16 @@ const PALETTES = {
         6:    'rgba( 13,  78,  42, ',
         9:    'rgba( 10,  78,  41, ',
         core: 'rgba(202, 234, 211, ',
+    },
+    silver: {
+        1:    'rgba(129, 132, 140, ',
+        2:    'rgba(120, 124, 133, ',
+        3:    'rgba(110, 113, 122, ',
+        4:    'rgba(116, 120, 129, ',
+        5:    'rgba( 89,  93, 102, ',
+        6:    'rgba( 64,  67,  76, ',
+        9:    'rgba( 65,  67,  77, ',
+        core: 'rgba(225, 226, 232, ',
     },
 };
 
