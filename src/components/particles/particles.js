@@ -7,6 +7,7 @@
 //     - CONFIG, VISUAL, MIX, TIERS
 //  3. Spawn
 //     - rnd(), pickTier(), spawnParticle(), makeTier9(), spawnScene()
+//     - getSprite(), stamp()   (light dots)
 //  4. Pulse state
 //  5. Animation
 //     - project(), animate()
@@ -159,6 +160,39 @@ function spawnScene() {
 }
 
 
+// Light dots: one soft radial-gradient sprite per colour, drawn once and then
+// stamped with drawImage. Replaces shadowBlur, which the browser recomputed
+// for every particle on every frame.
+const SPRITE_SIZE = 128;
+const CORE_COLOR  = 'rgba(210, 228, 255, ';
+const sprites     = new Map();
+
+function getSprite(color) {
+    if (sprites.has(color)) return sprites.get(color);
+
+    const sprite = document.createElement('canvas');
+    sprite.width = sprite.height = SPRITE_SIZE;
+    const g    = sprite.getContext('2d');
+    const half = SPRITE_SIZE / 2;
+    const grad = g.createRadialGradient(half, half, 0, half, half, half);
+    grad.addColorStop(0,    color + '1)');
+    grad.addColorStop(0.15, color + '0.85)');
+    grad.addColorStop(0.35, color + '0.3)');
+    grad.addColorStop(0.65, color + '0.07)');
+    grad.addColorStop(1,    color + '0)');
+    g.fillStyle = grad;
+    g.fillRect(0, 0, SPRITE_SIZE, SPRITE_SIZE);
+
+    sprites.set(color, sprite);
+    return sprite;
+}
+
+// Draws a sprite centred on (x, y) with the given radius
+function stamp(sprite, x, y, r) {
+    ctx.drawImage(sprite, x - r, y - r, r * 2, r * 2);
+}
+
+
 // ──────────────────────────────────────────────
 // 4. PULSE STATE
 // ──────────────────────────────────────────────
@@ -298,6 +332,9 @@ function animate() {
 
     newRings.length = 0;
 
+    // Light adds up where particles overlap, like real light
+    ctx.globalCompositeOperation = 'lighter';
+
     particles.forEach(p => {
         p.vx *= CONFIG.friction;
         p.vy *= CONFIG.friction;
@@ -347,56 +384,22 @@ function animate() {
 
         const glowBoost  = 1 + impulse * 2.5;
         const glow       = p.size * VISUAL.maxGlow * scale * lf * p.glowMult * glowBoost;
-
-        ctx.shadowBlur = 0;
-
-        if (p.tier === 9) {
-            if (!isMobile) {
-                const haloR = radius * 10;
-                const grad  = ctx.createRadialGradient(sx, sy, radius, sx, sy, haloR);
-                grad.addColorStop(0, 'rgba( 40,  90, 220, 0.28)');
-                grad.addColorStop(1, 'rgba( 20,  50, 180, 0)');
-                ctx.fillStyle  = grad;
-                ctx.beginPath(); ctx.arc(sx, sy, haloR, 0, Math.PI * 2); ctx.fill();
-
-                ctx.shadowColor = 'rgba(80, 140, 255, 1.0)';
-                ctx.shadowBlur  = radius * 32;
-            }
-            ctx.fillStyle   = 'rgba(80, 140, 255, ' + (alpha * 0.85) + ')';
-            ctx.beginPath(); ctx.arc(sx, sy, radius * 2.2, 0, Math.PI * 2); ctx.fill();
-
-            if (!isMobile) {
-                ctx.shadowBlur  = radius * 14;
-            }
-            ctx.fillStyle   = 'rgba(160, 200, 255, ' + (alpha * 0.9) + ')';
-            ctx.beginPath(); ctx.arc(sx, sy, radius * 0.7, 0, Math.PI * 2); ctx.fill();
-            ctx.shadowBlur  = 0;
-        }
-
-        const canGlow = !isMobile && ((p.tier === 5 || p.tier === 6 || p.tier === 9) || (p.tier >= 3 && impulse > 0.6));
         const pulseAlpha  = Math.min(1, alpha * (1 + impulse * 2.0));
         const growMult    = p.tier <= 2 ? 0.2 : 0.02;
         const pulseRadius = radius * (1 + impulse * growMult);
-        if (canGlow && glow > 4) {
-            ctx.shadowColor = p.color + Math.min(1, pulseAlpha * 1.5) + ')';
-            ctx.shadowBlur  = glow * 2;
-        }
-        ctx.fillStyle = p.color + pulseAlpha + ')';
-        ctx.beginPath(); ctx.arc(sx, sy, pulseRadius, 0, Math.PI * 2); ctx.fill();
 
-        if (!isMobile && impulse > 0.3) {
-            ctx.shadowBlur = 0;
-            ctx.fillStyle  = `rgba(200, 225, 255, ${impulse * alpha * 0.9})`;
-            ctx.beginPath(); ctx.arc(sx, sy, radius, 0, Math.PI * 2); ctx.fill();
-        }
+        // Halo: the tier's soft light dot, scaled by its glow
+        const halo = p.tier === 9 ? radius * 10 : pulseRadius * 2 + glow;
+        ctx.globalAlpha = p.tier === 9 ? alpha * 0.5 : pulseAlpha;
+        stamp(getSprite(p.color), sx, sy, halo);
 
-        if (canGlow && glow > 4) {
-            ctx.shadowBlur = glow * 0.4;
-            ctx.fillStyle  = p.color + Math.min(1, alpha * 1.2) + ')';
-            ctx.beginPath(); ctx.arc(sx, sy, radius * 0.5, 0, Math.PI * 2); ctx.fill();
-            ctx.shadowBlur = 0;
-        }
+        // Core: a bright centre, stronger while a pulse ring passes through
+        ctx.globalAlpha = Math.min(1, alpha * (0.5 + impulse * 1.5));
+        stamp(getSprite(CORE_COLOR), sx, sy, p.tier === 9 ? radius * 2.2 : pulseRadius);
     });
+
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
 
     for (const ring of newRings) impulseRings.push(ring);
 
