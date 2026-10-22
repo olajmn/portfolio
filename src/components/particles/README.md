@@ -13,7 +13,7 @@ A canvas particle system shown behind the page in night mode. Everything lives i
 
 ## Add-ons
 
-- **`colorWave.js`** — clicking the page in night mode sends a pulse from the click point. It only uses `addPulseAt()` from `particles.js` (section 8). To turn it off, remove its import from `src/main.js`.
+- **`colorWave.js`** — clicking the page in night mode sends a pulse from the click point that recolours the particles as it spreads, moving to the next palette in `PALETTES` each time. It only uses the exports in `particles.js` section 8. To turn it off, remove its import from `src/main.js`.
 
 ## Tuning
 
@@ -23,7 +23,7 @@ A canvas particle system shown behind the page in night mode. Everything lives i
 | Size, brightness, halo size, core brightness | `VISUAL` |
 | Which tiers exist and how common they are | `MIX`, `pct` in `TIERS` |
 | Colours (one per tier, plus the core) | `PALETTES` |
-| Which palette is used | `ACTIVE_PALETTE` |
+| Which palette the scene starts in | `DEFAULT_PALETTE` |
 | Halo at rest (few bright "stars") | `haloRest` in `TIERS` |
 | Halo while a pulse passes (small ones bloom) | `haloPulse` in `TIERS` |
 | Pulse speed and ring width | `RING_SPEED`, `RING_BAND` (section 5) |

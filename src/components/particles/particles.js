@@ -14,7 +14,7 @@
 //     - project(), animate()
 //  7. Night mode
 //  8. API
-//     - addPulseAt()
+//     - PALETTE_NAMES, DEFAULT_PALETTE, addPulseAt(), finishPaletteRing()
 
 
 // ──────────────────────────────────────────────
@@ -202,8 +202,10 @@ const PALETTES = {
     },
 };
 
-// The palette new particles are born in
-const ACTIVE_PALETTE = 'blue';
+// The palette new particles are born in. Starts as DEFAULT_PALETTE; a pulse
+// ring that carries a palette (see 8. API) makes it the active one when done.
+const DEFAULT_PALETTE = 'blue';
+let activePalette     = DEFAULT_PALETTE;
 
 
 // ──────────────────────────────────────────────
@@ -236,7 +238,7 @@ function spawnParticle() {
         repelDist:  t.repelDist ?? CONFIG.attract.repelDist,
         lifeMax:    rnd(t.lifetime[0], t.lifetime[1]) * 1800,
         life: 0, fadeIn: t.fadeIn ?? 60,
-        palette: ACTIVE_PALETTE,
+        palette: activePalette,
         spin:       t.spin ?? (Math.random() < 0.5 ? 1 : -1),
         ecc:          0.6 + Math.random() * 0.8,
         orbitAngle:   Math.random() * Math.PI * 2,
@@ -256,7 +258,7 @@ function makeTier9(props) {
         repelDist:  CONFIG.attract.repelDist,
         lifeMax:    Infinity,
         fadeIn:     t.fadeIn,
-        palette:    ACTIVE_PALETTE,
+        palette:    activePalette,
         spin:       t.spin,
         ecc:        0.6 + Math.random() * 0.8,
         orbitAngle: Math.random() * Math.PI * 2,
@@ -491,6 +493,13 @@ function animate() {
         const radius = Math.max(0.4, p.size * VISUAL.maxRadius * scale);
         const alpha  = (VISUAL.alphaMin + p.size * (VISUAL.alphaMax - VISUAL.alphaMin)) * lf;
 
+        // A ring carrying a palette recolours every particle its front has passed.
+        // Later rings come later in the array, so the newest one wins.
+        for (const ring of impulseRings) {
+            if (ring.palette && p.palette !== ring.palette && Math.hypot(p.x - ring.x, p.y - ring.y) <= ring.r)
+                p.palette = ring.palette;
+        }
+
         let impulse = 0;
         if (p.tier !== 9) {
             for (const ring of impulseRings) {
@@ -540,8 +549,12 @@ function animate() {
     for (const ring of newRings) impulseRings.push(ring);
 
     for (const ring of impulseRings) { ring.r += RING_SPEED; ring.alpha *= 0.9985; }
-    for (let i = impulseRings.length - 1; i >= 0; i--)
-        if (impulseRings[i].r > impulseRings[i].maxR) impulseRings.splice(i, 1);
+    for (let i = impulseRings.length - 1; i >= 0; i--) {
+        const ring = impulseRings[i];
+        if (ring.r <= ring.maxR) continue;
+        impulseRings.splice(i, 1);
+        if (ring.palette) finishPaletteRing(ring.palette);
+    }
 
     if (running) requestAnimationFrame(animate);
 }
@@ -589,13 +602,28 @@ document.addEventListener('nightmode-toggle', () => {
 // ──────────────────────────────────────────────
 // 8. API — used by optional add-ons such as colorWave.js
 // ──────────────────────────────────────────────
-// Adds a pulse ring at a screen position (clientX/clientY). Does nothing
-// while the scene isn't running, i.e. outside night mode.
-export function addPulseAt(clientX, clientY) {
-    if (!running) return;
+export const PALETTE_NAMES = Object.keys(PALETTES);
+export { DEFAULT_PALETTE };
+
+// Adds a pulse ring at a screen position (clientX/clientY). With a palette,
+// the ring also recolours the particles it passes, and reaches every corner
+// of the screen. Returns false while the scene isn't running (outside night mode).
+export function addPulseAt(clientX, clientY, palette) {
+    if (!running) return false;
     // Screen → scene coordinates (at Z_CENTER the projection scale is 1)
     const rect = canvas.getBoundingClientRect();
     const x = clientX - rect.left - canvas.width / 2;
     const y = clientY - rect.top  - canvas.height / 2;
-    impulseRings.push({ x, y, r: 0, maxR: 550, alpha: 1.0 });
+    const toCorner = Math.hypot(canvas.width / 2 + Math.abs(x), canvas.height / 2 + Math.abs(y));
+    impulseRings.push({ x, y, r: 0, maxR: palette ? toCorner + 100 : 550, alpha: 1.0, palette });
+    return true;
+}
+
+// When a palette ring has crossed the screen, its palette becomes the one new
+// particles are born in. If no other palette ring is still travelling,
+// particles it never reached (off screen) take it too.
+function finishPaletteRing(palette) {
+    activePalette = palette;
+    if (impulseRings.some(ring => ring.palette)) return;
+    for (const p of particles) p.palette = palette;
 }
