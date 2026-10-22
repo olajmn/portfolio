@@ -1,6 +1,16 @@
+/* Contents
+    1. Sections        (shared section box and h2)
+    2. Home
+    3. About
+    4. Education
+    5. Contact
+    6. Mobile
+   Projects lives in components/projectCards/projectCards.css
+*/
+
 
 /* ===========================
-   SECTIONS
+   1. SECTIONS
 =========================== */
 
 section {
@@ -23,7 +33,7 @@ h2 {
 
 
 /* ===========================
-   HOME
+   2. HOME
 =========================== */
 
 #home {
@@ -52,7 +62,7 @@ h2 {
 
 
 /* ===========================
-   ABOUT
+   3. ABOUT
 =========================== */
 
 #about {
@@ -96,7 +106,7 @@ h2 {
 
 
 /* ===========================
-   EDUCATION
+   4. EDUCATION
 =========================== */
 
 .education-list {
@@ -125,16 +135,14 @@ h2 {
 .edu-school {
     font-size: 15px;
     font-weight: 400;
-    color: var(--gray);
 }
 
-.edu-degree {
-    color: var(--black);
-}
+.edu-degree { color: var(--black); }
+.edu-school { color: var(--gray); }
 
 
 /* ===========================
-   CONTACT
+   5. CONTACT
 =========================== */
 
 #contact {
@@ -181,7 +189,7 @@ h2 {
 
 
 /* ===========================
-   MOBILE
+   6. MOBILE
 =========================== */
 
 @media (max-width: 768px) {
