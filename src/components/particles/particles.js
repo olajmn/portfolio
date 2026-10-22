@@ -174,6 +174,16 @@ const TIERS = {
 // The order here is the order the colour wave cycles through.
 // Colours are 'rgba(r, g, b, ' prefixes; the alpha is added when drawing.
 const PALETTES = {
+    silver: {
+        1:    'rgba(129, 132, 140, ',
+        2:    'rgba(120, 124, 133, ',
+        3:    'rgba(110, 113, 122, ',
+        4:    'rgba(116, 120, 129, ',
+        5:    'rgba( 89,  93, 102, ',
+        6:    'rgba( 64,  67,  76, ',
+        9:    'rgba( 65,  67,  77, ',
+        core: 'rgba(225, 226, 232, ',
+    },
     blue: {
         1:    'rgba( 75, 130, 230, ',
         2:    'rgba( 65, 120, 225, ',
@@ -224,21 +234,11 @@ const PALETTES = {
         9:    'rgba( 10,  78,  41, ',
         core: 'rgba(202, 234, 211, ',
     },
-    silver: {
-        1:    'rgba(129, 132, 140, ',
-        2:    'rgba(120, 124, 133, ',
-        3:    'rgba(110, 113, 122, ',
-        4:    'rgba(116, 120, 129, ',
-        5:    'rgba( 89,  93, 102, ',
-        6:    'rgba( 64,  67,  76, ',
-        9:    'rgba( 65,  67,  77, ',
-        core: 'rgba(225, 226, 232, ',
-    },
 };
 
 // The palette new particles are born in. Starts as DEFAULT_PALETTE; a pulse
 // ring that carries a palette (see 8. API) makes it the active one when done.
-const DEFAULT_PALETTE = 'blue';
+const DEFAULT_PALETTE = 'silver';
 let activePalette     = DEFAULT_PALETTE;
 
 
