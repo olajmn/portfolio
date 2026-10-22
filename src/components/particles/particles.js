@@ -1,5 +1,5 @@
 //  PARTICLES — canvas particle system (pseudo-3D, physics-based) revealed in
-//  night mode. Runs only while night mode is on; see 6. Night mode.
+//  night mode. Runs only while night mode is on; see 7. Night mode.
 
 // Contents
 //  1. Setup
@@ -7,11 +7,12 @@
 //     - CONFIG, VISUAL, MIX, TIERS
 //  3. Spawn
 //     - rnd(), pickTier(), spawnParticle(), makeTier9(), spawnScene()
-//     - getSprite(), stamp()   (light dots)
-//  4. Pulse state
-//  5. Animation
+//  4. Light dots
+//     - getSprite(), stamp()
+//  5. Pulse state
+//  6. Animation
 //     - project(), animate()
-//  6. Night mode
+//  7. Night mode
 
 
 // ──────────────────────────────────────────────
@@ -63,8 +64,10 @@ const VISUAL = {
         glow:  3.0,   // extra radius per square root of glow strength
         min:   3,     // smallest halo radius (px)
         max:   24,    // largest halo radius (px), tier 9 excluded
+        swell: 0.4,   // how much a blooming halo grows while a pulse passes
     },
-    coreBoost: 0.8,   // base brightness of the core, before pulses add to it
+    coreBoost: 0.8,   // base brightness of the core
+    corePulse: 1.5,   // extra core brightness while a pulse passes
 };
 
 // MIX — which tiers are active
@@ -172,9 +175,12 @@ function spawnScene() {
 }
 
 
-// Light dots: one soft radial-gradient sprite per colour, drawn once and then
-// stamped with drawImage. Replaces shadowBlur, which the browser recomputed
-// for every particle on every frame.
+// ──────────────────────────────────────────────
+// 4. LIGHT DOTS
+// ──────────────────────────────────────────────
+// One soft radial-gradient sprite per colour, drawn once and then stamped with
+// drawImage. Much cheaper than shadowBlur, which is recomputed for every
+// particle on every frame.
 const SPRITE_SIZE = 128;
 const CORE_COLOR  = 'rgba(210, 228, 255, ';
 const sprites     = new Map();
@@ -206,7 +212,7 @@ function stamp(sprite, x, y, r) {
 
 
 // ──────────────────────────────────────────────
-// 4. PULSE STATE
+// 5. PULSE STATE
 // ──────────────────────────────────────────────
 const impulseRings = [];
 const RING_SPEED = 2.8;
@@ -219,7 +225,7 @@ let burstTimer    = 0;    // frames until the next pulse in the burst
 
 
 // ──────────────────────────────────────────────
-// 5. ANIMATION
+// 6. ANIMATION
 // ──────────────────────────────────────────────
 function project(x, y, z) {
     const sc = FOCAL / Math.max(z, 1);
@@ -401,19 +407,22 @@ function animate() {
 
         // Halo: the tier's soft light dot. Size is compressed so it stays close
         // between tiers; strength comes from the tier's haloRest + haloPulse.
-        const t        = TIERS[p.tier];
-        const strength = Math.min(1, t.haloRest + impulse * t.haloPulse);
+        // Tier 9 is the scene's anchor: a larger, softer halo and a bigger core,
+        // and no pulse reaction (it is the source of the first pulse).
+        const tier     = TIERS[p.tier];
+        const isAnchor = p.tier === 9;
+        const strength = Math.min(1, tier.haloRest + impulse * tier.haloPulse);
         const H        = VISUAL.halo;
-        const halo     = p.tier === 9
+        const halo     = isAnchor
             ? Math.min(radius * 6, H.max * 1.6)
             : Math.min(H.max, Math.max(H.min, pulseRadius * H.scale + Math.sqrt(glow) * H.glow))
-              * (1 + impulse * t.haloPulse * 0.4);   // blooming halos also swell a little
-        ctx.globalAlpha = (p.tier === 9 ? alpha * 0.5 : pulseAlpha) * strength;
+              * (1 + impulse * tier.haloPulse * H.swell);
+        ctx.globalAlpha = (isAnchor ? alpha * 0.5 : pulseAlpha) * strength;
         if (ctx.globalAlpha > 0.01) stamp(getSprite(p.color), sx, sy, halo);
 
         // Core: a bright centre, stronger while a pulse ring passes through
-        ctx.globalAlpha = Math.min(1, alpha * (VISUAL.coreBoost + impulse * 1.5));
-        stamp(getSprite(CORE_COLOR), sx, sy, p.tier === 9 ? radius * 2.2 : pulseRadius);
+        ctx.globalAlpha = Math.min(1, alpha * (VISUAL.coreBoost + impulse * VISUAL.corePulse));
+        stamp(getSprite(CORE_COLOR), sx, sy, isAnchor ? radius * 2.2 : pulseRadius);
     });
 
     ctx.globalAlpha = 1;
@@ -430,7 +439,7 @@ function animate() {
 
 
 // ──────────────────────────────────────────────
-// 6. NIGHT MODE — run only while the canvas is visible
+// 7. NIGHT MODE — run only while the canvas is visible
 // ──────────────────────────────────────────────
 // The scene starts fresh the first time night mode turns on, then pauses
 // in day mode and resumes where it left off.
