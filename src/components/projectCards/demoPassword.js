@@ -15,8 +15,8 @@ document.querySelectorAll('.project-password').forEach(function(box) {
     const masked   = '•'.repeat(password.length);   // one dot per character
 
     box.innerHTML = '<span class="password-text" aria-label="Demo password"></span>'
-        + '<button type="button" class="project-link password-toggle"></button>'
-        + `<button type="button" class="project-link password-copy" aria-label="Copy password">${COPY_ICON}</button>`;
+        + '<button type="button" class="project-link password-toggle" data-tooltip="Toggle visibility"></button>'
+        + `<button type="button" class="project-link password-copy" aria-label="Copy password" data-tooltip="Copy password">${COPY_ICON}</button>`;
 
     const text       = box.querySelector('.password-text');
     const toggle     = box.querySelector('.password-toggle');
