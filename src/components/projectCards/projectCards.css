@@ -163,16 +163,11 @@
    5. HOVER — zoom inside a fixed frame, an even tint, and a frame spotlight
 =========================== */
 
-.project-card:hover .project-image img { transform: scale(1.04); }
-
 /* Only the content zooms — the stack line and footer (with its buttons) stay put */
 .project-card h3,
 .project-description {
     transition: transform 0.5s ease;
 }
-
-.project-card:hover h3,
-.project-card:hover .project-description { transform: scale(1.03); }
 
 /* An even tint over the whole card — only the frame follows the mouse */
 .project-card::after {
@@ -202,9 +197,15 @@
     transition: opacity 0.3s ease;
 }
 
-/* Mouse: light while hovering. Touch: a tap adds .spot-active briefly
-   (see effects/frameSpotlight.js); phones' "sticky" hover is ignored. */
+/* Mouse: zoom and light while hovering. Touch: no zoom, and a tap adds
+   .spot-active briefly (see effects/frameSpotlight.js); phones' "sticky"
+   hover is ignored, so nothing stays zoomed or lit after a tap. */
 @media (hover: hover) {
+    .project-card:hover .project-image img { transform: scale(1.04); }
+
+    .project-card:hover h3,
+    .project-card:hover .project-description { transform: scale(1.03); }
+
     .project-card:hover::before,
     .project-card:hover::after { opacity: 1; }
 }
