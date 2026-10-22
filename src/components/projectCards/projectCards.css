@@ -215,6 +215,16 @@
 }
 
 
+/* The light grey seam between two images reads as white next to dark photos.
+   A 1px shadow on the left card's image covers that part of its right border.
+   Desktop only — on mobile the cards stack and there is no seam. */
+@media (min-width: 769px) {
+    .project-card:nth-child(odd):not(:last-child) .project-image {
+        box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5);
+    }
+}
+
+
 /* ===========================
    MOBILE
 =========================== */
