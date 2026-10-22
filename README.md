@@ -27,7 +27,7 @@ src/
   main.js               Entry point — imports and initializes everything below
   components/
     navbar/             Navbar markup + dark/light mode toggle
-    particles/          Canvas particle animation
+    particles/          Canvas particle animation (has its own README)
     projectCards/       Project grid and hover, carousel.js, demoPassword.js/.css
   effects/
     anchorScroll.js     Smooth scroll to sections
