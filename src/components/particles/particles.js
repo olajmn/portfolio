@@ -4,7 +4,7 @@
 // Contents
 //  1. Setup
 //  2. Config
-//     - CONFIG, VISUAL, MIX, TIERS
+//     - CONFIG, VISUAL, MIX, TIERS, PALETTES
 //  3. Spawn
 //     - rnd(), pickTier(), spawnParticle(), makeTier9(), spawnScene()
 //  4. Light dots
@@ -84,17 +84,45 @@ const MIX = [1, 2, 3, 4, 5, 6, ];
 //   haloRest:   halo strength at rest (0 = core only, 1 = full halo) — few "stars" shine
 //   haloPulse:  extra halo while a pulse ring passes — small ones bloom when they blink
 //   tier 9 is never spawned randomly (not in MIX) — see makeTier9()
+//   colours live in PALETTES below, not here
 const TIERS = {
-    1: { pct: 1.00, size: [0.18, 0.28], mass: 0.3, inertia:  3.0, glowMult: 0.3, repelDist:  5,            lifetime: [0.2, 0.5], haloRest: 0.10, haloPulse: 1.2, color: 'rgba( 75, 130, 230, ' },
-    2: { pct: 0.90, size: [0.24, 0.33], mass: 0.5, inertia:  3.0, glowMult: 0.5, repelDist:  8,            lifetime: [0.3, 0.6], haloRest: 0.10, haloPulse: 1.0, color: 'rgba( 65, 120, 225, ' },
-    3: { pct: 0.80, size: [0.28, 0.38], mass: 0.7, inertia:  4.0, glowMult: 0.5, repelDist: 11,            lifetime: [0.8, 1.4], haloRest: 0.15, haloPulse: 0.9, color: 'rgba( 55, 108, 218, ' },
+    1: { pct: 1.00, size: [0.18, 0.28], mass: 0.3, inertia:  3.0, glowMult: 0.3, repelDist:  5,            lifetime: [0.2, 0.5], haloRest: 0.10, haloPulse: 1.2 },
+    2: { pct: 0.90, size: [0.24, 0.33], mass: 0.5, inertia:  3.0, glowMult: 0.5, repelDist:  8,            lifetime: [0.3, 0.6], haloRest: 0.10, haloPulse: 1.0 },
+    3: { pct: 0.80, size: [0.28, 0.38], mass: 0.7, inertia:  4.0, glowMult: 0.5, repelDist: 11,            lifetime: [0.8, 1.4], haloRest: 0.15, haloPulse: 0.9 },
 
-    4: { pct: 0.40, size: [0.18, 0.28], mass: 3.0, inertia:  5.0, glowMult: 0.8, centerPull: 0.00002,     lifetime: [1.0, 1.4], haloRest: 0.20, haloPulse: 0.6, color: 'rgba( 60, 115, 225, ' },
-    5: { pct: 0.30, size: [0.28, 0.38], mass: 4.5, inertia:  6.5, glowMult: 1.2, centerPull: 0.00005,     lifetime: [1.0, 1.4], haloRest: 0.30, haloPulse: 0.5, color: 'rgba( 40,  85, 195, ' },
-    6: { pct: 0.22, size: [0.38, 0.50], mass: 6.0, inertia:  8.0, glowMult: 1.6, centerPull: 0.00012,     lifetime: [1.2, 1.6], haloRest: 0.90, haloPulse: 0.3, color: 'rgba( 25,  55, 165, ' },
+    4: { pct: 0.40, size: [0.18, 0.28], mass: 3.0, inertia:  5.0, glowMult: 0.8, centerPull: 0.00002,     lifetime: [1.0, 1.4], haloRest: 0.20, haloPulse: 0.6 },
+    5: { pct: 0.30, size: [0.28, 0.38], mass: 4.5, inertia:  6.5, glowMult: 1.2, centerPull: 0.00005,     lifetime: [1.0, 1.4], haloRest: 0.30, haloPulse: 0.5 },
+    6: { pct: 0.22, size: [0.38, 0.50], mass: 6.0, inertia:  8.0, glowMult: 1.6, centerPull: 0.00012,     lifetime: [1.2, 1.6], haloRest: 0.90, haloPulse: 0.3 },
 
-    9: {             size: [0.14, 0.20], mass: 30.0, inertia: 14.0, glowMult: 6.0,                          fadeIn: 220, spin: 1, haloRest: 1.00, haloPulse: 0.0, color: 'rgba( 20,  50, 180, ' },
+    9: {             size: [0.14, 0.20], mass: 30.0, inertia: 14.0, glowMult: 6.0,                          fadeIn: 220, spin: 1, haloRest: 1.00, haloPulse: 0.0 },
 };
+
+// PALETTES — one colour per tier, plus the bright core shared by all particles.
+// Same pattern in every palette: small tiers lightest, large tiers deepest.
+// Colours are 'rgba(r, g, b, ' prefixes; the alpha is added when drawing.
+const PALETTES = {
+    blue: {
+        1: 'rgba( 75, 130, 230, ', 2: 'rgba( 65, 120, 225, ', 3: 'rgba( 55, 108, 218, ',
+        4: 'rgba( 60, 115, 225, ', 5: 'rgba( 40,  85, 195, ', 6: 'rgba( 25,  55, 165, ',
+        9: 'rgba( 20,  50, 180, ',
+        core: 'rgba(210, 228, 255, ',
+    },
+    red: {
+        1: 'rgba(235,  95,  90, ', 2: 'rgba(225,  80,  78, ', 3: 'rgba(215,  68,  66, ',
+        4: 'rgba(222,  76,  72, ', 5: 'rgba(190,  50,  50, ', 6: 'rgba(160,  32,  36, ',
+        9: 'rgba(170,  30,  35, ',
+        core: 'rgba(255, 222, 215, ',
+    },
+    green: {
+        1: 'rgba( 90, 215, 140, ', 2: 'rgba( 78, 200, 128, ', 3: 'rgba( 66, 188, 116, ',
+        4: 'rgba( 72, 195, 122, ', 5: 'rgba( 45, 160,  95, ', 6: 'rgba( 28, 128,  72, ',
+        9: 'rgba( 25, 135,  75, ',
+        core: 'rgba(220, 255, 230, ',
+    },
+};
+
+// The palette new particles are born in
+const ACTIVE_PALETTE = 'blue';
 
 
 // ──────────────────────────────────────────────
@@ -127,7 +155,7 @@ function spawnParticle() {
         repelDist:  t.repelDist ?? CONFIG.attract.repelDist,
         lifeMax:    rnd(t.lifetime[0], t.lifetime[1]) * 1800,
         life: 0, fadeIn: t.fadeIn ?? 60,
-        color: t.color,
+        palette: ACTIVE_PALETTE,
         spin:       t.spin ?? (Math.random() < 0.5 ? 1 : -1),
         ecc:          0.6 + Math.random() * 0.8,
         orbitAngle:   Math.random() * Math.PI * 2,
@@ -147,7 +175,7 @@ function makeTier9(props) {
         repelDist:  CONFIG.attract.repelDist,
         lifeMax:    Infinity,
         fadeIn:     t.fadeIn,
-        color:      t.color,
+        palette:    ACTIVE_PALETTE,
         spin:       t.spin,
         ecc:        0.6 + Math.random() * 0.8,
         orbitAngle: Math.random() * Math.PI * 2,
@@ -182,7 +210,6 @@ function spawnScene() {
 // drawImage. Much cheaper than shadowBlur, which is recomputed for every
 // particle on every frame.
 const SPRITE_SIZE = 128;
-const CORE_COLOR  = 'rgba(210, 228, 255, ';
 const sprites     = new Map();
 
 function getSprite(color) {
@@ -418,11 +445,12 @@ function animate() {
             : Math.min(H.max, Math.max(H.min, pulseRadius * H.scale + Math.sqrt(glow) * H.glow))
               * (1 + impulse * tier.haloPulse * H.swell);
         ctx.globalAlpha = (isAnchor ? alpha * 0.5 : pulseAlpha) * strength;
-        if (ctx.globalAlpha > 0.01) stamp(getSprite(p.color), sx, sy, halo);
+        const colors = PALETTES[p.palette];
+        if (ctx.globalAlpha > 0.01) stamp(getSprite(colors[p.tier]), sx, sy, halo);
 
         // Core: a bright centre, stronger while a pulse ring passes through
         ctx.globalAlpha = Math.min(1, alpha * (VISUAL.coreBoost + impulse * VISUAL.corePulse));
-        stamp(getSprite(CORE_COLOR), sx, sy, isAnchor ? radius * 2.2 : pulseRadius);
+        stamp(getSprite(colors.core), sx, sy, isAnchor ? radius * 2.2 : pulseRadius);
     });
 
     ctx.globalAlpha = 1;
