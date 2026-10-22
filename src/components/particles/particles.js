@@ -76,6 +76,7 @@ const VISUAL = {
         max:   24,    // largest halo radius (px), tier 9 excluded
         swell: 0.4,   // how much a blooming halo grows while a pulse passes
     },
+    clear:     0.95,  // how much of the last frame is painted over (1 = no motion trails)
     coreBoost: 0.8,   // base brightness of the core
     corePulse: 1.5,   // extra core brightness while a pulse passes
 };
@@ -399,7 +400,7 @@ function project(x, y, z) {
 const heavy = [], light = [], newRings = [];
 
 function animate() {
-    ctx.fillStyle = `rgba(${CONFIG.bg}, 0.80)`;
+    ctx.fillStyle = `rgba(${CONFIG.bg}, ${VISUAL.clear})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Splits particles into heavy (mass ≥ 1) and light for performance
