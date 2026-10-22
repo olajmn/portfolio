@@ -106,7 +106,10 @@
     margin-bottom: 12px;
 }
 
+/* flex: 1 lets the description take any spare height, so the stack line and
+   footer sit at the bottom and line up across cards with different text lengths */
 .project-description {
+    flex: 1;
     font-size: 15px;
     color: var(--gray);
     margin-bottom: 24px;
@@ -125,9 +128,7 @@
    4. FOOTER AND LINKS
 =========================== */
 
-/* margin-top: auto pins the footer to the bottom, so both cards line up */
 .project-footer {
-    margin-top: auto;
     padding-top: 16px;
     border-top: 1px solid var(--line);
     display: flex;
