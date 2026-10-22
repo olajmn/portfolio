@@ -54,7 +54,17 @@ const VISUAL = {
     maxRadius: 6,     // largest possible radius (px)
     alphaMin:  0.14,  // smallest opacity
     alphaMax:  0.95,  // largest opacity
-    maxGlow:   18,    // largest glow blur (px)
+    maxGlow:   18,    // largest glow strength, before compression below
+
+    // Halo size is compressed (square root of the glow), so large particles
+    // don't get huge halos and small ones stay visible
+    halo: {
+        scale: 2.2,   // halo radius as a multiple of the particle radius
+        glow:  3.0,   // extra radius per square root of glow strength
+        min:   3,     // smallest halo radius (px)
+        max:   24,    // largest halo radius (px), tier 9 excluded
+    },
+    coreBoost: 0.8,   // base brightness of the core, before pulses add to it
 };
 
 // MIX — which tiers are active
@@ -388,13 +398,16 @@ function animate() {
         const growMult    = p.tier <= 2 ? 0.2 : 0.02;
         const pulseRadius = radius * (1 + impulse * growMult);
 
-        // Halo: the tier's soft light dot, scaled by its glow
-        const halo = p.tier === 9 ? radius * 10 : pulseRadius * 2 + glow;
+        // Halo: the tier's soft light dot, compressed so sizes stay close together
+        const H    = VISUAL.halo;
+        const halo = p.tier === 9
+            ? Math.min(radius * 6, H.max * 1.6)
+            : Math.min(H.max, Math.max(H.min, pulseRadius * H.scale + Math.sqrt(glow) * H.glow));
         ctx.globalAlpha = p.tier === 9 ? alpha * 0.5 : pulseAlpha;
         stamp(getSprite(p.color), sx, sy, halo);
 
         // Core: a bright centre, stronger while a pulse ring passes through
-        ctx.globalAlpha = Math.min(1, alpha * (0.5 + impulse * 1.5));
+        ctx.globalAlpha = Math.min(1, alpha * (VISUAL.coreBoost + impulse * 1.5));
         stamp(getSprite(CORE_COLOR), sx, sy, p.tier === 9 ? radius * 2.2 : pulseRadius);
     });
 
