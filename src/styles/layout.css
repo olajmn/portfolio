@@ -181,18 +181,17 @@ h2 {
     gap: 16px;
 }
 
-/* Grey at rest, dark on hover — same as the links in the project cards */
 #contact .contact-icons a {
-    color: var(--gray);
+    color: var(--black);
     opacity: 1;
-    transition: color 0.3s ease;
+    transition: opacity 0.2s;
     border-bottom: none;
     padding-bottom: 0;
     font-size: inherit;
 }
 
 #contact .contact-icons a:hover {
-    color: var(--black);
+    opacity: 0.35;
 }
 
 .contact-icons svg {
