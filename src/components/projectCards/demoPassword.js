@@ -1,5 +1,5 @@
-//  DEMO PASSWORD — Bitwarden-style field in each .project-password: the
-//  password masked as dots, an eye to show/hide it, and a copy button that
+//  DEMO PASSWORD — field in each .project-password: the label "Password"
+//  (or the password itself), an eye to show/hide it, and a copy button that
 //  works without revealing it. The password itself is the element's
 //  data-password in index.html; styles in projectCards.css, section 5.
 
@@ -12,7 +12,7 @@ const CHECK_ICON   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
 
 document.querySelectorAll('.project-password').forEach(function(box) {
     const password = box.dataset.password;
-    const masked   = '•'.repeat(password.length);   // one dot per character
+    const label    = 'Password';   // shown in place of the password while hidden
 
     box.innerHTML = '<span class="password-text" aria-label="Demo password"></span>'
         + '<button type="button" class="project-link password-toggle" data-tooltip="Toggle visibility"></button>'
@@ -24,7 +24,7 @@ document.querySelectorAll('.project-password').forEach(function(box) {
     let visible = false;
 
     function render() {
-        text.textContent = visible ? password : masked;
+        text.textContent = visible ? password : label;
         text.classList.toggle('is-visible', visible);
         toggle.innerHTML = visible ? EYE_OFF_ICON : EYE_ICON;
         toggle.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');

@@ -162,7 +162,7 @@
    5. DEMO PASSWORD
 =========================== */
 
-/* Filled in by demoPassword.js: dots (or the password) + eye + copy */
+/* Filled in by demoPassword.js: "Password" (or the password) + eye + copy */
 .project-password {
     display: inline-flex;
     align-items: center;
@@ -183,13 +183,8 @@
     cursor: pointer;
 }
 
-.password-text {
-    color: var(--gray);
-    text-transform: none;
-    letter-spacing: 0.1em;
-}
-
 .password-text.is-visible {
+    text-transform: none;
     user-select: all;
 }
 
