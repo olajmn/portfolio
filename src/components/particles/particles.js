@@ -13,6 +13,7 @@
 //  6. Animation
 //     - project(), animate()
 //  7. Night mode
+//  8. Click
 
 
 // ──────────────────────────────────────────────
@@ -580,4 +581,25 @@ document.addEventListener('nightmode-toggle', () => {
         running = true;
         requestAnimationFrame(animate);
     }
+});
+
+
+// ──────────────────────────────────────────────
+// 8. CLICK — send a pulse from where the page is clicked
+// ──────────────────────────────────────────────
+// Listens on the whole page (the canvas sits behind the content), but skips
+// clicks meant for something else: links, buttons, the navbar, the name that
+// toggles night mode, and clicks that end a text selection.
+const CLICK_IGNORE = 'a, button, input, textarea, nav, #name-toggle';
+
+document.addEventListener('click', (e) => {
+    if (!running || !document.body.classList.contains('night-mode')) return;
+    if (e.target.closest(CLICK_IGNORE)) return;
+    if (window.getSelection().toString()) return;
+
+    // Screen → scene coordinates (at Z_CENTER the projection scale is 1)
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left - canvas.width / 2;
+    const y = e.clientY - rect.top  - canvas.height / 2;
+    impulseRings.push({ x, y, r: 0, maxR: 550, alpha: 1.0 });
 });
