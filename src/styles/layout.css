@@ -70,7 +70,7 @@ h2 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 48px 40px;
-    align-items: start;
+    align-items: center;   /* bio sits on the photo's vertical centre */
 }
 
 .about-image {
@@ -99,6 +99,11 @@ h2 {
 
 .bio-line {
     transition: opacity 0.15s ease;
+}
+
+/* No trailing margin, so the centring against the photo is exact */
+#about p:last-child {
+    margin-bottom: 0;
 }
 
 
