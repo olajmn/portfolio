@@ -9,11 +9,11 @@
     3. Text
        - .project-label, h3, .project-description, .project-stack
     4. Footer and links
-    5. Demo password                (filled in by demoPassword.js)
-    6. Hover
-    7. Image seam (desktop)
-    8. Mobile
-    9. Night mode
+    5. Hover
+    6. Image seam (desktop)
+    7. Mobile
+    8. Night mode
+   The demo password in the footer has its own demoPassword.css
 */
 
 
@@ -159,107 +159,7 @@
 
 
 /* ===========================
-   5. DEMO PASSWORD
-=========================== */
-
-/* Filled in by demoPassword.js: "Password" (or the password) + eye + copy */
-.project-password {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.password-toggle,
-.password-copy {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font: inherit;
-    letter-spacing: inherit;
-    text-transform: inherit;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-}
-
-.password-text.is-visible {
-    text-transform: none;
-    user-select: all;
-}
-
-.project-password svg {
-    width: 13px;
-    height: 13px;
-    flex-shrink: 0;
-}
-
-/* Small dark label under the eye and copy icons, after a short hover delay.
-   The "Copied!" bubble (added by demoPassword.js) shares the same look. */
-.project-password [data-tooltip] {
-    position: relative;
-}
-
-.project-password [data-tooltip]::after,
-.copied-bubble {
-    position: absolute;
-    left: 50%;
-    z-index: 1;
-    padding: 5px 9px;
-    border-radius: 4px;
-    background: #222;
-    color: var(--white);
-    font-family: var(--font);
-    font-size: 12px;
-    letter-spacing: normal;
-    text-transform: none;
-    white-space: nowrap;
-    pointer-events: none;
-}
-
-.project-password [data-tooltip]::after {
-    content: attr(data-tooltip);
-    top: calc(100% + 8px);
-    transform: translateX(-50%);
-    opacity: 0;
-    transition: opacity 0.15s ease;
-}
-
-.project-password [data-tooltip]:hover::after {
-    opacity: 1;
-    transition-delay: 0.6s;
-}
-
-/* Set by demoPassword.js after copying, until the mouse leaves the button */
-/* Hidden instantly, so "Copy password" seems to turn into "Copied!" */
-.project-password [data-tooltip].tooltip-hidden::after {
-    opacity: 0;
-    transition: none;
-}
-
-/* "Copied!" appears exactly where the tooltip was, then floats upward and fades */
-.copied-bubble {
-    top: calc(100% + 8px);
-    animation: copied-float 1.2s ease-out forwards;
-}
-
-@keyframes copied-float {
-    0%, 35% { opacity: 1; transform: translate(-50%, 0); }
-    100%    { opacity: 0; transform: translate(-50%, -12px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .copied-bubble { animation: copied-fade 1.2s ease-out forwards; }
-
-    @keyframes copied-fade {
-        0%, 70% { opacity: 1; transform: translateX(-50%); }
-        100%    { opacity: 0; transform: translateX(-50%); }
-    }
-}
-
-
-/* ===========================
-   6. HOVER — zoom inside a fixed frame, an even tint, and a frame spotlight
+   5. HOVER — zoom inside a fixed frame, an even tint, and a frame spotlight
 =========================== */
 
 .project-card:hover .project-image img { transform: scale(1.04); }
@@ -312,7 +212,7 @@
 
 
 /* ===========================
-   7. IMAGE SEAM (DESKTOP)
+   6. IMAGE SEAM (DESKTOP)
 =========================== */
 
 /* The light grey seam between two images reads as white next to dark photos.
@@ -326,7 +226,7 @@
 
 
 /* ===========================
-   8. MOBILE
+   7. MOBILE
 =========================== */
 
 @media (max-width: 768px) {
@@ -341,14 +241,9 @@
 
 
 /* ===========================
-   9. NIGHT MODE
+   8. NIGHT MODE
 =========================== */
 
 body.night-mode .project-card      { --tint: rgba(255, 255, 255, 0.04); }
 body.night-mode .project-link:hover { color: var(--white); }
 body.night-mode .project-card h3   { color: var(--white); }
-body.night-mode .project-password [data-tooltip]::after,
-body.night-mode .copied-bubble {
-    background: #1a1a1a;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-}

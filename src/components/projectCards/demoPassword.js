@@ -1,7 +1,7 @@
 //  DEMO PASSWORD — field in each .project-password: the label "Password"
 //  (or the password itself), an eye to show/hide it, and a copy button that
 //  works without revealing it. The password itself is the element's
-//  data-password in index.html; styles in projectCards.css, section 5.
+//  data-password in index.html; styles in demoPassword.css.
 
 
 const EYE_ICON     = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -14,7 +14,7 @@ document.querySelectorAll('.project-password').forEach(function(box) {
     const password = box.dataset.password;
     const label    = 'Password';   // shown in place of the password while hidden
 
-    box.innerHTML = '<span class="password-text" aria-label="Demo password"></span>'
+    box.innerHTML = '<span class="password-text"></span>'
         + '<button type="button" class="project-link password-toggle" data-tooltip="Toggle visibility"></button>'
         + `<button type="button" class="project-link password-copy" aria-label="Copy password" data-tooltip="Copy password">${COPY_ICON}</button>`;
 
@@ -55,7 +55,7 @@ document.querySelectorAll('.project-password').forEach(function(box) {
             // The "Copy password" tooltip stays closed until the mouse leaves
             copyButton.classList.add('tooltip-hidden');
 
-            // "Copied!" bubble: pops up, floats upward and fades (CSS keyframes)
+            // "Copied!" bubble in the tooltip's place; floats up and fades (demoPassword.css)
             const bubble = document.createElement('span');
             bubble.className = 'copied-bubble';
             bubble.textContent = 'Copied!';
