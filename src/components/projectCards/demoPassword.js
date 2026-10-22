@@ -39,7 +39,11 @@ document.querySelectorAll('.project-password').forEach(function(box) {
         // Clipboard needs https or localhost
         if (!navigator.clipboard) return;
         navigator.clipboard.writeText(password).then(function() {
-            // "Copied!" in the tooltip and a check, then everything closes again
+            // Copying also hides a revealed password, straight away
+            visible = false;
+            render();
+
+            // "Copied!" in the tooltip and a check, then the tooltip closes
             copyButton.innerHTML = CHECK_ICON;
             copyButton.dataset.tooltip = 'Copied!';
             copyButton.classList.add('tooltip-shown');
@@ -48,8 +52,6 @@ document.querySelectorAll('.project-password').forEach(function(box) {
                 // Keep the tooltip closed while the mouse is still on the button
                 copyButton.classList.add('tooltip-hidden');
                 copyButton.innerHTML = COPY_ICON;
-                visible = false;
-                render();
             }, 1500);
         }).catch(function() {});
     });
