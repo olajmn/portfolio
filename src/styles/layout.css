@@ -66,14 +66,25 @@ h2 {
     padding-top: 40px;
 }
 
+/* Heading and bio form one block, centred against the photo: the two 1fr rows
+   share the leftover height equally above and below it. */
 .about-inner {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 48px 40px;
-    align-items: center;   /* bio sits on the photo's vertical centre */
+    grid-template-rows: 1fr auto auto 1fr;
+    grid-template-areas:
+        ".       image"
+        "heading image"
+        "text    image"
+        ".       image";
+    column-gap: 40px;
 }
 
+#about h2       { grid-area: heading; }
+.about-text     { grid-area: text; }
+
 .about-image {
+    grid-area: image;
     width: 85%;
     margin: 0 auto;
 }
@@ -206,13 +217,16 @@ h2 {
         min-height: 0;
     }
 
+    /* Same order as before on phones: heading, photo, text */
     .about-inner {
         grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-template-areas: "heading" "image" "text";
     }
 
     .about-image {
-        order: -1;
         width: 100%;
+        margin-bottom: 48px;
     }
 
     .about-image img {
