@@ -7,6 +7,8 @@ body.night-mode #home h1               { color: var(--white); }
 body.night-mode #about p,
 body.night-mode h2                     { color: rgba(255, 255, 255, 0.6); }
 body.night-mode #contact a             { color: var(--white); border-color: var(--white); }
+body.night-mode #contact .contact-icons a       { color: var(--gray); }
+body.night-mode #contact .contact-icons a:hover { color: var(--white); }
 
 body.night-mode #particle-canvas       { opacity: 1; }
 body.night-mode #particle-canvas.is-dimmed { opacity: 0.35; }   /* past the hero, see particles.js */
