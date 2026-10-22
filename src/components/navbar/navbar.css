@@ -19,6 +19,7 @@ nav {
     white-space: nowrap;
     overflow: hidden;
     --nav-line: rgba(0, 0, 0, 0.08);
+    --spot-size: 150px;
     --nav-cap: rgba(0, 0, 0, 0.35);   /* darker ends, like brackets: ( … ) */
 }
 
@@ -46,7 +47,7 @@ nav::before {
 }
 
 nav::after {
-    background: radial-gradient(150px circle at var(--spot-x, 50%) var(--spot-y, 50%), var(--spot-border), transparent 70%);
+    background: radial-gradient(var(--spot-size) circle at var(--spot-x, 50%) var(--spot-y, 50%), var(--spot-border), transparent 70%);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -118,6 +119,11 @@ nav::after {
     nav:hover::after          { opacity: 1; }
 }
 nav.spot-active::after        { opacity: 1; }
+
+/* A tap marks one link, so the light is much tighter on touch screens */
+@media (hover: none) {
+    nav { --spot-size: 70px; }
+}
 nav:hover .navbar-divider     { background: #cfcfcf; }   /* a hint, not a flash — the frame spotlight does the main work */
 .navbar-home:hover            { color: #000; }
 .navbar-links a:hover         { color: #000; }

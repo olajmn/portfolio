@@ -36,6 +36,7 @@
     border-right: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
     --tint: rgba(0, 0, 0, 0.025);
+    --spot-size: 300px;
 }
 
 .project-body {
@@ -193,7 +194,7 @@
     inset: -1px;
     padding: 1px;
     pointer-events: none;
-    background: radial-gradient(300px circle at var(--spot-x, 50%) var(--spot-y, 50%), var(--spot-border), transparent 70%);
+    background: radial-gradient(var(--spot-size) circle at var(--spot-x, 50%) var(--spot-y, 50%), var(--spot-border), transparent 70%);
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -209,6 +210,10 @@
 }
 .project-card.spot-active::before,
 .project-card.spot-active::after { opacity: 1; }
+
+@media (hover: none) {
+    .project-card { --spot-size: 180px; }
+}
 
 @media (prefers-reduced-motion: reduce) {
     .project-card:hover .project-image img,
