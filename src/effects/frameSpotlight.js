@@ -10,7 +10,7 @@
 //  4. Touch scroll  - a finger scroll clears the held mark
 
 
-const TAP_GLOW    = 1000;  // ms a tap lights up a card before it fades
+const TAP_GLOW    = 1500;  // ms a tap lights up a card before it fades
 const SCROLL_DRAG = 10;    // px a finger must move before it counts as scrolling
 
 
