@@ -23,7 +23,14 @@
 // ──────────────────────────────────────────────
 const canvas = document.getElementById('particle-canvas');
 const ctx    = canvas.getContext('2d');
-function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+// Only rebuild when the canvas really changed size (rotation, window resize).
+// Rebuilding clears it and moves the scene's centre, so it must not happen on
+// the resize events phones fire while scrolling (see particles.css).
+function resizeCanvas() {
+    if (canvas.width === canvas.offsetWidth && canvas.height === canvas.offsetHeight) return;
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+}
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
