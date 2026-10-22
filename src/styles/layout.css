@@ -26,7 +26,7 @@ h2 {
     font-weight: 400;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: var(--black);   /* black vs. the grey mono metadata below, so headings read as headings */
+    color: var(--gray);
     margin-bottom: 60px;
     min-height: 1.6em;
 }
