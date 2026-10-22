@@ -19,7 +19,7 @@ Personal developer portfolio — built with plain HTML, CSS, and vanilla JavaScr
 ## Structure
 
 ```
-index.html              Page markup (home, about, education, work, contact)
+index.html              Page markup (home, about, projects, education, contact)
 CLAUDE.md               AI session instructions (loads global-standards/)
 assets/images/          Images
 global-standards/       Reusable code, documentation, and AI-collaboration guides
