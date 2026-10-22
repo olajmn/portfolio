@@ -2,6 +2,25 @@
    PROJECT CARDS
 =========================== */
 
+/* Contents
+    1. Grid and card
+    2. Image
+       - .project-image--carousel   (driven by carousel.js)
+    3. Text
+       - .project-label, h3, .project-description, .project-stack
+    4. Footer and links
+    5. Demo password                (filled in by demoPassword.js)
+    6. Hover
+    7. Image seam (desktop)
+    8. Mobile
+    9. Night mode
+*/
+
+
+/* ===========================
+   1. GRID AND CARD
+=========================== */
+
 .project-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -18,6 +37,18 @@
     border-bottom: 1px solid var(--line);
     --tint: rgba(0, 0, 0, 0.025);
 }
+
+.project-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 32px;
+}
+
+
+/* ===========================
+   2. IMAGE
+=========================== */
 
 .project-image {
     aspect-ratio: 16 / 9;
@@ -51,12 +82,10 @@
     opacity: 1;
 }
 
-.project-body {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    padding: 32px;
-}
+
+/* ===========================
+   3. TEXT
+=========================== */
 
 .project-label {
     font-family: var(--font-mono);
@@ -90,6 +119,11 @@
     margin-bottom: 24px;
 }
 
+
+/* ===========================
+   4. FOOTER AND LINKS
+=========================== */
+
 /* margin-top: auto pins the footer to the bottom, so both cards line up */
 .project-footer {
     margin-top: auto;
@@ -111,6 +145,22 @@
     flex-wrap: wrap;
     gap: 8px 24px;
 }
+
+.project-link {
+    color: var(--black);
+    text-decoration: none;
+    opacity: 0.75;
+    transition: opacity 0.3s ease;
+}
+
+.project-link:hover {
+    opacity: 1;
+}
+
+
+/* ===========================
+   5. DEMO PASSWORD
+=========================== */
 
 /* Filled in by demoPassword.js: "Show password" + eye, or the password + hide + copy */
 .project-password {
@@ -150,20 +200,9 @@
     flex-shrink: 0;
 }
 
-.project-link {
-    color: var(--black);
-    text-decoration: none;
-    opacity: 0.75;
-    transition: opacity 0.3s ease;
-}
-
-.project-link:hover {
-    opacity: 1;
-}
-
 
 /* ===========================
-   HOVER — zoom inside a fixed frame, an even tint, and a frame spotlight
+   6. HOVER — zoom inside a fixed frame, an even tint, and a frame spotlight
 =========================== */
 
 .project-card:hover .project-image img { transform: scale(1.04); }
@@ -215,6 +254,10 @@
 }
 
 
+/* ===========================
+   7. IMAGE SEAM (DESKTOP)
+=========================== */
+
 /* The light grey seam between two images reads as white next to dark photos.
    A 1px shadow on the left card's image covers that part of its right border.
    Desktop only — on mobile the cards stack and there is no seam. */
@@ -226,7 +269,7 @@
 
 
 /* ===========================
-   MOBILE
+   8. MOBILE
 =========================== */
 
 @media (max-width: 768px) {
@@ -241,11 +284,10 @@
 
 
 /* ===========================
-   NIGHT MODE
+   9. NIGHT MODE
 =========================== */
 
 body.night-mode .project-card      { --tint: rgba(255, 255, 255, 0.04); }
 body.night-mode .project-link,
 body.night-mode .password-text     { color: var(--white); }
 body.night-mode .project-card h3   { color: var(--white); }
-
