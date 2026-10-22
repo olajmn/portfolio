@@ -225,6 +225,17 @@
     transition-delay: 0.4s;
 }
 
+/* Set by demoPassword.js after copying: show "Copied!" at once, then keep it closed */
+.project-password [data-tooltip].tooltip-shown::after {
+    opacity: 1;
+    transition-delay: 0s;
+}
+
+.project-password [data-tooltip].tooltip-hidden::after {
+    opacity: 0;
+    transition-delay: 0s;
+}
+
 
 /* ===========================
    6. HOVER — zoom inside a fixed frame, an even tint, and a frame spotlight
