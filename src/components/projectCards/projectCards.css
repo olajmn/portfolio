@@ -146,15 +146,15 @@
     gap: 8px 24px;
 }
 
+/* Same grey as the year at rest; darkens on hover */
 .project-link {
-    color: var(--black);
+    color: var(--gray);
     text-decoration: none;
-    opacity: 0.75;
-    transition: opacity 0.3s ease;
+    transition: color 0.3s ease;
 }
 
 .project-link:hover {
-    opacity: 1;
+    color: var(--black);
 }
 
 
@@ -288,6 +288,5 @@
 =========================== */
 
 body.night-mode .project-card      { --tint: rgba(255, 255, 255, 0.04); }
-body.night-mode .project-link,
-body.night-mode .password-text     { color: var(--white); }
+body.night-mode .project-link:hover { color: var(--white); }
 body.night-mode .project-card h3   { color: var(--white); }
