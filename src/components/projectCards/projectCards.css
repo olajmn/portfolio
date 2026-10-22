@@ -162,7 +162,7 @@
    5. DEMO PASSWORD
 =========================== */
 
-/* Filled in by demoPassword.js: "Show password" + eye, or the password + hide + copy */
+/* Filled in by demoPassword.js: dots (or the password) + eye + copy */
 .project-password {
     display: inline-flex;
     align-items: center;
@@ -184,14 +184,13 @@
 }
 
 .password-text {
-    color: var(--black);
+    color: var(--gray);
     text-transform: none;
-    user-select: all;
+    letter-spacing: 0.1em;
 }
 
-/* display: inline-flex above would otherwise override the hidden attribute */
-.project-password [hidden] {
-    display: none;
+.password-text.is-visible {
+    user-select: all;
 }
 
 .project-password svg {

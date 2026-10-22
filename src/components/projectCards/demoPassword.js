@@ -1,5 +1,6 @@
-//  DEMO PASSWORD — fills each .project-password with "Show password" + eye,
-//  or the password + hide + copy. The password itself is the element's
+//  DEMO PASSWORD — Bitwarden-style field in each .project-password: the
+//  password masked as dots, an eye to show/hide it, and a copy button that
+//  works without revealing it. The password itself is the element's
 //  data-password in index.html; styles in projectCards.css, section 5.
 
 
@@ -11,8 +12,9 @@ const CHECK_ICON   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
 
 document.querySelectorAll('.project-password').forEach(function(box) {
     const password = box.dataset.password;
+    const masked   = '•'.repeat(password.length);   // one dot per character
 
-    box.innerHTML = '<span class="password-text"></span>'
+    box.innerHTML = '<span class="password-text" aria-label="Demo password"></span>'
         + '<button type="button" class="project-link password-toggle"></button>'
         + `<button type="button" class="project-link password-copy" aria-label="Copy password">${COPY_ICON}</button>`;
 
@@ -20,12 +22,11 @@ document.querySelectorAll('.project-password').forEach(function(box) {
     const toggle     = box.querySelector('.password-toggle');
     const copyButton = box.querySelector('.password-copy');
     let visible = false;
-    text.textContent = password;
 
     function render() {
-        text.hidden = !visible;
-        copyButton.hidden = !visible;
-        toggle.innerHTML = visible ? EYE_OFF_ICON : 'Show password ' + EYE_ICON;
+        text.textContent = visible ? password : masked;
+        text.classList.toggle('is-visible', visible);
+        toggle.innerHTML = visible ? EYE_OFF_ICON : EYE_ICON;
         toggle.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
     }
 
@@ -35,10 +36,10 @@ document.querySelectorAll('.project-password').forEach(function(box) {
     });
 
     copyButton.addEventListener('click', function() {
-        // Clipboard needs https or localhost; the text stays selectable as a fallback
+        // Clipboard needs https or localhost
         if (!navigator.clipboard) return;
         navigator.clipboard.writeText(password).then(function() {
-            // Show the check briefly, then close the password again
+            // Show the check briefly, then mask the password again
             copyButton.innerHTML = CHECK_ICON;
             setTimeout(function() {
                 copyButton.innerHTML = COPY_ICON;
