@@ -26,7 +26,8 @@ A canvas particle system shown behind the page in night mode. Everything lives i
 | Which palette the scene starts in | `DEFAULT_PALETTE` |
 | Halo at rest (few bright "stars") | `haloRest` in `TIERS` |
 | Halo while a pulse passes (small ones bloom) | `haloPulse` in `TIERS` |
-| Pulse speed and ring width | `RING_SPEED`, `RING_BAND` (section 5) |
+| Pulse speed, ring width and reach | `RING_SPEED`, `RING_BAND`, `PULSE_MAX_R` (section 5) |
+| Colour wave: time between clicks | `CLICK_COOLDOWN` in `colorWave.js` |
 
 ## Limitations
 

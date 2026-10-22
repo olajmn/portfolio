@@ -11,14 +11,21 @@ import { addPulseAt, PALETTE_NAMES, DEFAULT_PALETTE } from './particles.js';
 // the name that toggles night mode, and clicks that end a text selection.
 const CLICK_IGNORE = 'a, button, input, textarea, nav, #name-toggle';
 
+// At most one wave per CLICK_COOLDOWN, so rapid clicking can't pile up rings
+const CLICK_COOLDOWN = 300;   // ms
+
 let paletteIndex = PALETTE_NAMES.indexOf(DEFAULT_PALETTE);
+let lastClick    = 0;
 
 
 document.addEventListener('click', (e) => {
     if (!document.body.classList.contains('night-mode')) return;
     if (e.target.closest(CLICK_IGNORE)) return;
     if (window.getSelection().toString()) return;
+    if (e.timeStamp - lastClick < CLICK_COOLDOWN) return;
 
     const next = (paletteIndex + 1) % PALETTE_NAMES.length;
-    if (addPulseAt(e.clientX, e.clientY, PALETTE_NAMES[next])) paletteIndex = next;
+    if (!addPulseAt(e.clientX, e.clientY, PALETTE_NAMES[next])) return;
+    paletteIndex = next;
+    lastClick    = e.timeStamp;
 });

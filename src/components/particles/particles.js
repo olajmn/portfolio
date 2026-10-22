@@ -10,11 +10,12 @@
 //  4. Light dots
 //     - getSprite(), stamp()
 //  5. Pulse state
+//     - finishPaletteRing()
 //  6. Animation
 //     - project(), animate()
 //  7. Night mode
 //  8. API
-//     - PALETTE_NAMES, DEFAULT_PALETTE, addPulseAt(), finishPaletteRing()
+//     - PALETTE_NAMES, DEFAULT_PALETTE, addPulseAt()
 
 
 // ──────────────────────────────────────────────
@@ -359,13 +360,24 @@ function stamp(sprite, x, y, r) {
 // 5. PULSE STATE
 // ──────────────────────────────────────────────
 const impulseRings = [];
-const RING_SPEED = 2.8;
-const RING_BAND  = 55;
+const RING_SPEED  = 2.8;
+const RING_BAND   = 55;
+const PULSE_MAX_R = 550;   // how far a normal pulse ring travels (px)
 let firstPulse    = true;  // the first pulse comes right away, from tier 9
 let pulseReady    = false; // blocks a new pulse while the system is exhausted
 let silenceTimer  = 0;    // mandatory silence between bursts
 let burstRemain   = 0;    // number of remaining pulses in the ongoing burst
 let burstTimer    = 0;    // frames until the next pulse in the burst
+
+
+// When a palette ring has crossed the screen, its palette becomes the one new
+// particles are born in. If no other palette ring is still travelling,
+// particles it never reached (off screen) take it too.
+function finishPaletteRing(palette) {
+    activePalette = palette;
+    if (impulseRings.some(ring => ring.palette)) return;
+    for (const p of particles) p.palette = palette;
+}
 
 
 // ──────────────────────────────────────────────
@@ -446,7 +458,7 @@ function animate() {
     // First pulse always from tier 9
     if (firstPulse) {
         const t9 = particles.find(p => p.isDefaultTier9);
-        if (t9) impulseRings.push({ x: t9.x, y: t9.y, r: 0, maxR: 550, alpha: 1.0 });
+        if (t9) impulseRings.push({ x: t9.x, y: t9.y, r: 0, maxR: PULSE_MAX_R, alpha: 1.0 });
         firstPulse = false;
     }
 
@@ -469,7 +481,7 @@ function animate() {
         for (const p of source) { const w = p.pulseStrength ?? 0; wx += p.x * w; wy += p.y * w; wt += w; }
         const ox = wt > 0 ? wx / wt : 0;
         const oy = wt > 0 ? wy / wt : 0;
-        impulseRings.push({ x: ox, y: oy, r: 0, maxR: 550, alpha: 1.0 });
+        impulseRings.push({ x: ox, y: oy, r: 0, maxR: PULSE_MAX_R, alpha: 1.0 });
     };
 
     // Continue the ongoing burst
@@ -632,7 +644,6 @@ document.addEventListener('nightmode-toggle', () => {
 });
 
 
-
 // ──────────────────────────────────────────────
 // 8. API — used by optional add-ons such as colorWave.js
 // ──────────────────────────────────────────────
@@ -648,16 +659,8 @@ export function addPulseAt(clientX, clientY, palette) {
     const rect = canvas.getBoundingClientRect();
     const x = clientX - rect.left - canvas.width / 2;
     const y = clientY - rect.top  - canvas.height / 2;
+    // A palette ring must reach the farthest corner (+ margin) to recolour everything
     const toCorner = Math.hypot(canvas.width / 2 + Math.abs(x), canvas.height / 2 + Math.abs(y));
-    impulseRings.push({ x, y, r: 0, maxR: palette ? toCorner + 100 : 550, alpha: 1.0, palette });
+    impulseRings.push({ x, y, r: 0, maxR: palette ? toCorner + 100 : PULSE_MAX_R, alpha: 1.0, palette });
     return true;
-}
-
-// When a palette ring has crossed the screen, its palette becomes the one new
-// particles are born in. If no other palette ring is still travelling,
-// particles it never reached (off screen) take it too.
-function finishPaletteRing(palette) {
-    activePalette = palette;
-    if (impulseRings.some(ring => ring.palette)) return;
-    for (const p of particles) p.palette = palette;
 }
