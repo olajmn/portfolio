@@ -11,6 +11,10 @@ A canvas particle system shown behind the page in night mode. Everything lives i
 5. **Pulses run through the scene** (sections 5–6). The first pulse starts from tier 9. Tiers 4 and 5 slowly charge up; once charged, a burst of 1–3 pulse rings can start, followed by 4–9 s of silence. A ring that hits a charged tier 4/5 particle can set off a new ring, which gives the chain reaction. Rings are invisible — only the particles they pass light up.
 6. **Light dots draw them** (section 4). Each colour gets one soft radial-gradient sprite, drawn once and then stamped with `drawImage`, with additive blending (`'lighter'`) so overlapping light adds up. This replaces `shadowBlur`, which is too expensive per particle.
 
+## Add-ons
+
+- **`colorWave.js`** — clicking the page in night mode sends a pulse from the click point. It only uses `addPulseAt()` from `particles.js` (section 8). To turn it off, remove its import from `src/main.js`.
+
 ## Tuning
 
 | What | Where |
