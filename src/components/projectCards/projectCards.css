@@ -194,17 +194,16 @@
     flex-shrink: 0;
 }
 
-/* Small dark label under the eye and copy icons, after a short hover delay */
+/* Small dark label under the eye and copy icons, after a short hover delay.
+   The "Copied!" bubble (added by demoPassword.js) shares the same look. */
 .project-password [data-tooltip] {
     position: relative;
 }
 
-.project-password [data-tooltip]::after {
-    content: attr(data-tooltip);
+.project-password [data-tooltip]::after,
+.copied-bubble {
     position: absolute;
-    top: calc(100% + 8px);
     left: 50%;
-    transform: translateX(-50%);
     z-index: 1;
     padding: 5px 9px;
     border-radius: 4px;
@@ -215,8 +214,14 @@
     letter-spacing: normal;
     text-transform: none;
     white-space: nowrap;
-    opacity: 0;
     pointer-events: none;
+}
+
+.project-password [data-tooltip]::after {
+    content: attr(data-tooltip);
+    top: calc(100% + 8px);
+    transform: translateX(-50%);
+    opacity: 0;
     transition: opacity 0.15s ease;
 }
 
@@ -225,15 +230,32 @@
     transition-delay: 0.4s;
 }
 
-/* Set by demoPassword.js after copying: show "Copied!" at once, then keep it closed */
-.project-password [data-tooltip].tooltip-shown::after {
-    opacity: 1;
-    transition-delay: 0s;
-}
-
+/* Set by demoPassword.js after copying, until the mouse leaves the button */
 .project-password [data-tooltip].tooltip-hidden::after {
     opacity: 0;
     transition-delay: 0s;
+}
+
+/* "Copied!" pops up above the icon, floats upward and fades out */
+.copied-bubble {
+    bottom: calc(100% + 6px);
+    animation: copied-float 1.2s ease-out forwards;
+}
+
+@keyframes copied-float {
+    0%   { opacity: 0; transform: translate(-50%, 4px) scale(0.9); }
+    15%  { opacity: 1; transform: translate(-50%, 0) scale(1); }
+    60%  { opacity: 1; transform: translate(-50%, -6px); }
+    100% { opacity: 0; transform: translate(-50%, -18px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .copied-bubble { animation: copied-fade 1.2s ease-out forwards; }
+
+    @keyframes copied-fade {
+        0%, 70% { opacity: 1; transform: translateX(-50%); }
+        100%    { opacity: 0; transform: translateX(-50%); }
+    }
 }
 
 
@@ -326,7 +348,8 @@
 body.night-mode .project-card      { --tint: rgba(255, 255, 255, 0.04); }
 body.night-mode .project-link:hover { color: var(--white); }
 body.night-mode .project-card h3   { color: var(--white); }
-body.night-mode .project-password [data-tooltip]::after {
+body.night-mode .project-password [data-tooltip]::after,
+body.night-mode .copied-bubble {
     background: #1a1a1a;
     border: 1px solid rgba(255, 255, 255, 0.15);
 }

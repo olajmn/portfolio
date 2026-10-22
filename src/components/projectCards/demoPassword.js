@@ -35,6 +35,8 @@ document.querySelectorAll('.project-password').forEach(function(box) {
         render();
     });
 
+    let iconTimer = null;
+
     copyButton.addEventListener('click', function() {
         // Clipboard needs https or localhost
         if (!navigator.clipboard) return;
@@ -43,23 +45,27 @@ document.querySelectorAll('.project-password').forEach(function(box) {
             visible = false;
             render();
 
-            // "Copied!" in the tooltip and a check, then the tooltip closes
-            copyButton.innerHTML = CHECK_ICON;
-            copyButton.dataset.tooltip = 'Copied!';
-            copyButton.classList.add('tooltip-shown');
-            setTimeout(function() {
-                copyButton.classList.remove('tooltip-shown');
-                // Keep the tooltip closed while the mouse is still on the button
-                copyButton.classList.add('tooltip-hidden');
-                copyButton.innerHTML = COPY_ICON;
+            // Swap only the icon, so a bubble from an earlier click keeps animating
+            copyButton.querySelector('svg').outerHTML = CHECK_ICON;
+            clearTimeout(iconTimer);
+            iconTimer = setTimeout(function() {
+                copyButton.querySelector('svg').outerHTML = COPY_ICON;
             }, 1500);
+
+            // The "Copy password" tooltip stays closed until the mouse leaves
+            copyButton.classList.add('tooltip-hidden');
+
+            // "Copied!" bubble: pops up, floats upward and fades (CSS keyframes)
+            const bubble = document.createElement('span');
+            bubble.className = 'copied-bubble';
+            bubble.textContent = 'Copied!';
+            bubble.addEventListener('animationend', function() { bubble.remove(); });
+            copyButton.appendChild(bubble);
         }).catch(function() {});
     });
 
     copyButton.addEventListener('mouseleave', function() {
-        if (!copyButton.classList.contains('tooltip-hidden')) return;
         copyButton.classList.remove('tooltip-hidden');
-        copyButton.dataset.tooltip = 'Copy password';
     });
 
     render();
