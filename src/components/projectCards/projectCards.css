@@ -197,9 +197,9 @@
     transition: opacity 0.3s ease;
 }
 
-/* Mouse: zoom and light while hovering. Touch: no zoom, and a tap adds
-   .spot-active briefly (see effects/frameSpotlight.js); phones' "sticky"
-   hover is ignored, so nothing stays zoomed or lit after a tap. */
+/* Mouse: zoom and light while hovering. Touch: a tap adds .spot-active for a
+   moment (see effects/frameSpotlight.js), which zooms and lights the card and
+   then lets it settle; phones' "sticky" hover is ignored, so nothing stays on. */
 @media (hover: hover) {
     .project-card:hover .project-image img { transform: scale(1.04); }
 
@@ -209,6 +209,11 @@
     .project-card:hover::before,
     .project-card:hover::after { opacity: 1; }
 }
+.project-card.spot-active .project-image img { transform: scale(1.04); }
+
+.project-card.spot-active h3,
+.project-card.spot-active .project-description { transform: scale(1.03); }
+
 .project-card.spot-active::before,
 .project-card.spot-active::after { opacity: 1; }
 
@@ -219,7 +224,10 @@
 @media (prefers-reduced-motion: reduce) {
     .project-card:hover .project-image img,
     .project-card:hover h3,
-    .project-card:hover .project-description { transform: none; }
+    .project-card:hover .project-description,
+    .project-card.spot-active .project-image img,
+    .project-card.spot-active h3,
+    .project-card.spot-active .project-description { transform: none; }
 }
 
 
