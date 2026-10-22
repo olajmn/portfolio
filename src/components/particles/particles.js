@@ -416,6 +416,15 @@ function animate() {
 let running = false;
 let started = false;
 
+// Dim the particles once the hero is scrolled past, so they don't compete
+// with the text (opacity in night-mode.css)
+const homeSection = document.getElementById('home');
+function updateDim() {
+    canvas.classList.toggle('is-dimmed', window.scrollY > homeSection.offsetHeight * 0.6);
+}
+window.addEventListener('scroll', updateDim, { passive: true });
+updateDim();
+
 // Keep drawing until the fade-out finishes, then stop
 canvas.addEventListener('transitionend', () => {
     if (!document.body.classList.contains('night-mode')) running = false;
