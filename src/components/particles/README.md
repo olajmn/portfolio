@@ -13,7 +13,7 @@ A canvas particle system shown behind the page in night mode. Everything lives i
 
 ## Add-ons
 
-- **`colorWave.js`** — clicking the page in night mode sends a pulse from the click point that recolours the particles as it spreads, moving to the next palette in `PALETTES` each time. It only uses the exports in `particles.js` section 8. To turn it off, remove its import from `src/main.js`.
+- **`colorWave.js`** — clicking the page in night mode sends a pulse from the click point that recolours the particles as it spreads, moving to the next palette in `PALETTES` each time. A small "Click anywhere" hint under the navbar shows it's possible, until the first wave. Its styles are in `colorWave.css`, which `colorWave.js` loads itself. It only uses the exports in `particles.js` section 8. To turn it off, remove its import from `src/main.js`.
 
 ## Tuning
 
@@ -27,7 +27,7 @@ A canvas particle system shown behind the page in night mode. Everything lives i
 | Halo at rest (few bright "stars") | `haloRest` in `TIERS` |
 | Halo while a pulse passes (small ones bloom) | `haloPulse` in `TIERS` |
 | Pulse speed, ring width and reach | `RING_SPEED`, `RING_BAND`, `PULSE_MAX_R` (section 5) |
-| Colour wave: time between clicks | `CLICK_COOLDOWN` in `colorWave.js` |
+| Colour wave: time between clicks, how long the hint stays | `CLICK_COOLDOWN`, `HINT_DURATION` in `colorWave.js` |
 
 ## Limitations
 
