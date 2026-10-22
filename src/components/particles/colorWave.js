@@ -27,7 +27,7 @@ const CLICK_IGNORE = 'a, button, input, textarea, nav, #name-toggle';
 
 // At most one wave per CLICK_COOLDOWN, so rapid clicking can't pile up rings
 const CLICK_COOLDOWN = 300;    // ms
-const HINT_DURATION  = 5000;   // ms the hint stays before fading on its own
+const HINT_DURATION  = 4000;   // ms the hint stays before fading on its own
 const HINT_GAP       = 10;     // px between the navbar and the hint
 
 let paletteIndex = PALETTE_NAMES.indexOf(DEFAULT_PALETTE);
