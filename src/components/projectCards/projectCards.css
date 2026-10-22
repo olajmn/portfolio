@@ -34,10 +34,21 @@
     transition: transform 0.5s ease;
 }
 
-.project-image--drawing img {
-    object-fit: contain;
+/* Images stacked on top of each other; projectCards.js fades between them */
+.project-image--carousel {
+    position: relative;
+}
+
+.project-image--carousel img {
+    position: absolute;
+    inset: 0;
     object-position: center;
-    padding: 15%;
+    opacity: 0;
+    transition: opacity 1.2s ease, transform 0.5s ease;
+}
+
+.project-image--carousel img.is-active {
+    opacity: 1;
 }
 
 .project-body {
@@ -150,11 +161,6 @@
     opacity: 1;
 }
 
-.img-multiply {
-    transition: filter 0.8s ease;
-    mix-blend-mode: multiply;
-}
-
 
 /* ===========================
    HOVER — zoom inside a fixed frame, an even tint, and a frame spotlight
@@ -233,8 +239,3 @@ body.night-mode .project-link,
 body.night-mode .password-text     { color: var(--white); }
 body.night-mode .project-card h3   { color: var(--white); }
 
-/* Only line drawings are inverted — screenshots and photos keep their colors */
-body.night-mode .img-multiply {
-    filter: invert(1);
-    mix-blend-mode: normal;
-}

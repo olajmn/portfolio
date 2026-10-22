@@ -28,7 +28,7 @@ src/
   components/
     navbar/             Navbar markup + dark/light mode toggle
     particles/          Canvas particle animation
-    projectCards/       Project grid, hover effects, demo password
+    projectCards/       Project grid, hover effects, image carousel, demo password
   effects/
     anchorScroll.js     Smooth scroll to sections
     heroScroll.js       Hero title shrinks/moves on scroll
