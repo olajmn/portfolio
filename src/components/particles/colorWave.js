@@ -1,6 +1,6 @@
 //  COLOR WAVE — optional add-on: clicking the page in night mode sends a pulse
 //  from the click point that recolours the particles as it spreads, moving to
-//  the next palette in PALETTES each time. A small "Click anywhere" hint under
+//  the next palette in PALETTES each time. A small "Click anywhere to change color" hint under
 //  the navbar shows that it's possible. Everything for this feature lives in
 //  this file and colorWave.css (loaded from here); to turn it off, remove its
 //  import from src/main.js.
@@ -27,7 +27,7 @@ const CLICK_IGNORE = 'a, button, input, textarea, nav, #name-toggle';
 
 // At most one wave per CLICK_COOLDOWN, so rapid clicking can't pile up rings
 const CLICK_COOLDOWN = 300;    // ms
-const HINT_DURATION  = 4000;   // ms the hint stays before fading on its own
+const HINT_DURATION  = 2000;   // ms the hint stays before fading on its own
 const HINT_GAP       = 10;     // px between the navbar and the hint
 
 let paletteIndex = PALETTE_NAMES.indexOf(DEFAULT_PALETTE);
@@ -40,7 +40,7 @@ let hintTimer    = null;
 
 const hint = document.createElement('div');
 hint.className   = 'color-wave-hint';
-hint.textContent = 'Click anywhere';
+hint.textContent = 'Click anywhere to change color';
 hint.setAttribute('aria-hidden', 'true');
 document.body.append(hint);
 

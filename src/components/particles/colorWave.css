@@ -2,7 +2,7 @@
    COLOR WAVE — hint
 =========================== */
 
-/* "Click anywhere", shown just under the navbar when night mode turns on.
+/* "Click anywhere to change color", shown just under the navbar when night mode turns on.
    Loaded and positioned by colorWave.js. Shape like the password tooltips,
    fill and frame like the navbar in night mode, so it doesn't pop. */
 .color-wave-hint {

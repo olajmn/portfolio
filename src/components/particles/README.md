@@ -13,7 +13,7 @@ A canvas particle system shown behind the page in night mode. Everything lives i
 
 ## Add-ons
 
-- **`colorWave.js`** — clicking the page in night mode sends a pulse from the click point that recolours the particles as it spreads, moving to the next palette in `PALETTES` each time. A small "Click anywhere" hint under the navbar shows it's possible, until the first wave. Its styles are in `colorWave.css`, which `colorWave.js` loads itself. It only uses the exports in `particles.js` section 8. To turn it off, remove its import from `src/main.js`.
+- **`colorWave.js`** — clicking the page in night mode sends a pulse from the click point that recolours the particles as it spreads, moving to the next palette in `PALETTES` each time. A small "Click anywhere to change color" hint under the navbar shows it's possible, until the first wave. Its styles are in `colorWave.css`, which `colorWave.js` loads itself. It only uses the exports in `particles.js` section 8. To turn it off, remove its import from `src/main.js`.
 
 ## Tuning
 
