@@ -223,26 +223,27 @@ const PALETTES = {
         9:    'rgba(134,  21,  26, ',
         core: 'rgba(252, 219, 213, ',
     },
-    gold: {
-        1:    'rgba(168, 125,  60, ',
-        2:    'rgba(163, 114,  49, ',
-        3:    'rgba(156, 101,  39, ',
-        4:    'rgba(161, 109,  46, ',
-        5:    'rgba(136,  79,  25, ',
-        6:    'rgba(104,  54,  14, ',
-        9:    'rgba(105,  54,  12, ',
-        core: 'rgba(239, 225, 201, ',
-    },
-    green: {
-        1:    'rgba( 60, 149,  95, ',
-        2:    'rgba( 52, 139,  88, ',
-        3:    'rgba( 42, 128,  78, ',
-        4:    'rgba( 47, 135,  83, ',
-        5:    'rgba( 27, 106,  61, ',
-        6:    'rgba( 13,  78,  42, ',
-        9:    'rgba( 10,  78,  41, ',
-        core: 'rgba(202, 234, 211, ',
-    },
+    // Gold and green are left out of the cycle for now; uncomment to bring them back.
+    // gold: {
+    //     1:    'rgba(168, 125,  60, ',
+    //     2:    'rgba(163, 114,  49, ',
+    //     3:    'rgba(156, 101,  39, ',
+    //     4:    'rgba(161, 109,  46, ',
+    //     5:    'rgba(136,  79,  25, ',
+    //     6:    'rgba(104,  54,  14, ',
+    //     9:    'rgba(105,  54,  12, ',
+    //     core: 'rgba(239, 225, 201, ',
+    // },
+    // green: {
+    //     1:    'rgba( 60, 149,  95, ',
+    //     2:    'rgba( 52, 139,  88, ',
+    //     3:    'rgba( 42, 128,  78, ',
+    //     4:    'rgba( 47, 135,  83, ',
+    //     5:    'rgba( 27, 106,  61, ',
+    //     6:    'rgba( 13,  78,  42, ',
+    //     9:    'rgba( 10,  78,  41, ',
+    //     core: 'rgba(202, 234, 211, ',
+    // },
 };
 
 // The palette new particles are born in. Starts as DEFAULT_PALETTE; a pulse
