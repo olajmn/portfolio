@@ -1,26 +1,50 @@
-//  PARTICLES — canvas particle system (pseudo-3D, physics-based) revealed in
-//  night mode. Runs only while night mode is on; see 7. Night mode.
+// Canvas particle system shown in night mode.
 
 // Contents
-//  1. Setup
-//  2. Config
-//     - CONFIG, VISUAL, MIX, TIERS, PALETTES
-//  3. Spawn
-//     - rnd(), pickTier(), spawnParticle(), makeTier9(), spawnScene()
-//  4. Light dots
-//     - getSprite(), stamp()
-//  5. Pulse state
-//     - finishPaletteRing()
-//  6. Animation
-//     - project(), animate()
-//  7. Night mode
-//  8. API
-//     - PALETTE_NAMES, DEFAULT_PALETTE, addPulseAt()
+// 1. Setup
+//    - canvas
+//    - ctx
+//    - resizeCanvas()
+//    - isMobile
+//    - FOCAL
+//    - Z_CENTER
+// 2. Config
+//    - CONFIG
+//    - VISUAL
+//    - MIX
+//    - TIERS
+//    - PALETTES
+//    - DEFAULT_PALETTE
+//    - activePalette
+// 3. Spawn
+//    - rnd()
+//    - pickTier()
+//    - spawnParticle()
+//    - makeTier9()
+//    - particles
+//    - spawnScene()
+// 4. Light dots
+//    - SPRITE_SIZE
+//    - sprites
+//    - getSprite()
+//    - stamp()
+// 5. Pulse state
+//    - impulseRings
+//    - RING_SPEED
+//    - RING_BAND
+//    - PULSE_MAX_R
+//    - finishPaletteRing()
+// 6. Animation
+//    - project()
+//    - animate()
+// 7. Night mode
+//    - updateDim()
+// 8. API
+//    - PALETTE_NAMES
+//    - DEFAULT_PALETTE
+//    - addPulseAt()
 
-
-// ──────────────────────────────────────────────
-// 1. SETUP
-// ──────────────────────────────────────────────
+// 1. Setup
 const canvas = document.getElementById('particle-canvas');
 const ctx    = canvas.getContext('2d');
 // Only rebuild when the canvas really changed size (rotation, window resize).
@@ -40,10 +64,7 @@ const FOCAL    = 600;
 const Z_CENTER = 600;
 
 
-// ──────────────────────────────────────────────
-// 2. CONFIG
-// ──────────────────────────────────────────────
-// Everything tunable lives in this section.
+// 2. Config
 
 const CONFIG = {
     count:         isMobile ? 80 : 250,      // total number of particles
@@ -252,9 +273,7 @@ const DEFAULT_PALETTE = 'silver';
 let activePalette     = DEFAULT_PALETTE;
 
 
-// ──────────────────────────────────────────────
-// 3. SPAWN
-// ──────────────────────────────────────────────
+// 3. Spawn
 function rnd(min, max) { return min + Math.random() * (max - min); }
 
 function pickTier() {
@@ -330,9 +349,7 @@ function spawnScene() {
 }
 
 
-// ──────────────────────────────────────────────
-// 4. LIGHT DOTS
-// ──────────────────────────────────────────────
+// 4. Light dots
 // One soft radial-gradient sprite per colour, drawn once and then stamped with
 // drawImage. Much cheaper than shadowBlur, which is recomputed for every
 // particle on every frame.
@@ -365,9 +382,7 @@ function stamp(sprite, x, y, r) {
 }
 
 
-// ──────────────────────────────────────────────
-// 5. PULSE STATE
-// ──────────────────────────────────────────────
+// 5. Pulse state
 const impulseRings = [];
 const RING_SPEED  = 2.8;
 const RING_BAND   = 55;
@@ -389,9 +404,7 @@ function finishPaletteRing(palette) {
 }
 
 
-// ──────────────────────────────────────────────
-// 6. ANIMATION
-// ──────────────────────────────────────────────
+// 6. Animation
 function project(x, y, z) {
     const sc = FOCAL / Math.max(z, 1);
     return { sx: canvas.width / 2 + x * sc, sy: canvas.height / 2 + y * sc, scale: Z_CENTER / Math.max(z, 1) };
@@ -615,9 +628,7 @@ function animate() {
 }
 
 
-// ──────────────────────────────────────────────
-// 7. NIGHT MODE — run only while the canvas is visible
-// ──────────────────────────────────────────────
+// 7. Night mode
 // The scene starts fresh the first time night mode turns on, then pauses
 // in day mode and resumes where it left off.
 let running = false;
@@ -653,9 +664,8 @@ document.addEventListener('nightmode-toggle', () => {
 });
 
 
-// ──────────────────────────────────────────────
-// 8. API — used by optional add-ons such as colorWave.js
-// ──────────────────────────────────────────────
+// 8. API
+// Used by optional add-ons such as colorWave.js.
 export const PALETTE_NAMES = Object.keys(PALETTES);
 export { DEFAULT_PALETTE };
 

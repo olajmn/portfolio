@@ -1,11 +1,11 @@
-//  BIO LINES — text fades based on scroll position
-//
-//  How it works:
-//  1. We get the center of each paragraph (getBoundingClientRect)
-//  2. We calculate the distance to the center of the screen
-//  3. The closer to the center, the more visible the text (opacity closer to 1)
-//  4. This runs on every scroll event
+// Fades each bio line by how far it is from the centre of the screen.
 
+// Contents
+// 1. Fade
+//    - bioLines
+//    - updateBioWeights()
+
+// 1. Fade
 
 const bioLines = document.querySelectorAll('.bio-line');
 

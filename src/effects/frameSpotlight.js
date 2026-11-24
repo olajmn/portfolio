@@ -1,18 +1,14 @@
-//  FRAME SPOTLIGHT — places the frame highlight on any element with
-//  [data-spotlight] by setting --spot-x / --spot-y (the light itself is CSS).
-//  Delegated from document, so it also covers the navbar, which is inserted later.
+// Places the frame highlight on any [data-spotlight] element.
 
 // Contents
-//  1. Helpers       - setSpot(), nearestItem()
-//  2. Mouse         - the light follows the pointer
-//  3. Touch tap     - [data-spotlight="hold"] (navbar) keeps a mark on the tapped
-//                     item, like an app's tab bar; anything else glows briefly
-//  4. Touch scroll  - a finger scroll clears the held mark
-
-
-const TAP_GLOW    = 1500;  // ms a tap lights up a card before it fades
-const SCROLL_DRAG = 10;    // px a finger must move before it counts as scrolling
-
+// 1. Helpers
+//    - setSpot()
+//    - nearestItem()
+// 2. Mouse
+// 3. Touch tap
+//    - TAP_GLOW
+// 4. Touch scroll
+//    - SCROLL_DRAG
 
 // 1. Helpers
 
@@ -44,8 +40,10 @@ document.addEventListener('pointermove', function(e) {
 }, { passive: true });
 
 
-// 3. Touch tap — touch screens have no hover, so a tap places the light and
-//    adds .spot-active (shown by the components' CSS)
+// 3. Touch tap
+// Touch screens have no hover, so a tap places the light and adds .spot-active.
+
+const TAP_GLOW = 1500;  // ms a tap lights up a card before it fades
 
 document.addEventListener('pointerdown', function(e) {
     if (e.pointerType === 'mouse') return;
@@ -69,9 +67,10 @@ document.addEventListener('pointerdown', function(e) {
 }, { passive: true });
 
 
-// 4. Touch scroll — tapping a nav link also scrolls the page (smooth scroll to
-//    the section), so only real finger drags clear the mark, not scroll events
+// 4. Touch scroll
+// Tapping a nav link also scrolls the page, so only a real finger drag clears the mark.
 
+const SCROLL_DRAG = 10;  // px a finger must move before it counts as scrolling
 let touchStartY = null;
 
 document.addEventListener('touchstart', function(e) {

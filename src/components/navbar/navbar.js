@@ -1,3 +1,13 @@
+// Builds the navbar and wires the night-mode toggles.
+
+// Contents
+// 1. Navbar
+//    - createNavbar()
+//    - toggleNightMode()
+//    - initNavbar()
+
+// 1. Navbar
+
 function createNavbar() {
     return `
     <nav data-spotlight="hold">

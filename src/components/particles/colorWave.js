@@ -1,14 +1,17 @@
-//  COLOR WAVE — optional add-on: clicking the page in night mode sends a pulse
-//  from the click point that recolours the particles as it spreads, moving to
-//  the next palette in PALETTES each time. A small "Click anywhere to change color" hint under
-//  the navbar shows that it's possible. Everything for this feature lives in
-//  this file and colorWave.css (loaded from here); to turn it off, remove its
-//  import from src/main.js.
+// A click in night mode sends a pulse that recolours the particles. Remove its import in src/main.js to turn it off.
 
 // Contents
-//  1. Setup        - styles, settings, state
-//  2. Hint         - showHint(), hideHint()
-//  3. Colour wave  - the click handler
+// 1. Setup
+//    - styles
+//    - CLICK_IGNORE
+//    - CLICK_COOLDOWN
+//    - HINT_DURATION
+//    - HINT_GAP
+// 2. Hint
+//    - hint
+//    - showHint()
+//    - hideHint()
+// 3. Colour wave
 
 
 import { addPulseAt, PALETTE_NAMES, DEFAULT_PALETTE } from './particles.js';

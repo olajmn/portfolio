@@ -1,16 +1,10 @@
-// ============================================================
-//  TYPEWRITER — "About" types itself out when the page loads
-//
-//  How it works:
-//  1. We clear the h2 text immediately
-//  2. We use setInterval() — a function that repeats itself
-//     at a fixed time interval (here: every 40ms)
-//  3. Each time, we add one letter
-//  4. When all the letters have been typed, we stop
-// ============================================================
-// Reusable function — takes an h2 element and sets up a typewriter on it
+// Types a heading out when it scrolls into view.
 
+// Contents
+// 1. Typewriter
+//    - addTypewriter()
 
+// 1. Typewriter
 
 function addTypewriter(element) {
     if (!element) return;
@@ -39,7 +33,6 @@ function addTypewriter(element) {
     observer.observe(element);
 }
 
-// Use the function on ABOUT WORK CONTACT
 addTypewriter(document.querySelector('#about h2'));
 addTypewriter(document.querySelector('#education h2'));
 addTypewriter(document.querySelector('#projects h2'));

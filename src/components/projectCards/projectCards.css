@@ -1,25 +1,18 @@
-/* ===========================
-   PROJECT CARDS
-=========================== */
+/* The project grid: card, image, text, footer, and hover. The password field is in demoPassword.css. */
 
 /* Contents
-    1. Grid and card
-    2. Image
-       - .project-image--carousel   (driven by carousel.js)
-    3. Text
-       - .project-label, h3, .project-description, .project-stack
-    4. Footer and links
-    5. Hover
-    6. Image seam (desktop)
-    7. Mobile
-    8. Night mode
-   The demo password in the footer has its own demoPassword.css
+   1. Grid and card
+   2. Image
+   3. Text
+   4. Footer and links
+   5. Hover
+   6. Image seam (desktop)
+   7. Mobile
+   8. Night mode
 */
 
 
-/* ===========================
-   1. GRID AND CARD
-=========================== */
+/* 1. Grid and card */
 
 .project-grid {
     display: grid;
@@ -47,9 +40,7 @@
 }
 
 
-/* ===========================
-   2. IMAGE
-=========================== */
+/* 2. Image */
 
 .project-image {
     aspect-ratio: 16 / 9;
@@ -84,9 +75,7 @@
 }
 
 
-/* ===========================
-   3. TEXT
-=========================== */
+/* 3. Text */
 
 .project-label {
     font-family: var(--font-mono);
@@ -124,9 +113,7 @@
 }
 
 
-/* ===========================
-   4. FOOTER AND LINKS
-=========================== */
+/* 4. Footer and links */
 
 .project-footer {
     padding-top: 16px;
@@ -160,9 +147,9 @@
 }
 
 
-/* ===========================
-   5. HOVER — zoom inside a fixed frame, an even tint, and a frame spotlight
-=========================== */
+/* 5. Hover */
+
+/* Zoom inside a fixed frame, an even tint, and a frame spotlight. */
 
 /* Only the content zooms — the stack line and footer (with its buttons) stay put */
 .project-card h3,
@@ -224,9 +211,7 @@
 }
 
 
-/* ===========================
-   6. IMAGE SEAM (DESKTOP)
-=========================== */
+/* 6. Image seam (desktop) */
 
 /* The light grey seam between two images reads as white next to dark photos.
    A 1px shadow on the left card's image covers that part of its right border.
@@ -238,9 +223,7 @@
 }
 
 
-/* ===========================
-   7. MOBILE
-=========================== */
+/* 7. Mobile */
 
 @media (max-width: 768px) {
     .project-grid {
@@ -253,9 +236,7 @@
 }
 
 
-/* ===========================
-   8. NIGHT MODE
-=========================== */
+/* 8. Night mode */
 
 body.night-mode .project-card      { --tint: rgba(255, 255, 255, 0.04); }
 body.night-mode .project-link:hover { color: var(--white); }

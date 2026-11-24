@@ -1,6 +1,10 @@
-/* ===========================
-   NIGHT MODE
-=========================== */
+/* Colours for the page while night mode is on. */
+
+/* Contents
+   1. Page
+*/
+
+/* 1. Page */
 
 body.night-mode                        { background-color: #000; color: var(--white); --line: rgba(255, 255, 255, 0.12); --spot-border: rgba(255, 255, 255, 0.7); }
 body.night-mode #home h1               { color: rgba(255, 255, 255, 0.3); }

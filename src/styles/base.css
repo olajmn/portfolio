@@ -1,12 +1,11 @@
-/* ============================================================
-   PORTFOLIO — Ola Jin Myhre Nymoen
-   Style: Minimalist, black & white, Helvetica
-   ============================================================ */
+/* Reset, shared colour and type tokens, and the page base. */
 
+/* Contents
+   1. Reset and variables
+   2. Base
+*/
 
-/* ===========================
-   RESET & VARIABLES
-=========================== */
+/* 1. Reset and variables */
 
 *, *::before, *::after {
     margin: 0;
@@ -26,9 +25,7 @@
 }
 
 
-/* ===========================
-   BASE
-=========================== */
+/* 2. Base */
 
 body {
     font-family: var(--font);

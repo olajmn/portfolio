@@ -1,5 +1,9 @@
-//  Makes sure nav links always land in the right place,
+// Scrolls each in-page link to its section, with that section's offset.
 
+// Contents
+// 1. Click
+
+// 1. Click
 
 document.addEventListener('click', function(e) {
     const anchor = e.target.closest('a[href^="#"]');

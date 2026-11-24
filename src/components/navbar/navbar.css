@@ -1,6 +1,13 @@
-/* ===========================
-   NAVBAR — structure
-=========================== */
+/* The fixed navbar: its bar, the hover light, and night mode. */
+
+/* Contents
+   1. Bar
+   2. Hover
+   3. Night mode
+   4. Mobile
+*/
+
+/* 1. Bar */
 
 nav {
     position: fixed;
@@ -109,9 +116,7 @@ nav::after {
 }
 
 
-/* ===========================
-   NAVBAR — hover
-=========================== */
+/* 2. Hover */
 
 /* Mouse: light while hovering. Touch: .spot-active stays on the last tap
    (see effects/frameSpotlight.js); phones' "sticky" hover is ignored. */
@@ -130,9 +135,7 @@ nav:hover .navbar-divider     { background: #cfcfcf; }   /* a hint, not a flash 
 .navbar-night-toggle:hover    { color: #000; }
 
 
-/* ===========================
-   NAVBAR — night mode
-=========================== */
+/* 3. Night mode */
 
 body.night-mode nav                  { background: rgba(0, 0, 0, 0.3); --nav-line: rgba(255, 255, 255, 0.12); --nav-cap: rgba(255, 255, 255, 0.35); }
 body.night-mode nav:hover .navbar-divider { background: rgba(255, 255, 255, 0.22); }
@@ -152,9 +155,7 @@ body.night-mode .icon-moon { opacity: 0; transform: translate(-50%, -50%) rotate
 body.night-mode .icon-sun  { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) scale(1); }
 
 
-/* ===========================
-   NAVBAR — mobile
-=========================== */
+/* 4. Mobile */
 
 @media (max-width: 768px) {
     nav {

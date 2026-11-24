@@ -1,5 +1,11 @@
-//  HERO — the title shrinks and slides up on scroll
+// Shrinks and slides the home title up as the page scrolls.
 
+// Contents
+// 1. Scroll
+//    - homeSection
+//    - updateScroll()
+
+// 1. Scroll
 
 const homeSection = document.getElementById('home');
 

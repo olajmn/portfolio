@@ -1,7 +1,10 @@
-//  CAROUSEL — cross-fades through the images in any [data-carousel], like a
-//  slow GIF (used on the architecture card). Reduced motion keeps the first image.
-//  The stacking and fade live in projectCards.css, section 2.
+// Cross-fades the images in any [data-carousel]. The stacking and fade are in projectCards.css.
 
+// Contents
+// 1. Playback
+//    - CAROUSEL_INTERVAL
+
+// 1. Playback
 
 const CAROUSEL_INTERVAL = 3500;   // ms per image
 

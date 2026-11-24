@@ -1,17 +1,15 @@
+/* Layout of the page sections. Project cards are in components/projectCards/projectCards.css. */
+
 /* Contents
-    1. Sections        (shared section box and h2)
-    2. Home
-    3. About
-    4. Education
-    5. Contact
-    6. Mobile
-   Projects lives in components/projectCards/projectCards.css
+   1. Sections
+   2. Home
+   3. About
+   4. Education
+   5. Contact
+   6. Mobile
 */
 
-
-/* ===========================
-   1. SECTIONS
-=========================== */
+/* 1. Sections */
 
 section {
     max-width: var(--max-width);
@@ -29,9 +27,7 @@ h2 {
 }
 
 
-/* ===========================
-   2. HOME
-=========================== */
+/* 2. Home */
 
 #home {
     padding-top: 260px;
@@ -58,9 +54,7 @@ h2 {
 }
 
 
-/* ===========================
-   3. ABOUT
-=========================== */
+/* 3. About */
 
 #about {
     padding-top: 40px;
@@ -118,9 +112,7 @@ h2 {
 }
 
 
-/* ===========================
-   4. EDUCATION
-=========================== */
+/* 4. Education */
 
 .education-list {
     display: flex;
@@ -154,9 +146,7 @@ h2 {
 .edu-school { color: var(--gray); }
 
 
-/* ===========================
-   5. CONTACT
-=========================== */
+/* 5. Contact */
 
 #contact {
     padding-top: 160px;
@@ -201,9 +191,7 @@ h2 {
 }
 
 
-/* ===========================
-   6. MOBILE
-=========================== */
+/* 6. Mobile */
 
 @media (max-width: 768px) {
 

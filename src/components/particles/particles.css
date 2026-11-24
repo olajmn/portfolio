@@ -1,3 +1,11 @@
+/* Full-screen canvas behind the page, shown in night mode. */
+
+/* Contents
+   1. Canvas
+*/
+
+/* 1. Canvas */
+
 #particle-canvas {
     position: fixed;
     top: 0;
