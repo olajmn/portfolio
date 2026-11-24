@@ -4,4 +4,4 @@ Styles for the whole page. `index.html` loads them in this order: `base.css`, `l
 
 `base.css` holds the reset and the shared custom properties, including `--font` and `--font-mono`. `layout.css` holds the sections. `night-mode.css` holds the night-mode overrides.
 
-The principle's word for this folder is not settled (`workflow/docs/03-architecture.md` § 1). It is held by `src/` and holds the three files above.
+The principle's word for this folder is not settled. It is held by `src/` and holds the three files above.

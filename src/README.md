@@ -4,4 +4,4 @@ The JavaScript that runs the site, and the styles the page loads. `main.js` star
 
 A file here is started from `main.js`, or imported by a file that is. Page content stays in `index.html`.
 
-The principle's word for this folder is not settled (`workflow/docs/03-architecture.md` § 1). It is held by the project and holds `main.js`, `components/`, `effects/` and `styles/`.
+The principle's word for this folder is not settled. It is held by the project and holds `main.js`, `components/`, `effects/` and `styles/`.

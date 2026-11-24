@@ -35,7 +35,3 @@ src/
     frameSpotlight.js   Frame highlight for cards and navbar (mouse and touch)
   styles/               Base, layout, and night-mode styles
 ```
-
-## How this project is worked on
-
-The way of working is in `workflow/`: the plan in `workflow/TODO.md`, the documentation in `workflow/docs/` (start with `00-brief.md`), and the rules in `workflow/CONVENTIONS.md` and `workflow/COLLABORATION.md`.

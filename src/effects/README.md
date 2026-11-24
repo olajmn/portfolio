@@ -8,4 +8,4 @@ Scroll and pointer behaviour. Each file runs when `src/main.js` imports it, and 
 - `textFade.js` — the About lines fade with scroll position.
 - `frameSpotlight.js` — the frame highlight on `[data-spotlight]`, including the navbar, which is inserted later.
 
-The principle's word for this folder is not settled (`workflow/docs/03-architecture.md` § 1). It is held by `src/` and holds the five files above.
+The principle's word for this folder is not settled. It is held by `src/` and holds the five files above.

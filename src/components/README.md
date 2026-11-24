@@ -8,4 +8,4 @@ A part of the page that has its own folder.
 
 Night mode is turned on in `navbar/navbar.js`, which sets `night-mode` on `body` and dispatches `nightmode-toggle`. `particles/` listens for that event. It does not import the navbar.
 
-The principle's word for this folder is not settled (`workflow/docs/03-architecture.md` § 1). It is held by `src/` and holds the three folders above.
+The principle's word for this folder is not settled. It is held by `src/` and holds the three folders above.
