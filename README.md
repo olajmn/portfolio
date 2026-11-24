@@ -30,7 +30,7 @@ src/
   effects/
     anchorScroll.js     Smooth scroll to sections
     heroScroll.js       Hero title shrinks/moves on scroll
-    typewriter.js       Section titles type themselves in on scroll
+    typewriter.js       About, Projects, Education and Contact titles type themselves in
     textFade.js         Bio lines fade based on scroll position
     frameSpotlight.js   Frame highlight for cards and navbar (mouse and touch)
   styles/               Base, layout, and night-mode styles

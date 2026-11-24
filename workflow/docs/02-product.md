@@ -12,7 +12,7 @@ One page, `index.html`, with five sections.
 - **Education.** Four programmes, newest first.
 - **Contact.** An email address, and links to GitHub and LinkedIn.
 
-The navbar stays fixed and links to each section. The section headings type themselves in when they enter the view. Night mode turns the page dark and shows a particle scene on the canvas behind it. In night mode, a click sends a colour wave through the particles.
+The navbar stays fixed and links to each section. The About, Projects, Education and Contact headings type themselves in when they enter the view. Night mode turns the page dark and shows a particle scene on the canvas behind it. In night mode, a click sends a colour wave through the particles.
 
 ## 2. Principles
 

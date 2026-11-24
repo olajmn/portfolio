@@ -51,6 +51,6 @@ The source files are not rewritten to `global-standards/_CODE_STRUCTURE.md`. `pa
 
 ## 4. Known limits
 
-- `main` is the only branch. The published site is `origin/main`, at `ccb12fd` (2026-11-24), until this change is pushed.
+- `main` is the only branch, and it is the published site.
 - On screens narrower than 768 px the particle scene draws 80 particles instead of 250, decided once, on page load. The canvas is CSS pixels, not device pixels (`src/components/particles/README.md`).
 - Which browsers the page has been checked in is not recorded.
