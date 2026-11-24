@@ -47,7 +47,7 @@ A full block:
 /*
  * Contents
  *
- * 1. Imports and Configuration
+ * 1. Configuration
  *
  * 2. Classes
  *    - BaseEntity
@@ -63,6 +63,8 @@ A full block:
  */
 ```
 
+A stricter, checked version for every file is `_CODE_STRUCTURE.md`, which a project can opt in to.
+
 ## 2. Code Organization
 
 - Group related code together. Do not scatter one kind of logic through a file.
@@ -70,6 +72,7 @@ A full block:
 - Keep distinct concerns apart, such as data access, UI rendering, and core logic: in separate files, or in labeled sections (§1) when the project needs a single file.
 - Apply this as far as the project's size calls for. It is not a reason to add files or layers.
 - A file's opening docstring states what the file is responsible for, briefly. A tutorial, a history, or an architecture explanation belongs in project documentation; point there instead.
+- A file keeps the job its first line states; a second job goes in a new file, in the same change.
 
 ## 3. Naming
 
@@ -100,6 +103,7 @@ Most code needs no comment. Keep a comment only if it helps someone understand o
 
 When code changes:
 
+- Before writing a new function, search the project for one that already does the same job, and reuse or extend it instead of writing a second.
 - Update the Contents block (§1) if the file's structure changes.
 - Update or remove comments that no longer match the code.
 - Follow the file's existing structure and conventions. Do not restructure working code to match a different style, or rewrite it only to make it "cleaner". An already-clean file is the target, not a problem to fix.
@@ -115,3 +119,4 @@ Structure follows the same rule: a heading, a Contents block, a comment, or a ne
 
 - Flag uncertainty instead of inventing a solution.
 - Before creating or substantially editing a file, decide how much structure it needs: how large it is, what it is responsible for in a sentence or two, which choices are not obvious, and what the code already says on its own.
+- When planning a change, say for each file it touches why the change belongs there. A reason outside the file's stated job means a new file.

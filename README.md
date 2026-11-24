@@ -20,9 +20,7 @@ Personal developer portfolio — built with plain HTML, CSS, and vanilla JavaScr
 
 ```
 index.html              Page markup (home, about, projects, education, contact)
-CLAUDE.md               AI session instructions (loads global-standards/)
 assets/images/          Images
-global-standards/       Reusable code, documentation, and AI-collaboration guides
 src/
   main.js               Entry point — imports and initializes everything below
   components/
@@ -37,3 +35,7 @@ src/
     frameSpotlight.js   Frame highlight for cards and navbar (mouse and touch)
   styles/               Base, layout, and night-mode styles
 ```
+
+## How this project is worked on
+
+The way of working is in `workflow/`: the plan in `workflow/TODO.md`, the documentation in `workflow/docs/` (start with `00-brief.md`), and the rules in `workflow/CONVENTIONS.md` and `workflow/COLLABORATION.md`.

@@ -15,6 +15,7 @@ A project's own collaboration document (for example `COLLABORATION.md`) says whi
 7. Handling Structural Changes
 8. Keeping Current State Consistent With Documentation
 9. Scaling Verification Effort to Stakes
+10. Reviewing Finished Work
 
 ## 1. Establishing Understanding Before Substantive Work
 
@@ -90,3 +91,19 @@ If a session changes what is true about the project, update the project's curren
 ## 9. Scaling Verification Effort to Stakes
 
 Match verification effort to what rides on the claim. Casual orientation needs less rigor than a claim that drives an edit, a structural change, or a fact written into documentation. Cheap automated checks are worth re-running before a consequential claim or change.
+
+## 10. Reviewing Finished Work
+
+Before work is called done, go through every file it created or changed, one file at a time, reading each in full, and answer:
+
+1. Does the first line still say what the file does?
+2. Does every comment still match the code?
+3. Is anything here also done somewhere else?
+4. Is anything unused?
+5. Is it in the right file and component?
+6. Do the test names match what they check?
+7. If the project uses `_CODE_STRUCTURE.md`: is every declaration in the section of its subject?
+
+Show the findings before fixing them. A project's collaboration document says when in its process this review happens.
+
+One review misses a file that gathers jobs over many changes, so the whole codebase is also checked for files that have outgrown their first line, at the points the project's collaboration document names. That check compares each file's first line with its Contents block, or with its top-level declarations where it has none, and reads the file in full when a section or declaration there is not covered by the first line.

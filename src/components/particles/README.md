@@ -33,3 +33,5 @@ A canvas particle system shown behind the page in night mode. Everything lives i
 
 - On screens narrower than 768 px, `CONFIG.count` drops from 250 to 80 particles. This is decided once, on page load.
 - The canvas is drawn at CSS pixel size, not device pixels, so on high-density (retina) screens the particles are slightly soft.
+
+The principle's word for this folder is not settled (`workflow/docs/03-architecture.md` § 1). It is held by `src/components/` and holds `particles.js`, `particles.css`, `colorWave.js` and `colorWave.css`.
